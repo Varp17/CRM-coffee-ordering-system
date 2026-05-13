@@ -1,0 +1,198 @@
+.order-queue-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: calc(100vh - 100px); /* Adjust based on header */
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.queue-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  height: 100%;
+  overflow-x: auto;
+}
+
+.queue-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  border-radius: var(--border-radius-m);
+  background: rgba(255, 255, 255, 0.02);
+  min-width: 300px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 10px;
+}
+
+.column-header h3 {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.column-header .count {
+  background: rgba(212, 163, 115, 0.2);
+  color: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.order-ticket {
+  padding: 15px;
+  border-radius: var(--border-radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.order-ticket.in-progress {
+  border-color: rgba(212, 163, 115, 0.4);
+}
+
+.order-ticket.completed {
+  opacity: 0.7;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.order-id {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.customer-name {
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.item-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.9rem;
+}
+
+.item-list li {
+  color: var(--color-text-muted);
+}
+
+.ticket-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.status-badge {
+  color: #28a745;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.kot-modal {
+  width: 500px;
+  max-width: 90%;
+  padding: 30px;
+  border-radius: var(--border-radius-m);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 15px;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.kot-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+.kot-section h3 {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+
+.kot-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.kot-section li {
+  color: var(--color-text-muted);
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 15px;
+}

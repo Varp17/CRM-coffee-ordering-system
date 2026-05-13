@@ -1,0 +1,140 @@
+.kiosk-checkout {
+  height: 100vh;
+  width: 100vw;
+  background: #0a0503;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text);
+}
+
+.checkout-card {
+  width: 500px;
+  padding: 40px;
+  border-radius: var(--border-radius-l);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+.checkout-card .back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.checkout-card h2 {
+  font-size: 2rem;
+  font-family: var(--font-heading);
+  text-align: center;
+}
+
+.order-summary-section h3,
+.payment-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: var(--color-primary);
+}
+
+.cart-items-list {
+  list-style: none;
+  padding: 0;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+.total-price {
+  color: var(--color-primary);
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.payment-option {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text);
+  padding: 20px;
+  border-radius: var(--border-radius-s);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.payment-option:hover {
+  background: rgba(212, 163, 115, 0.1);
+}
+
+.payment-option.active {
+  border-color: var(--color-primary);
+  background: rgba(212, 163, 115, 0.05);
+}
+
+.payment-option .icon {
+  font-size: 1.5rem;
+}
+
+.success-screen {
+  background: #0a0503;
+}
+
+.success-card {
+  width: 400px;
+  padding: 40px;
+  border-radius: var(--border-radius-l);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--color-primary);
+  color: #1c0e08;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.order-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}

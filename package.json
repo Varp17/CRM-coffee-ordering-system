@@ -1,0 +1,37 @@
+{
+  "name": "coffee-ordering-system",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:d2c": "vite --mode d2c --port 5073",
+    "dev:admin": "vite --mode admin --port 5074",
+    "dev:barista": "vite --mode barista --port 5075",
+    "dev:kiosk": "vite --mode kiosk --port 5076",
+    "dev": "concurrently \"npm run dev:d2c\" \"npm run dev:admin\" \"npm run dev:barista\" \"npm run dev:kiosk\"",
+    "build:d2c": "vite build --mode d2c --base /d2c/ --outDir dist/d2c",
+    "build:admin": "vite build --mode admin --base /admin/ --outDir dist/admin",
+    "build:barista": "vite build --mode barista --base /barista/ --outDir dist/barista",
+    "build:kiosk": "vite build --mode kiosk --base /kiosk/ --outDir dist/kiosk",
+    "build:all": "npm run build:d2c && npm run build:admin && npm run build:barista && npm run build:kiosk && node -e \"require('fs').writeFileSync('dist/index.html', '<script>window.location.href=\\\"/d2c/\\\"</script>')\"",
+    "build": "npm run build:all",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "vite": "^8.0.12"
+  }
+}

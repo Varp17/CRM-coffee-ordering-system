@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Color Palette - Premium Coffee Theme */
+  --color-bg: #0F0C0B;
+  --color-surface: #1A1614;
+  --color-primary: #D4A373; /* Warm Amber/Gold */
+  --color-secondary: #A06037; /* Rich Coffee Brown */
+  --color-accent: #E6C594;
+  --color-text: #F4F1DE;
+  --color-text-muted: #A8A29E;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #D4A373 0%, #A06037 100%);
+  --gradient-dark: linear-gradient(135deg, #1A1614 0%, #0F0C0B 100%);
+  --gradient-glow: radial-gradient(circle at center, rgba(212, 163, 115, 0.15) 0%, rgba(15, 12, 11, 0) 70%);
+
+  /* Typography */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(26, 22, 20, 0.6);
+  --glass-border: rgba(212, 163, 115, 0.1);
+  --glass-blur: blur(12px);
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+/* Utility Classes */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: var(--gradient-glow);
+  z-index: -1;
+  pointer-events: none;
+}

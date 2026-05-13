@@ -1,0 +1,42 @@
+.orders-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.filter-btn:hover, .filter-btn.active {
+  background: var(--color-primary);
+  color: #0F0C0B;
+  border-color: var(--color-primary);
+}
+
+.status-chip.live {
+  background: rgba(0, 123, 255, 0.2);
+  color: #007bff;
+}
+
+.status-chip.completed {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}

@@ -1,0 +1,22 @@
+.inventory-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Status Chips for Inventory */
+.status-chip.active {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.status-chip.inactive {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
