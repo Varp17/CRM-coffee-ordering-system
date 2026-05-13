@@ -1,8 +1,5 @@
 {
   "rewrites": [
-    { "source": "/d2c/(.*)", "destination": "/d2c/index.html" },
-    { "source": "/admin/(.*)", "destination": "/admin/index.html" },
-    { "source": "/barista/(.*)", "destination": "/barista/index.html" },
-    { "source": "/kiosk/(.*)", "destination": "/kiosk/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -15,7 +15,16 @@ import KioskCustomDrink from './pages/kiosk/CustomDrink/CustomDrink'
 import KioskCheckout from './pages/kiosk/Checkout/Checkout' // Import Kiosk Checkout
 
 function App() {
-  const appMode = import.meta.env.VITE_APP_MODE;
+  // Detect app mode from URL path
+  const getAppModeFromUrl = () => {
+    const path = window.location.pathname;
+    if (path.startsWith('/admin')) return 'admin';
+    if (path.startsWith('/barista')) return 'barista';
+    if (path.startsWith('/kiosk')) return 'kiosk';
+    return 'd2c';
+  };
+
+  const appMode = getAppModeFromUrl();
 
   // Set document title based on mode
   useEffect(() => {
@@ -65,13 +74,7 @@ function App() {
           <button onClick={() => setCurrentPage('cart')} style={{ background: 'none', border: 'none', color: currentPage === 'cart' || currentPage === 'checkout' ? 'var(--color-primary)' : 'var(--color-text)', cursor: 'pointer', fontWeight: 600, fontSize: '1.1rem', transition: 'var(--transition-smooth)' }}>Cart</button>
           <button onClick={() => setCurrentPage('profile')} style={{ background: 'none', border: 'none', color: currentPage === 'profile' ? 'var(--color-primary)' : 'var(--color-text)', cursor: 'pointer', fontWeight: 600, fontSize: '1.1rem', transition: 'var(--transition-smooth)' }}>Profile</button>
           
-          {!appMode && (
-            <>
-              <button onClick={() => setCurrentPage('barista')} style={{ background: 'none', border: 'none', color: currentPage === 'barista' ? 'var(--color-primary)' : 'var(--color-text)', cursor: 'pointer', fontWeight: 600, fontSize: '1.1rem', transition: 'var(--transition-smooth)' }}>Barista</button>
-              <button onClick={() => setCurrentPage('kiosk')} style={{ background: 'none', border: 'none', color: currentPage === 'kiosk' || currentPage === 'kiosk-catalog' || currentPage === 'kiosk-login' || currentPage === 'kiosk-qr' || currentPage === 'kiosk-custom' || currentPage === 'kiosk-checkout' ? 'var(--color-primary)' : 'var(--color-text)', cursor: 'pointer', fontWeight: 600, fontSize: '1.1rem', transition: 'var(--transition-smooth)' }}>Kiosk</button>
-              <button onClick={() => setCurrentPage('admin-login')} style={{ background: 'none', border: 'none', color: currentPage === 'admin-login' ? 'var(--color-primary)' : 'var(--color-text)', cursor: 'pointer', fontWeight: 600, fontSize: '1.1rem', transition: 'var(--transition-smooth)' }}>Admin</button>
-            </>
-          )}
+
         </nav>
       )}
 
