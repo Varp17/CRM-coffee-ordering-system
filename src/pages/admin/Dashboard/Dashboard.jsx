@@ -1,7 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../../../services/api';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const [summary, setSummary] = useState({ revenue: 0, total_orders: 0, active_customers: 0 });
+  const [topProducts, setTopProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [summaryRes, topProductsRes] = await Promise.all([
+          api.get('/reports/summary'),
+          api.get('/reports/top-products')
+        ]);
+        
+        setSummary(summaryRes.data.data || summaryRes.data || {});
+        setTopProducts(topProductsRes.data.data || topProductsRes.data || []);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
   return (
     <div className="dashboard-view">
       <div className="view-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -16,17 +39,17 @@ const Dashboard = () => {
       <div className="stats-grid">
         <div className="stat-card glass">
           <span className="stat-label">Total Revenue</span>
-          <span className="stat-value">₹1,25,000</span>
+          <span className="stat-value">₹{summary.revenue || summary.total_revenue || 0}</span>
           <span className="stat-sub">+12% from last month</span>
         </div>
         <div className="stat-card glass">
           <span className="stat-label">Total Orders</span>
-          <span className="stat-value">1,240</span>
+          <span className="stat-value">{summary.total_orders || 0}</span>
           <span className="stat-sub">+5% from last month</span>
         </div>
         <div className="stat-card glass">
           <span className="stat-label">Active Customers</span>
-          <span className="stat-value">450</span>
+          <span className="stat-value">{summary.active_customers || summary.total_customers || 0}</span>
           <span className="stat-sub">+8% from last month</span>
         </div>
       </div>
@@ -58,24 +81,20 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Dark Roast Concentrate</td>
-              <td>Concentrates</td>
-              <td>350</td>
-              <td>₹3,49,650</td>
-            </tr>
-            <tr>
-              <td>Vanilla Infused Cold Brew</td>
-              <td>Ready to Drink</td>
-              <td>220</td>
-              <td>₹2,63,780</td>
-            </tr>
-            <tr>
-              <td>Hazelnut Dream</td>
-              <td>Specialty</td>
-              <td>150</td>
-              <td>₹1,94,850</td>
-            </tr>
+            {loading ? (
+              <tr><td colSpan="4" style={{ textAlign: 'center' }}>Loading...</td></tr>
+            ) : topProducts.length > 0 ? (
+              topProducts.map((p, idx) => (
+                <tr key={p.product?.id || idx}>
+                  <td>{p.product?.name || 'Unknown'}</td>
+                  <td>{p.product?.category || '-'}</td>
+                  <td>{p.total_quantity || p.order_count}</td>
+                  <td>₹{p.total_revenue}</td>
+                </tr>
+              ))
+            ) : (
+              <tr><td colSpan="4" style={{ textAlign: 'center' }}>No products found.</td></tr>
+            )}
           </tbody>
         </table>
       </div>

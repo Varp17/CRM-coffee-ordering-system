@@ -9,10 +9,10 @@ const Accounting = () => {
   useEffect(() => {
     const fetchAccounting = async () => {
       try {
-        const response = await api.get('/accounting');
+        const response = await api.get('/accounting/sync/logs');
         setReports(response.data.data || response.data || []);
       } catch (error) {
-        console.error('Failed to fetch accounting:', error);
+        console.error('Failed to fetch accounting logs:', error);
       } finally {
         setLoading(false);
       }
@@ -33,24 +33,30 @@ const Accounting = () => {
           <table className="cms-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Amount</th>
+                <th>Log ID</th>
+                <th>Order ID</th>
+                <th>Target Provider</th>
+                <th>Status</th>
                 <th>Date</th>
               </tr>
             </thead>
             <tbody>
               {reports.map((report, index) => (
                 <tr key={report.id || index}>
-                  <td>{report.id}</td>
-                  <td>{report.type}</td>
-                  <td>${report.amount}</td>
-                  <td>{new Date(report.date).toLocaleDateString()}</td>
+                  <td>#{report.id}</td>
+                  <td>#{report.order_id}</td>
+                  <td>{report.provider || 'Zoho'}</td>
+                  <td>
+                    <span className={`status-badge ${report.status?.toLowerCase() === 'failed' ? 'failed' : 'success'}`}>
+                      {report.status}
+                    </span>
+                  </td>
+                  <td>{new Date(report.created_at || report.date).toLocaleDateString()}</td>
                 </tr>
               ))}
               {reports.length === 0 && (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: 'center' }}>No accounting records found.</td>
+                  <td colSpan="5" style={{ textAlign: 'center' }}>No accounting sync logs found.</td>
                 </tr>
               )}
             </tbody>

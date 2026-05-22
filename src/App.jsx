@@ -12,49 +12,46 @@ import KioskCatalog from './pages/kiosk/Catalog/Catalog'
 import KioskLogin from './pages/kiosk/Login/Login'
 import KioskQrOrder from './pages/kiosk/QrOrder/QrOrder'
 import KioskCustomDrink from './pages/kiosk/CustomDrink/CustomDrink'
-import KioskCheckout from './pages/kiosk/Checkout/Checkout' // Import Kiosk Checkout
+import KioskCheckout from './pages/kiosk/Checkout/Checkout'
+import Portal from './pages/Portal/Portal' // Import Portal
 
 function App() {
-  // Detect app mode from URL path
-  const getAppModeFromUrl = () => {
-    const path = window.location.pathname;
-    if (path.startsWith('/admin')) return 'admin';
-    if (path.startsWith('/barista')) return 'barista';
-    if (path.startsWith('/kiosk')) return 'kiosk';
-    return 'd2c';
-  };
-
-  const appMode = getAppModeFromUrl();
-
+  // We'll store app mode in state so it can be changed via the Portal
+  const [appMode, setAppMode] = useState('');
+  
   // Set document title based on mode
   useEffect(() => {
     if (appMode === 'admin') document.title = 'Admin Dashboard';
     else if (appMode === 'barista') document.title = 'Barista Interface';
     else if (appMode === 'kiosk') document.title = 'Kiosk Interface';
-    else document.title = 'Vasify Coffee - D2C';
+    else if (appMode === 'd2c') document.title = 'Vasify Coffee - D2C';
+    else document.title = 'Vasify Portal';
   }, [appMode]);
-  
-  // Set initial page based on mode
-  const getInitialPage = () => {
-    if (appMode === 'admin') return 'admin-login';
-    if (appMode === 'barista') return 'barista';
-    if (appMode === 'kiosk') return 'kiosk';
-    return 'home'; // Default D2C
-  };
 
-  const [currentPage, setCurrentPage] = useState(getInitialPage());
+  const [currentPage, setCurrentPage] = useState('portal');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   
   // Kiosk Cart State
   const [kioskCart, setKioskCart] = useState([]);
   const [kioskTotal, setKioskTotal] = useState(0);
 
-  // Determine if we should show the main nav
-  const shouldShowNav = !appMode || appMode === 'd2c';
+  // Determine if we should show the main nav (only for D2C mode)
+  const shouldShowNav = appMode === 'd2c';
   
   // Hide nav for specific pages
-  const hideNavPages = ['admin-dashboard', 'kiosk', 'kiosk-catalog', 'kiosk-login', 'kiosk-qr', 'kiosk-custom', 'kiosk-checkout'];
+  const hideNavPages = ['admin-dashboard', 'kiosk', 'kiosk-catalog', 'kiosk-login', 'kiosk-qr', 'kiosk-custom', 'kiosk-checkout', 'portal'];
   const isNavHidden = hideNavPages.includes(currentPage);
+
+  const handlePortalLogin = (role) => {
+    setAppMode(role);
+    if (role === 'admin') {
+      setIsAdminLoggedIn(true);
+      setCurrentPage('admin-dashboard');
+    }
+    else if (role === 'barista') setCurrentPage('barista');
+    else if (role === 'kiosk') setCurrentPage('kiosk');
+    else if (role === 'd2c') setCurrentPage('home');
+  };
 
   return (
     <>
@@ -87,6 +84,8 @@ function App() {
           </button>
         </nav>
       )}
+
+      {currentPage === 'portal' && <Portal onLogin={handlePortalLogin} />}
 
       {currentPage === 'home' && <Home />}
       {currentPage === 'catalog' && <Catalog />}

@@ -17,9 +17,9 @@ const Login = ({ onLogin }) => {
 
     try {
       setLoading(true);
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login-email', { email, password });
       
-      const token = response.data.token || response.data.data?.token;
+      const token = response.data.data?.accessToken || response.data.accessToken || response.data.token || response.data.data?.token;
       if (token) {
         localStorage.setItem('token', token);
         onLogin();
