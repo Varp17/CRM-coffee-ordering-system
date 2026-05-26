@@ -13,9 +13,11 @@ const Dashboard = () => {
   const [data, setData] = useState(null);
   const [liveOrders, setLiveOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
+    setHasError(false);
     try {
       const dbRes = await analyticsService.getDashboard();
       setData(dbRes.data || dbRes);
@@ -24,6 +26,7 @@ const Dashboard = () => {
       setLiveOrders(ordersRes.data || ordersRes || []);
     } catch (err) {
       console.error('Error loading dashboard stats:', err);
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -33,10 +36,19 @@ const Dashboard = () => {
     loadData();
   }, []);
 
-  if (isLoading || !data) {
+  if (isLoading && !data) {
     return (
       <div className="dashboard-view flex-center" style={{ height: '70vh' }}>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.2rem' }}>Loading analytics dashboard...</p>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="dashboard-view flex-center flex-col" style={{ height: '70vh', gap: '16px' }}>
+        <p style={{ color: 'var(--color-danger)', fontSize: '1.2rem', fontWeight: 600 }}>Failed to load dashboard statistics.</p>
+        <Button variant="outline" onClick={loadData}>Retry 🔄</Button>
       </div>
     );
   }

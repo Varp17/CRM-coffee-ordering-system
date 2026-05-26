@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // Layouts
 import D2CLayout from './layouts/D2CLayout';
@@ -63,12 +64,26 @@ import Portal from './pages/Portal/Portal';
 import { useNavigate } from 'react-router-dom';
 import { useKioskStore } from './store/useKioskStore';
 import { useOrderStore } from './store/useOrderStore';
+import { useAuthStore } from './store/useAuthStore';
 
 function App() {
+  const navigate = useNavigate();
+
+  // Handle auto-logout and redirect when session expires (401 Unauthorized)
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      useAuthStore.setState({ user: null, role: null, isAuthenticated: false });
+      navigate('/');
+    };
+
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+    };
+  }, [navigate]);
   // Activate simulated real-time WebSocket updates
   useWebSocket();
 
-  const navigate = useNavigate();
   const placeOrder = useOrderStore((state) => state.placeOrder);
 
   // Kiosk cart has one source of truth so the header, catalog and checkout stay in sync.

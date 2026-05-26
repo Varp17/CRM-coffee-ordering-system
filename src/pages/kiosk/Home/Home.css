@@ -1,3 +1,8 @@
+/* ==========================================================================
+   KIOSK HOME SCREEN STYLE — Digital Coffee Kiosk Terminal
+   Highly legibly, premium dark mode glassmorphism with luxury warm accents
+   ========================================================================== */
+
 .kiosk-home {
   position: relative;
   height: 100vh;
@@ -15,7 +20,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(28, 14, 8, 0.9) 0%, rgba(10, 5, 3, 0.95) 100%);
+  /* Deep charcoal espresso gradient to ensure 100% legibility of light text */
+  background: linear-gradient(135deg, rgba(22, 11, 7, 0.92) 0%, rgba(8, 4, 3, 0.96) 100%);
 }
 
 .kiosk-content {
@@ -25,71 +31,131 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 80vh;
+  height: 75vh;
   width: 90%;
-  max-width: 600px;
+  max-width: 480px; /* Snugger width for a premium console look */
   text-align: center;
 }
 
+.brand-header {
+  margin-top: var(--space-20);
+}
+
 .brand-title {
-  font-size: 3.5rem;
+  font-size: 2.8rem;
   font-family: var(--font-heading);
-  margin-bottom: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  /* Radiant gold/caramel text gradient */
+  background: linear-gradient(135deg, #f5d6b3 0%, #c8a97e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: var(--space-6);
 }
 
 .brand-subtitle {
-  font-size: 1.2rem;
-  color: var(--color-primary);
-  letter-spacing: 4px;
+  font-size: 0.95rem;
+  color: #e8e5e1;
+  opacity: 0.85;
+  letter-spacing: 6px;
   text-transform: uppercase;
 }
 
+.cta-container {
+  width: 100%;
+}
+
 .start-card {
-  padding: 40px;
-  border-radius: var(--border-radius-l);
+  padding: var(--space-32) var(--space-24);
+  border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-16);
   align-items: center;
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .start-card h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.start-card p {
+  font-size: 0.95rem;
+  color: #d1cbc4; /* Readable light-gray-brown */
+  margin: 0;
+  max-width: 320px;
+  line-height: var(--line-height-snug);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
 .massive-btn {
-  background: var(--color-primary);
-  color: #1c0e08;
+  background: linear-gradient(135deg, #c8a97e 0%, #b89568 100%);
+  color: #1a0e0a;
   border: none;
-  padding: 25px 40px;
-  border-radius: 50px;
-  font-size: 1.5rem;
-  font-weight: 700;
+  padding: 16px 28px;
+  border-radius: 40px;
+  font-size: 1.15rem;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 15px;
-  box-shadow: 0 10px 20px rgba(212, 163, 115, 0.3);
-  transition: all 0.3s ease;
+  gap: var(--space-12);
+  box-shadow: 0 8px 24px rgba(200, 169, 126, 0.25);
+  transition: all var(--transition-normal);
   width: 100%;
   justify-content: center;
+  text-shadow: none;
 }
 
 .massive-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(212, 163, 115, 0.5);
-  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(200, 169, 126, 0.45);
+  background: linear-gradient(135deg, #d8ba90 0%, #c8a97e 100%);
+}
+
+.massive-btn:active {
+  transform: translateY(1px);
 }
 
 .massive-btn .btn-icon {
-  font-size: 2rem;
+  font-size: 1.4rem;
+}
+
+.qr-btn {
+  background: transparent !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  padding: 14px 28px !important;
+  border-radius: 40px !important;
+  margin-top: var(--space-6) !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  width: 100% !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.qr-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .brand-footer {
-  color: var(--color-text-muted);
-  font-size: 1rem;
+  color: #b3aba2;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: var(--space-16);
 }
