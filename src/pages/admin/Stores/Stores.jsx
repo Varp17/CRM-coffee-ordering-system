@@ -4,6 +4,7 @@ import Button from '../../../components/Button/Button';
 import Input from '../../../components/Input/Input';
 import { storeService } from '../../../services/stores';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Stores = () => {
@@ -25,9 +26,7 @@ const Stores = () => {
     setIsLoading(true);
     try {
       const res = await storeService.getAll();
-      // Backend returns either { stores: [...] } or direct array
-      const list = res.stores || res.data?.stores || res.data || res || [];
-      setStores(list);
+      setStores(unwrapList(res));
     } catch (err) {
       toast.error('Failed to load stores: ' + err.message);
     } finally {

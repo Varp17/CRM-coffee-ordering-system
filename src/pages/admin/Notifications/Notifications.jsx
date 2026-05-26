@@ -4,6 +4,7 @@ import Button from '../../../components/Button/Button';
 import Card from '../../../components/Card/Card';
 import Input from '../../../components/Input/Input';
 import { notificationService } from '../../../services/notifications';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Notifications = () => {
@@ -22,7 +23,7 @@ const Notifications = () => {
     setIsLoading(true);
     try {
       const res = await notificationService.getTemplates();
-      const list = res.data || res || [];
+      const list = unwrapList(res);
       const mapped = list.map(t => ({
         ...t,
         active: t.is_active === 1 || t.is_active === true

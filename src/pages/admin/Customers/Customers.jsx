@@ -3,11 +3,13 @@ import './Customers.css';
 import Button from '../../../components/Button/Button';
 import { customerService } from '../../../services/customers';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Customers = () => {
   const [customersList, setCustomersList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [segmentFilter, setSegmentFilter] = useState('all');
   
@@ -18,10 +20,13 @@ const Customers = () => {
 
   const loadCustomers = async () => {
     setIsLoading(true);
+    setLoadError('');
     try {
       const res = await customerService.getAll();
-      setCustomersList(res.data || res || []);
+      setCustomersList(unwrapList(res));
     } catch (err) {
+      setLoadError(err.message || 'Failed to load customers.');
+      setCustomersList([]);
       toast.error('Failed to load customers: ' + err.message);
     } finally {
       setIsLoading(false);
@@ -33,7 +38,7 @@ const Customers = () => {
   }, []);
 
   const filteredCustomers = useMemo(() => {
-    return customersList.filter(c => {
+    return (Array.isArray(customersList) ? customersList : []).filter(c => {
       const name = c.name || '';
       const email = c.email || '';
       const phone = c.mobile || c.phone || '';
@@ -73,6 +78,16 @@ const Customers = () => {
     return (
       <div className="customers-view flex-center" style={{ height: '70vh' }}>
         <p style={{ color: 'var(--color-text-secondary)' }}>Loading CRM database...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="customers-view flex-center flex-col" style={{ height: '70vh', gap: '16px' }}>
+        <p style={{ color: 'var(--color-danger)', fontSize: '1.1rem', fontWeight: 600 }}>Failed to load CRM database.</p>
+        <p style={{ color: 'var(--color-text-secondary)' }}>{loadError}</p>
+        <Button variant="outline" onClick={loadCustomers}>Retry</Button>
       </div>
     );
   }

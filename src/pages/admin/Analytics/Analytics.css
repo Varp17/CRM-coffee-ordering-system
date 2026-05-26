@@ -78,6 +78,8 @@
 .chart-viewport {
   width: 100%;
   margin-top: var(--space-16);
+  position: relative;
+  height: 300px;
 }
 
 .analytics-details-grid {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './Inventory.css';
 import Button from '../../../components/Button/Button';
 import { inventoryService } from '../../../services/inventory';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Inventory = () => {
@@ -15,7 +16,8 @@ const Inventory = () => {
     setIsLoading(true);
     try {
       const storeRes = await inventoryService.getStockLevels({ store_id: 1 });
-      const mappedStore = (storeRes.stock || storeRes || []).map(item => ({
+      const storeStock = unwrapList(storeRes);
+      const mappedStore = (Array.isArray(storeStock) ? storeStock : []).map(item => ({
         id: item.ingredient?.id || item.id,
         name: item.ingredient?.name || item.name,
         stock: item.quantity ?? 100,
@@ -27,7 +29,8 @@ const Inventory = () => {
 
       // Central inventory is mocked or can use another store ID (e.g. facility ID)
       const centralRes = await inventoryService.getStockLevels({ store_id: 1 }); // Let's reuse or map standard
-      const mappedCentral = (centralRes.stock || centralRes || []).map(item => ({
+      const centralStock = unwrapList(centralRes);
+      const mappedCentral = (Array.isArray(centralStock) ? centralStock : []).map(item => ({
         id: item.ingredient?.id || item.id,
         name: item.ingredient?.name || item.name,
         stock: (item.quantity ?? 100) * 10, // Simulate warehouse scale

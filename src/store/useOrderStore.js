@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { orderService } from '../services/orders';
 import { baristaService } from '../services/barista';
+import { unwrapData, unwrapList } from '../utils/apiResponse';
 
 export const useOrderStore = create((set, get) => ({
   orders: [],
@@ -12,7 +13,7 @@ export const useOrderStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await orderService.getAll(params);
-      const orders = res.data || res || [];
+      const orders = unwrapList(res);
       set({ orders, isLoading: false });
     } catch (err) {
       set({ error: err.message, isLoading: false });
@@ -23,7 +24,7 @@ export const useOrderStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await baristaService.getQueue(params);
-      const baristaOrders = res.data || res || [];
+      const baristaOrders = unwrapList(res);
       set({ baristaOrders, isLoading: false });
     } catch (err) {
       set({ error: err.message, isLoading: false });
@@ -35,7 +36,7 @@ export const useOrderStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await orderService.create(orderData);
-      const newOrder = res.data || res;
+      const newOrder = unwrapData(res, res);
       set((state) => ({
         orders: [newOrder, ...state.orders],
         isLoading: false

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { authService } from '../services/auth';
+import { unwrapObject } from '../utils/apiResponse';
 
 const getInitialUser = () => {
   try {
@@ -20,10 +21,9 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await authService.loginEmail(email, password);
-      // Backend returns: { accessToken, refreshToken, expiresIn, user: { id, mobile, name, email, role } }
-      const user = res.data?.user || res.user;
+      const payload = unwrapObject(res, {});
+      const user = payload.user || res.user;
       const role = user?.role || 'customer';
-      const token = res.data?.accessToken || res.accessToken;
 
       if (user) {
         localStorage.setItem('dc_user', JSON.stringify(user));
@@ -59,9 +59,9 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await authService.verifyOtp(mobile, otp);
-      const user = res.data?.user || res.user;
+      const payload = unwrapObject(res, {});
+      const user = payload.user || res.user;
       const role = user?.role || 'customer';
-      const token = res.data?.accessToken || res.accessToken;
 
       if (user) {
         localStorage.setItem('dc_user', JSON.stringify(user));
@@ -84,7 +84,7 @@ export const useAuthStore = create((set) => ({
   loadUser: async () => {
     try {
       const res = await authService.getMe();
-      const user = res.data || res;
+      const user = unwrapObject(res, null);
       const role = user?.role || 'customer';
       localStorage.setItem('dc_user', JSON.stringify(user));
       localStorage.setItem('dc_role', role);
@@ -105,7 +105,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await authService.updateProfile(updatedData);
-      const user = res.data || res;
+      const user = unwrapObject(res, null);
       localStorage.setItem('dc_user', JSON.stringify(user));
       set({ user, isLoading: false });
       return { success: true };

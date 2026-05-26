@@ -3,6 +3,7 @@ import './Financials.css';
 import Button from '../../../components/Button/Button';
 import { analyticsService } from '../../../services/analytics';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import { t } from '../../../utils/i18n';
 
@@ -15,7 +16,8 @@ const Financials = () => {
     setIsLoading(true);
     try {
       const res = await analyticsService.getDashboard();
-      const rev = res.revenue?.thisMonth || res.data?.revenue?.thisMonth || 0;
+      const data = unwrapObject(res, {});
+      const rev = data.revenue?.thisMonth || 0;
       setGrossSales(rev);
     } catch (err) {
       toast.error('Failed to load financials: ' + err.message);

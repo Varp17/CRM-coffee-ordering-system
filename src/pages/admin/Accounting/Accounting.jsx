@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../../services/api';
+import { api } from '../../../services/api';
+import { unwrapList } from '../../../utils/apiResponse';
 import './Accounting.css'; // Optional: We can reuse Orders.css or create a new one
 
 const Accounting = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchAccounting = async () => {
       try {
+        setError('');
         const response = await api.get('/accounting/sync/logs');
-        setReports(response.data.data || response.data || []);
+        setReports(unwrapList(response));
       } catch (error) {
+        setError(error.message || 'Failed to fetch accounting logs.');
         console.error('Failed to fetch accounting logs:', error);
       } finally {
         setLoading(false);
@@ -29,6 +33,8 @@ const Accounting = () => {
       <div className="cms-table-container glass">
         {loading ? (
           <p>Loading accounting data...</p>
+        ) : error ? (
+          <p style={{ color: 'var(--color-danger)' }}>{error}</p>
         ) : (
           <table className="cms-table">
             <thead>

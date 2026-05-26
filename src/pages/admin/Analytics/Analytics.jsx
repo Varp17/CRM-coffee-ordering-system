@@ -7,6 +7,7 @@ import Button from '../../../components/Button/Button';
 import { analyticsService } from '../../../services/analytics';
 import { inventoryService } from '../../../services/inventory';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Analytics = () => {
@@ -22,19 +23,19 @@ const Analytics = () => {
     try {
       // 1. Dashboard summary & weekly
       const dbRes = await analyticsService.getDashboard();
-      setDashboardData(dbRes.data || dbRes);
+      setDashboardData(unwrapObject(dbRes, {}));
 
       // 2. Hourly orders
       const hourlyRes = await analyticsService.getHourlyOrders();
-      setHourlyData(hourlyRes.data || hourlyRes || []);
+      setHourlyData(unwrapList(hourlyRes));
 
       // 3. Monthly projections
       const monthlyRes = await analyticsService.getMonthlyRevenue();
-      setMonthlyData(monthlyRes.data || monthlyRes || []);
+      setMonthlyData(unwrapList(monthlyRes));
 
       // 4. Inventory safety list
       const invRes = await inventoryService.getStockLevels({ store_id: 1 });
-      const mappedStock = (invRes.stock || invRes || []).map(item => ({
+      const mappedStock = unwrapList(invRes).map(item => ({
         id: item.ingredient?.id || item.id,
         name: item.ingredient?.name || item.name,
         stock: item.quantity ?? 100,
@@ -173,7 +174,7 @@ const Analytics = () => {
         <motion.div className="chart-container" variants={itemVariants}>
           <h3>📈 Net Sales Revenue Curve</h3>
           <div className="chart-viewport">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="99%" height="100%" key={`${timeRange}-${weeklyChartData.length}-${monthlyChartData.length}`}>
               {timeRange === 'weekly' ? (
                 <AreaChart data={weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                   <defs>
@@ -211,7 +212,7 @@ const Analytics = () => {
         <motion.div className="chart-container" variants={itemVariants}>
           <h3>⚡ Peak Hours Preparation Heatmap</h3>
           <div className="chart-viewport">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="99%" height="100%" key={hourlyChartData.length}>
               <BarChart data={hourlyChartData}>
                 <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
                 <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />

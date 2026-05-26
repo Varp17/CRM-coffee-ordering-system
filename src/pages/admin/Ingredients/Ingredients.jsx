@@ -3,6 +3,7 @@ import './Ingredients.css';
 import Button from '../../../components/Button/Button';
 import { recipeService } from '../../../services/recipes';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Ingredients = () => {
@@ -48,8 +49,7 @@ const Ingredients = () => {
     setIsLoading(true);
     try {
       const response = await recipeService.getAll();
-      const list = response.data || response || [];
-      setIngredients(list);
+      setIngredients(unwrapList(response));
     } catch (err) {
       toast.error('Failed to load ingredients: ' + err.message);
     } finally {
@@ -62,7 +62,7 @@ const Ingredients = () => {
   }, []);
 
   const filteredIngredients = useMemo(() => {
-    return ingredients.filter(item => {
+    return (Array.isArray(ingredients) ? ingredients : []).filter(item => {
       const category = getCategoryByName(item.name);
       const supplier = getSupplierByName(item.name);
       const matchesSearch = (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 

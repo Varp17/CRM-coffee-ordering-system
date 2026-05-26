@@ -6,9 +6,17 @@ import Button from '../../../components/Button/Button';
 import { analyticsService } from '../../../services/analytics';
 import { orderService } from '../../../services/orders';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import { t } from '../../../utils/i18n';
 
 const COLORS = ['#6F4E37', '#EDD6C8', '#4dabf7', '#38d9a9'];
+const EMPTY_DASHBOARD = {
+  revenue: { today: 0, yesterday: 0, thisWeek: 0, thisMonth: 0, growth: 0 },
+  orders: { today: 0, yesterday: 0, thisWeek: 0, thisMonth: 0, pending: 0, inProgress: 0 },
+  customers: { total: 0, active: 0, new: 0, retention: 0 },
+  weeklyRevenue: [],
+  topProducts: [],
+};
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -21,10 +29,10 @@ const Dashboard = () => {
     setHasError(false);
     try {
       const dbRes = await analyticsService.getDashboard();
-      setData(dbRes.data || dbRes);
+      setData({ ...EMPTY_DASHBOARD, ...unwrapObject(dbRes, {}) });
       
       const ordersRes = await orderService.getAll({ limit: 5 });
-      setLiveOrders(ordersRes.data || ordersRes || []);
+      setLiveOrders(unwrapList(ordersRes));
     } catch (err) {
       console.error('Error loading dashboard stats:', err);
       setHasError(true);
@@ -54,14 +62,16 @@ const Dashboard = () => {
     );
   }
 
-  const weeklyChartData = (data.weeklyRevenue || []).map(d => ({
+  const safeData = { ...EMPTY_DASHBOARD, ...(data || {}) };
+
+  const weeklyChartData = (safeData.weeklyRevenue || []).map(d => ({
     name: d.day,
-    Revenue: d.revenue,
+    Revenue: Number(d.revenue || 0),
   }));
 
-  const pieData = (data.topProducts || []).slice(0, 4).map(p => ({
-    name: p.name,
-    value: p.sales
+  const pieData = (safeData.topProducts || []).slice(0, 4).map(p => ({
+    name: p.name || 'Product',
+    value: Number(p.sales || 0)
   }));
 
   const getLegendColor = (index) => {
@@ -90,28 +100,28 @@ const Dashboard = () => {
         <KPICard
           title="Total Revenue (Month)"
           value=""
-          rawNumber={data.revenue?.thisMonth || 0}
+          rawNumber={safeData.revenue?.thisMonth || 0}
           prefix="₹"
-          trend={{ label: `${data.revenue?.growth >= 0 ? '+' : ''}${data.revenue?.growth || 0}% vs yesterday`, isPositive: (data.revenue?.growth || 0) >= 0 }}
-          sparklineData={[12000, 15000, 18000, 24000, 21000, 28000, data.revenue?.today || 0]}
+          trend={{ label: `${safeData.revenue?.growth >= 0 ? '+' : ''}${safeData.revenue?.growth || 0}% vs yesterday`, isPositive: (safeData.revenue?.growth || 0) >= 0 }}
+          sparklineData={[12000, 15000, 18000, 24000, 21000, 28000, safeData.revenue?.today || 0]}
           icon="📈"
           color="success"
         />
         <KPICard
           title="Total Orders (Month)"
           value=""
-          rawNumber={data.orders?.thisMonth || 0}
-          trend={{ label: `${data.orders?.pending || 0} pending orders`, isPositive: true }}
-          sparklineData={[68, 82, 74, 102, 94, 135, data.orders?.today || 0]}
+          rawNumber={safeData.orders?.thisMonth || 0}
+          trend={{ label: `${safeData.orders?.pending || 0} pending orders`, isPositive: true }}
+          sparklineData={[68, 82, 74, 102, 94, 135, safeData.orders?.today || 0]}
           icon="🛍️"
           color="primary"
         />
         <KPICard
           title="Active Customers"
           value=""
-          rawNumber={data.customers?.total || 0}
-          trend={{ label: `${data.customers?.retention || 0}% retention rate`, isPositive: true }}
-          sparklineData={[400, 410, 420, 435, 442, 448, data.customers?.active || 0]}
+          rawNumber={safeData.customers?.total || 0}
+          trend={{ label: `${safeData.customers?.retention || 0}% retention rate`, isPositive: true }}
+          sparklineData={[400, 410, 420, 435, 442, 448, safeData.customers?.active || 0]}
           icon="👥"
           color="warning"
         />
@@ -125,7 +135,7 @@ const Dashboard = () => {
             <select className="simple-select" onChange={loadData}><option>{t('dashboard.thisWeek', 'This Week')}</option></select>
           </div>
           <div className="chart-viewport">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="99%" height="100%" key={weeklyChartData.length}>
               <AreaChart data={weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
@@ -162,10 +172,10 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <div className="feed-item-body">
-                    <span className="feed-customer">{order.customer_name || 'Guest'}</span>
+                    <span className="feed-customer">{order.customer?.name || order.customer_name || 'Guest'}</span>
                     <span className={`status-indicator ${order.status === 'pending' ? 'low' : 'healthy'}`}>{order.status}</span>
                   </div>
-                  <div className="feed-item-total">{formatCurrency(order.total_amount || order.total)}</div>
+                  <div className="feed-item-total">{formatCurrency(order.total_amount || order.total || 0)}</div>
                 </div>
               ))
             )}
@@ -182,7 +192,7 @@ const Dashboard = () => {
               <p style={{ color: 'var(--color-text-secondary)' }}>{t('dashboard.noSalesData', 'No sales data available yet')}</p>
             ) : (
               <>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="99%" height="100%" key={pieData.length}>
                   <PieChart>
                     <Pie
                        data={pieData}
@@ -228,16 +238,16 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.topProducts?.length === 0 ? (
+                {(safeData.topProducts || []).length === 0 ? (
                   <tr>
                     <td colSpan="3" style={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>{t('dashboard.noTopProducts', 'No top products data yet')}</td>
                   </tr>
                 ) : (
-                  data.topProducts?.map((p, idx) => (
+                  (safeData.topProducts || []).map((p, idx) => (
                     <tr key={idx}>
-                      <td><strong>{p.name}</strong></td>
-                      <td>{p.sales} units</td>
-                      <td className="profit-col">{formatCurrency(p.revenue)}</td>
+                      <td><strong>{p.name || 'Product'}</strong></td>
+                      <td>{p.sales || 0} units</td>
+                      <td className="profit-col">{formatCurrency(p.revenue || 0)}</td>
                     </tr>
                   ))
                 )}

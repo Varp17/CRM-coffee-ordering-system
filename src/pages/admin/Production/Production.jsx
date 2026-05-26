@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../../services/api';
+import { api } from '../../../services/api';
+import { unwrapList } from '../../../utils/apiResponse';
 
 const Production = () => {
   const [productionBatches, setProductionBatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProduction = async () => {
       try {
+        setError('');
         const response = await api.get('/production');
-        setProductionBatches(response.data.data || response.data || []);
+        setProductionBatches(unwrapList(response));
       } catch (error) {
+        setError(error.message || 'Failed to fetch production batches.');
         console.error('Failed to fetch production:', error);
       } finally {
         setLoading(false);
@@ -28,6 +32,8 @@ const Production = () => {
       <div className="cms-table-container glass">
         {loading ? (
           <p>Loading production batches...</p>
+        ) : error ? (
+          <p style={{ color: 'var(--color-danger)' }}>{error}</p>
         ) : (
           <table className="cms-table">
             <thead>

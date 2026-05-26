@@ -3,6 +3,7 @@ import './Menu.css';
 import Button from '../../../components/Button/Button';
 import { productService } from '../../../services/products';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const Menu = () => {
@@ -29,10 +30,10 @@ const Menu = () => {
     setIsLoading(true);
     try {
       const pRes = await productService.getAll();
-      setProductsList(pRes.data || pRes || []);
+      setProductsList(unwrapList(pRes));
       
       const cRes = await productService.getCategories();
-      setCategoriesList(cRes.data || cRes || []);
+      setCategoriesList(unwrapList(cRes));
     } catch (err) {
       toast.error('Failed to load menu products: ' + err.message);
     } finally {

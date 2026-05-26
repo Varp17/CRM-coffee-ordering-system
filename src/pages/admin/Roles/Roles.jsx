@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Roles.css';
 import Button from '../../../components/Button/Button';
 import { roleService } from '../../../services/roles';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const ALL_PERMISSIONS = [
@@ -31,7 +32,7 @@ const Roles = () => {
     setIsLoading(true);
     try {
       const res = await roleService.getAll();
-      setRoles(res.data || res || []);
+      setRoles(unwrapList(res));
     } catch (err) {
       toast.error('Failed to load roles: ' + err.message);
     } finally {

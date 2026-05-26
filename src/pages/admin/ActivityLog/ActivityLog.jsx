@@ -3,6 +3,7 @@ import './ActivityLog.css';
 import Button from '../../../components/Button/Button';
 import Table from '../../../components/Table/Table';
 import { activityLogService } from '../../../services/activityLog';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import { t } from '../../../utils/i18n';
 
@@ -14,7 +15,7 @@ const ActivityLog = () => {
     setIsLoading(true);
     try {
       const res = await activityLogService.getAll({ limit: 100 });
-      const rawLogs = res.logs || res.data?.logs || res.data || res || [];
+      const rawLogs = unwrapList(res);
       const mapped = rawLogs.map(log => ({
         id: log.id,
         user: log.user_name || 'System',

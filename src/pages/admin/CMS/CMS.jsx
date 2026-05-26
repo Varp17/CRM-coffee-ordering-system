@@ -4,6 +4,7 @@ import Button from '../../../components/Button/Button';
 import { cmsService } from '../../../services/cms';
 import { productService } from '../../../services/products';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 
 const CMS = () => {
@@ -33,10 +34,10 @@ const CMS = () => {
     setIsLoading(true);
     try {
       const bannerRes = await cmsService.getBanners();
-      setBannersList(bannerRes.data || bannerRes || []);
+      setBannersList(unwrapList(bannerRes));
 
       const productRes = await productService.getAll();
-      setProductsList(productRes.data || productRes || []);
+      setProductsList(unwrapList(productRes));
     } catch (err) {
       toast.error('Failed to load CMS data: ' + err.message);
     } finally {

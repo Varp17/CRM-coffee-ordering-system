@@ -552,3 +552,169 @@ ul, ol {
 .cream-section {
   background-color: var(--color-cream);
 }
+
+/* ==========================================================================
+   UI CALIBRATION OVERRIDES — High-Density Premium Universal Standards
+   ========================================================================== */
+
+/* 13px base font-size */
+html {
+  font-size: 13px !important;
+}
+
+/* Page-level overflow hidden on desktop & per-panel scroll only (excluding D2C storefront and Portal Login) */
+@media (min-width: 1024px) {
+  body:not(:has(.d2c-layout)):not(:has(.portal-container)) {
+    overflow: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+}
+
+/* 40-50% spacing & padding universal reduction */
+:root {
+  --space-2:   1px !important;
+  --space-4:   2px !important;
+  --space-6:   4px !important;
+  --space-8:   4px !important;
+  --space-10:  5px !important;
+  --space-12:  6px !important;
+  --space-16:  8px !important;
+  --space-20:  10px !important;
+  --space-24:  12px !important;
+  --space-32:  16px !important;
+  --space-40:  20px !important;
+  --space-48:  24px !important;
+  --space-56:  28px !important;
+  --space-64:  32px !important;
+  --space-80:  40px !important;
+  --space-96:  48px !important;
+  --space-128: 64px !important;
+  
+  --radius-xs: 4px !important;
+  --radius-sm: 6px !important;
+  --radius-md: 8px !important;
+  --radius-lg: 12px !important;
+  --radius-xl: 16px !important;
+}
+
+/* Sticky headers and sidebars max sizing */
+.admin-sidebar {
+  max-width: 220px !important;
+  width: 220px !important;
+}
+
+.admin-panel-header {
+  height: 56px !important;
+  min-height: 56px !important;
+  padding: 0 var(--space-16) !important;
+}
+
+.sidebar-menu .menu-item {
+  height: 40px !important;
+  padding: var(--space-8) var(--space-12) !important;
+}
+
+/* Dense table rows */
+table tr, table th, table td {
+  height: 36px !important;
+  padding-top: var(--space-4) !important;
+  padding-bottom: var(--space-4) !important;
+}
+
+.table th, .table td {
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+}
+
+/* Tight card padding override */
+.card, .stat-card, .chart-card, .table-card, .feed-card {
+  padding: 12px !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Input fields & select overrides */
+input, select, textarea, .phone-styled-input, .operator-form-input, .customers-search-input {
+  height: 34px !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+}
+
+/* Buttons sizing overrides */
+.btn, button.btn, button.action-btn-sm, button.back-btn, button.massive-btn, .portal-login-btn {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  font-size: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.btn-large, button.massive-btn {
+  height: 40px !important;
+  min-height: 40px !important;
+  font-size: 13px !important;
+}
+
+/* Icons sizing override */
+.menu-icon, .icon, svg, .logo-icon, .store-icon, .search-icon {
+  font-size: 16px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+}
+
+/* Section scrolling overrides */
+.admin-panel-content {
+  overflow-y: auto !important;
+  max-height: calc(100vh - 56px) !important;
+  padding: var(--space-12) !important;
+}
+
+/* Compact KPI row (CRM Admin top band: max 80px tall) */
+.stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: var(--space-12) !important;
+  margin-bottom: var(--space-16) !important;
+}
+
+.stats-grid .kpi-card {
+  height: 80px !important;
+  padding: var(--space-8) var(--space-12) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.stats-grid .kpi-card .kpi-value {
+  font-size: 1.6rem !important;
+}
+
+/* Inline status tag alignments */
+.status-indicator, .segment-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+/* Switch from single-column layouts to multi-column grid where content allows */
+.dashboard-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+  gap: var(--space-12) !important;
+}
+
+/* Ensure no page-level vertical scroll for main task screens */
+.recipe-workspace-layout, .customers-view, .inventory-view, .menu-view {
+  height: calc(100vh - 80px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.table-container {
+  overflow-y: auto !important;
+  flex-grow: 1 !important;
+}
+

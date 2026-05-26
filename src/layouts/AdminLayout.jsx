@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import AdminPageErrorBoundary from '../components/AdminPageErrorBoundary/AdminPageErrorBoundary';
 import './AdminLayout.css';
 import { t } from '../utils/i18n';
 
@@ -164,7 +165,9 @@ const AdminLayout = () => {
 
         {/* Dynamic Nested Page Content */}
         <main className="admin-panel-content">
-          <Outlet />
+          <AdminPageErrorBoundary resetKey={location.pathname}>
+            <Outlet />
+          </AdminPageErrorBoundary>
         </main>
       </div>
     </div>

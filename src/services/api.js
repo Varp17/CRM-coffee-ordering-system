@@ -24,10 +24,29 @@ class ApiClient {
       localStorage.removeItem('dc_token');
       localStorage.removeItem('dc_user');
       localStorage.removeItem('dc_refresh_token');
+      localStorage.removeItem('dc_role');
     }
   }
 
-  async request(endpoint, options = {}) {
+  async refreshAccessToken() {
+    const refreshToken = localStorage.getItem('dc_refresh_token');
+    if (!refreshToken) return null;
+
+    const response = await fetch(`${this.baseUrl}/auth/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    }).catch(() => null);
+
+    if (!response?.ok) return null;
+
+    const payload = await response.json().catch(() => ({}));
+    const token = payload.data?.accessToken || payload.accessToken || payload.token;
+    if (token) this.setToken(token);
+    return token || null;
+  }
+
+  async request(endpoint, options = {}, hasRetriedAuth = false) {
     const url = `${this.baseUrl}${endpoint}`;
     const token = this.getToken();
 
@@ -62,6 +81,13 @@ class ApiClient {
 
       // Handle 401 — auto logout
       if (response.status === 401) {
+        if (!hasRetriedAuth) {
+          const newToken = await this.refreshAccessToken();
+          if (newToken) {
+            return this.request(endpoint, options, true);
+          }
+        }
+
         this.setToken(null);
         window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         const errData = await response.json().catch(() => ({}));

@@ -5,6 +5,7 @@ import Input from '../../../components/Input/Input';
 import { recipeService } from '../../../services/recipes';
 import { productService } from '../../../services/products';
 import { formatCurrency } from '../../../utils/formatters';
+import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import { t } from '../../../utils/i18n';
 
@@ -26,11 +27,11 @@ const RecipeEngine = () => {
     setIsLoading(true);
     try {
       const pRes = await productService.getAll();
-      const pList = pRes.data?.products || pRes.products || pRes.data || pRes || [];
+      const pList = unwrapList(pRes);
       setProducts(pList);
 
       const iRes = await recipeService.getAll();
-      const iList = iRes.data || iRes || [];
+      const iList = unwrapList(iRes);
       setIngredients(iList);
 
       if (pList.length > 0) {
@@ -47,8 +48,8 @@ const RecipeEngine = () => {
   const loadMappings = async (productUuid) => {
     try {
       const response = await recipeService.getIngredientMappings(productUuid);
-      const mappings = response.data || response || [];
-      setMappedIngredients(mappings);
+      const mappings = unwrapList(response);
+      setMappedIngredients(Array.isArray(mappings) ? mappings : []);
     } catch (err) {
       toast.error('Failed to load ingredient mappings: ' + err.message);
     }
@@ -132,8 +133,11 @@ const RecipeEngine = () => {
 
   // Calculate gross cost per cup
   const calculateCostPerCup = (list) => {
+    if (!Array.isArray(list)) return 0;
     return list.reduce((acc, curr) => {
-      const ing = ingredients.find(i => Number(i.id) === Number(curr.ingredient_id || curr.id));
+      if (!curr) return acc;
+      const idToFind = curr.ingredient_id || curr.id || curr.ingredient?.id;
+      const ing = ingredients.find(i => i.id === idToFind || Number(i.id) === Number(idToFind) || i.uuid === idToFind);
       const costPerUnit = ing ? (ing.cost_per_unit || 0) : 0;
       return acc + (costPerUnit * (curr.quantity || 0));
     }, 0);
@@ -281,13 +285,13 @@ const RecipeEngine = () => {
                     <h3>{t('recipeEngine.mapDetailsTitle', 'Inventory Map Details')}</h3>
                     <ul className="viewer-ing-list">
                       {mappedIngredients.map((ing, idx) => {
-                        const originalIng = ingredients.find(i => Number(i.id) === Number(ing.ingredient_id));
+                        const originalIng = ingredients.find(i => Number(i.id) === Number(ing.ingredient_id) || i.id === ing.ingredient?.id || i.uuid === ing.ingredient?.id);
                         return (
                           <li key={idx}>
                             <span className="bullet">📦</span>
                             <div>
-                              <strong>{ing.name || originalIng?.name || 'Raw Ingredient'}</strong>
-                              <p>{ing.quantity} {ing.unit || originalIng?.unit || 'g'} (Cost contribution: {formatCurrency(ing.quantity * (originalIng?.cost_per_unit || 0))})</p>
+                              <strong>{ing.name || ing.ingredient?.name || originalIng?.name || 'Raw Ingredient'}</strong>
+                              <p>{ing.quantity} {ing.unit || ing.ingredient?.unit || originalIng?.unit || 'g'} (Cost contribution: {formatCurrency(ing.quantity * (originalIng?.cost_per_unit || 0))})</p>
                             </div>
                           </li>
                         );
