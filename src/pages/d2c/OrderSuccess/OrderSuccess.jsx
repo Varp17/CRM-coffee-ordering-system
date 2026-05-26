@@ -63,10 +63,10 @@ const OrderSuccess = () => {
 
         {/* CTAs */}
         <div className="success-actions">
-          <Button variant="primary" size="large" onClick={() => navigate('/')}>
+          <Button variant="primary" size="large" onClick={() => navigate('/store')}>
             Return to Homepage 🏠
           </Button>
-          <Button variant="outline" size="large" onClick={() => navigate('/profile')}>
+          <Button variant="outline" size="large" onClick={() => navigate('/store/profile')}>
             View Order History 👤
           </Button>
         </div>

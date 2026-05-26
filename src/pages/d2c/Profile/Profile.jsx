@@ -49,7 +49,7 @@ const Profile = () => {
           <span className="prompt-emoji">👤</span>
           <h2>Access Your Digital Coffee Profile</h2>
           <p>Login to track active kitchen orders, manage recurring weekly subscriptions, save custom beverage modifications, and earn loyalty points.</p>
-          <Button variant="primary" size="large" onClick={() => navigate('/login')}>
+          <Button variant="primary" size="large" onClick={() => navigate('/store/login')}>
             Log In / Sign Up 🔑
           </Button>
         </div>
@@ -75,7 +75,7 @@ const Profile = () => {
         addItemToCart(baseProduct, variant, item.quantity || 1);
       });
       toast.success('All items added back to your cart! 🛒');
-      navigate('/cart');
+      navigate('/store/cart');
     } catch (err) {
       toast.error('Reorder failed: ' + err.message);
     }
@@ -172,7 +172,7 @@ const Profile = () => {
                     ></div>
                   </div>
                   
-                  <Button variant="outline" size="small" onClick={() => navigate('/success', { state: { orderId: activeOrder.id, total: activeOrder.total_amount, customerName: user.name } })}>
+                  <Button variant="outline" size="small" onClick={() => navigate('/store/success', { state: { orderId: activeOrder.id, total: activeOrder.total_amount, customerName: user.name } })}>
                     Open Prep Timeline →
                   </Button>
                 </div>
@@ -225,7 +225,7 @@ const Profile = () => {
               <div className="empty-history-box">
                 <span>📜</span>
                 <p>No past order logs found in database matching {user.email}.</p>
-                <Button variant="primary" size="medium" onClick={() => navigate('/catalog')}>
+                <Button variant="primary" size="medium" onClick={() => navigate('/store/catalog')}>
                   Order Your First Bottle
                 </Button>
               </div>

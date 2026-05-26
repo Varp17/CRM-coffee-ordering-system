@@ -44,7 +44,7 @@ const ProductDetail = () => {
           setRelatedProducts(related);
         } else {
           toast.error('Product not found!');
-          navigate('/catalog');
+          navigate('/store/catalog');
         }
       } catch (err) {
         console.error('Failed to load product details', err);
@@ -84,7 +84,7 @@ const ProductDetail = () => {
 
   return (
     <div className="detail-page animate-fade-in">
-      <button className="back-btn" onClick={() => navigate('/catalog')}>
+      <button className="back-btn" onClick={() => navigate('/store/catalog')}>
         {t('productDetail.back', '← Back to Catalog')}
       </button>
 

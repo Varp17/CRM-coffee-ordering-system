@@ -163,11 +163,11 @@ const Home = () => {
             </p>
 
             <div className="hero-actions">
-              <Button variant="accent" size="large" onClick={() => navigate('/catalog')}>
+              <Button variant="accent" size="large" onClick={() => navigate('/store/catalog')}>
                 {t('home.orderNow', 'Order Now')}
                 <ArrowRight size={18} />
               </Button>
-              <Button variant="outline" size="large" onClick={() => navigate('/catalog')} className="hero-outline-btn">
+              <Button variant="outline" size="large" onClick={() => navigate('/store/catalog')} className="hero-outline-btn">
                 {t('home.exploreMenu', 'Explore Menu')}
               </Button>
             </div>
@@ -282,7 +282,7 @@ const Home = () => {
               title={t('home.featuredTitle', 'Featured Concentrates')}
               subtitle={t('home.featuredSubtitle', 'Award-winning signatures. Pure extracts designed to craft cafe-style cups at home.')}
               ctaText={t('home.featuredCta', 'View All Products')}
-              ctaLink="/catalog"
+              ctaLink="/store/catalog"
             />
           </ScrollReveal>
 
@@ -405,7 +405,7 @@ const Home = () => {
                   <span className="sub-feature">{t('home.subFeat2', '✓ Pause Anytime')}</span>
                   <span className="sub-feature">{t('home.subFeat3', '✓ Up to 15% Off')}</span>
                 </div>
-                <Button variant="primary" size="large" onClick={() => navigate('/subscription')}>
+                <Button variant="primary" size="large" onClick={() => navigate('/store/subscription')}>
                   {t('home.subCta', 'Build Your Coffee Plan')}
                   <ArrowRight size={18} />
                 </Button>

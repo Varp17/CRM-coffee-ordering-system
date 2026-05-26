@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Portal.css';
 import api from '../../services/api';
+import { t } from '../../utils/i18n';
 
-const Portal = ({ onLogin }) => {
+const Portal = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('admin@example.com');
   const [password, setPassword] = useState('12345');
   const [loading, setLoading] = useState(false);
@@ -19,17 +22,26 @@ const Portal = ({ onLogin }) => {
         localStorage.setItem('token', token);
       }
 
-      let role = 'd2c';
+      // Determine destination based on role from the backend
+      let destination = '/store';
       if (user) {
-        if (user.role === 'super_admin' || user.role === 'admin') role = 'admin';
-        else if (user.role === 'barista' || user.role === 'kitchen') role = 'barista';
-        else if (user.role === 'store_manager' || user.role === 'kiosk') role = 'kiosk';
+        const role = (user.role || '').toLowerCase();
+        if (role === 'super_admin' || role === 'admin') {
+          destination = '/admin';
+        } else if (role === 'barista' || role === 'kitchen') {
+          destination = '/barista';
+        } else if (role === 'store_manager' || role === 'kiosk') {
+          destination = '/kiosk';
+        } else {
+          // customer or any other role → D2C storefront
+          destination = '/store';
+        }
       }
 
-      onLogin(role);
+      navigate(destination);
     } catch (err) {
       console.error('Login failed:', err);
-      alert('Login failed. Please check your credentials.');
+      alert(t('portal.loginFailed', 'Login failed. Please check your credentials.'));
     } finally {
       setLoading(false);
     }
@@ -38,12 +50,12 @@ const Portal = ({ onLogin }) => {
   return (
     <div className="portal-page">
       <div className="portal-card glass">
-        <h1 className="portal-title">Login</h1>
-        <p className="portal-subtitle">Vasify Coffee Ordering System</p>
+        <h1 className="portal-title">{t('portal.title', 'Login')}</h1>
+        <p className="portal-subtitle">{t('portal.subtitle', 'Vasify Coffee Ordering System')}</p>
         
         <form className="portal-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email Address</label>
+            <label>{t('portal.emailLabel', 'Email Address')}</label>
             <input 
               type="email" 
               value={email}
@@ -52,7 +64,7 @@ const Portal = ({ onLogin }) => {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>{t('portal.passwordLabel', 'Password')}</label>
             <input 
               type="password" 
               value={password}
@@ -62,7 +74,7 @@ const Portal = ({ onLogin }) => {
           </div>
 
           <button type="submit" className="portal-login-btn" disabled={loading}>
-            {loading ? 'Authenticating...' : 'Login'}
+            {loading ? t('portal.authenticating', 'Authenticating...') : t('portal.loginBtn', 'Login')}
           </button>
         </form>
 
@@ -70,31 +82,31 @@ const Portal = ({ onLogin }) => {
           <table className="credentials-table">
             <thead>
               <tr>
-                <th>Email</th>
-                <th>Pass</th>
-                <th>Role</th>
+                <th>{t('portal.colEmail', 'Email')}</th>
+                <th>{t('portal.colPass', 'Pass')}</th>
+                <th>{t('portal.colRole', 'Role')}</th>
               </tr>
             </thead>
             <tbody>
               <tr onClick={() => { setEmail('admin@example.com'); setPassword('12345'); }}>
-                <td>admin@example.com</td>
-                <td>12345</td>
-                <td>Admin</td>
+                <td>{'admin@example.com'}</td>
+                <td>{'12345'}</td>
+                <td>{t('portal.roleAdmin', 'Admin')}</td>
               </tr>
               <tr onClick={() => { setEmail('bianchi@gmail.com'); setPassword('12345'); }}>
-                <td>bianchi@gmail.com</td>
-                <td>12345</td>
-                <td>Kitchen (Barista)</td>
+                <td>{'bianchi@gmail.com'}</td>
+                <td>{'12345'}</td>
+                <td>{t('portal.roleBarista', 'Kitchen (Barista)')}</td>
               </tr>
               <tr onClick={() => { setEmail('counter@gmail.com'); setPassword('12345'); }}>
-                <td>counter@gmail.com</td>
-                <td>12345</td>
-                <td>Customer Display (Kiosk)</td>
+                <td>{'counter@gmail.com'}</td>
+                <td>{'12345'}</td>
+                <td>{t('portal.roleKiosk', 'Customer Display (Kiosk)')}</td>
               </tr>
             </tbody>
           </table>
           <p style={{ textAlign: 'center', marginTop: '15px', color: 'var(--color-text-muted)' }}>
-            *Click a row to autofill credentials.
+            {t('portal.autofillHint', '*Click a row to autofill credentials.')}
           </p>
         </div>
         
@@ -104,9 +116,9 @@ const Portal = ({ onLogin }) => {
             type="button" 
             className="back-btn" 
             style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', textDecoration: 'underline' }}
-            onClick={() => onLogin('d2c')}
+            onClick={() => navigate('/store')}
           >
-            Access D2C Consumer App
+            {t('portal.accessD2C', 'Access D2C Consumer App')}
           </button>
         </div>
       </div>

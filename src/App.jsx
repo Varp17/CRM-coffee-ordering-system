@@ -56,6 +56,9 @@ import DelayedOrders from './pages/barista/DelayedOrders/DelayedOrders';
 import Performance from './pages/barista/Performance/Performance';
 import TokenConfirmation from './pages/kiosk/TokenConfirmation/TokenConfirmation';
 
+// Portal (unified login hub)
+import Portal from './pages/Portal/Portal';
+
 // Stores & State
 import { useNavigate } from 'react-router-dom';
 import { useKioskStore } from './store/useKioskStore';
@@ -100,8 +103,11 @@ function App() {
 
   return (
     <Routes>
+      {/* ── 0. Portal — Default Landing / Login Hub ── */}
+      <Route path="/" element={<Portal />} />
+
       {/* ── 1. D2C storefront (Customer Facing) ── */}
-      <Route path="/" element={<D2CLayout />}>
+      <Route path="/store" element={<D2CLayout />}>
         <Route index element={<Home />} />
         <Route path="catalog" element={<Catalog />} />
         <Route path="catalog/:id" element={<ProductDetail />} />
@@ -191,7 +197,7 @@ function App() {
         <Route path="token" element={<TokenConfirmation />} />
       </Route>
 
-      {/* ── Catch-all / Redirect ── */}
+      {/* ── Catch-all / Redirect to Portal ── */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

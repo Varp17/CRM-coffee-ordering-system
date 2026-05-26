@@ -58,7 +58,7 @@ const Login = () => {
       const res = await login(phoneNumber, otpCode);
       if (res.success) {
         toast.success(`Welcome back, ${useAuthStore.getState().user?.name || 'Customer'}! ☕`);
-        navigate('/profile');
+        navigate('/store/profile');
       } else {
         toast.error(res.error || 'Authentication failed.');
       }
@@ -78,7 +78,7 @@ const Login = () => {
       const res = await login(email, password);
       if (res.success) {
         toast.success(`Welcome back, ${useAuthStore.getState().user?.name || 'Customer'}! ☕`);
-        navigate('/profile');
+        navigate('/store/profile');
       } else {
         toast.error(res.error || 'Authentication failed.');
       }

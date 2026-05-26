@@ -79,7 +79,7 @@ const Cart = () => {
           <span className="empty-emoji">🛒</span>
           <h2>Your cart is empty</h2>
           <p>You haven't added any delicious blends or fresh coffee concentrates yet.</p>
-          <Button variant="primary" size="large" onClick={() => navigate('/catalog')}>
+          <Button variant="primary" size="large" onClick={() => navigate('/store/catalog')}>
             Explore Menu Catalog 📖
           </Button>
         </div>
@@ -232,12 +232,12 @@ const Cart = () => {
                 variant="primary" 
                 size="large" 
                 fullWidth={true}
-                onClick={() => navigate('/checkout')}
+                onClick={() => navigate('/store/checkout')}
               >
                 Proceed to Checkout →
               </Button>
               
-              <Link to="/catalog" className="continue-shopping-link">
+              <Link to="/store/catalog" className="continue-shopping-link">
                 ← Continue Shopping
               </Link>
             </div>
