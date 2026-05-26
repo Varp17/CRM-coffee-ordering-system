@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Portal.css';
-import api from '../../services/api';
+import { useAuthStore } from '../../store/useAuthStore';
 import { t } from '../../utils/i18n';
 
 const Portal = () => {
   const navigate = useNavigate();
+  const loginStore = useAuthStore((state) => state.login);
   const [email, setEmail] = useState('admin@example.com');
   const [password, setPassword] = useState('12345');
   const [loading, setLoading] = useState(false);
@@ -14,18 +15,12 @@ const Portal = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await api.post('/auth/login-email', { email, password });
-      const user = response.data.data?.user || response.data.user;
-      const token = response.data.data?.accessToken || response.data.accessToken || response.data.token;
+      const result = await loginStore(email, password);
       
-      if (token) {
-        localStorage.setItem('token', token);
-      }
-
-      // Determine destination based on role from the backend
-      let destination = '/store';
-      if (user) {
-        const role = (user.role || '').toLowerCase();
+      if (result.success) {
+        // Determine destination based on role from the backend
+        let destination = '/store';
+        const role = (result.role || '').toLowerCase();
         if (role === 'super_admin' || role === 'admin') {
           destination = '/admin';
         } else if (role === 'barista' || role === 'kitchen') {
@@ -36,9 +31,10 @@ const Portal = () => {
           // customer or any other role → D2C storefront
           destination = '/store';
         }
+        navigate(destination);
+      } else {
+        alert(result.error || t('portal.loginFailed', 'Login failed. Please check your credentials.'));
       }
-
-      navigate(destination);
     } catch (err) {
       console.error('Login failed:', err);
       alert(t('portal.loginFailed', 'Login failed. Please check your credentials.'));

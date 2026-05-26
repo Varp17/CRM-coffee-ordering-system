@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/useAuthStore';
 import toast from 'react-hot-toast';
 import './Login.css';
+import { t } from '../../../utils/i18n';
 
 const Login = () => {
   const [email, setEmail] = useState('admin@example.com');
@@ -89,12 +90,13 @@ const Login = () => {
     setIsSubmitting(false);
 
     if (result.success) {
-      toast.success(`Successfully logged in as ${result.role === 'admin' ? 'Administrator' : result.role === 'barista' ? 'Kitchen Operator' : 'Kiosk Display'}!`, {
+      const isProductiveAdmin = result.role === 'admin' || result.role === 'super_admin';
+      toast.success(`Successfully logged in as ${isProductiveAdmin ? 'Administrator' : result.role === 'barista' ? 'Kitchen Operator' : 'Kiosk Display'}!`, {
         style: { background: '#157347', color: '#fff' }
       });
       
       // Redirect based on role
-      if (result.role === 'admin') {
+      if (isProductiveAdmin) {
         navigate('/admin');
       } else if (result.role === 'barista') {
         navigate('/barista');
@@ -113,13 +115,13 @@ const Login = () => {
     <div className="operator-login-container">
       <div className="operator-login-card">
         {/* Mockup Header */}
-        <h1 className="operator-login-title">Login</h1>
-        <p className="operator-login-subtitle">Digital Coffee Enterprise Management Software</p>
+        <h1 className="operator-login-title">{t('adminLogin.title', 'Login')}</h1>
+        <p className="operator-login-subtitle">{t('adminLogin.subtitle', 'Digital Coffee Enterprise Management Software')}</p>
 
         <form onSubmit={handleSubmit} className="operator-login-form">
           {/* Email Address Input */}
           <div className="operator-form-group">
-            <label className="operator-form-label" htmlFor="email-input">Email Address</label>
+            <label className="operator-form-label" htmlFor="email-input">{t('adminLogin.emailLabel', 'Email Address')}</label>
             <input
               id="email-input"
               type="email"
@@ -133,7 +135,7 @@ const Login = () => {
 
           {/* Password Input */}
           <div className="operator-form-group">
-            <label className="operator-form-label" htmlFor="password-input">Password</label>
+            <label className="operator-form-label" htmlFor="password-input">{t('adminLogin.passwordLabel', 'Password')}</label>
             <input
               id="password-input"
               type="password"
@@ -207,26 +209,26 @@ const Login = () => {
             <table className="credentials-reference-table">
               <thead>
                 <tr>
-                  <th>Email</th>
-                  <th>Pass</th>
-                  <th>Role</th>
+                  <th>{t('adminLogin.colEmail', 'Email')}</th>
+                  <th>{t('adminLogin.colPass', 'Pass')}</th>
+                  <th>{t('adminLogin.colRole', 'Role')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr onClick={() => handleRowClick('admin@example.com', '12345', 'Admin')} title="Click to autofill Admin credentials">
-                  <td>admin@example.com</td>
-                  <td>12345</td>
-                  <td><span className="role-tag role-admin">Admin</span></td>
+                  <td>{'admin@example.com'}</td>
+                  <td>{'12345'}</td>
+                  <td><span className="role-tag role-admin">{t('adminLogin.roleAdmin', 'Admin')}</span></td>
                 </tr>
                 <tr onClick={() => handleRowClick('bianchi@gmail.com', '12345', 'Kitchen')} title="Click to autofill Kitchen credentials">
-                  <td>bianchi@gmail.com</td>
-                  <td>12345</td>
-                  <td><span className="role-tag role-kitchen">Kitchen</span></td>
+                  <td>{'bianchi@gmail.com'}</td>
+                  <td>{'12345'}</td>
+                  <td><span className="role-tag role-kitchen">{t('adminLogin.roleKitchen', 'Kitchen')}</span></td>
                 </tr>
                 <tr onClick={() => handleRowClick('counter@gmail.com', '12345', 'Customer Display')} title="Click to autofill Customer Display credentials">
-                  <td>counter@gmail.com</td>
-                  <td>12345</td>
-                  <td><span className="role-tag role-display">Customer Display</span></td>
+                  <td>{'counter@gmail.com'}</td>
+                  <td>{'12345'}</td>
+                  <td><span className="role-tag role-display">{t('adminLogin.roleDisplay', 'Customer Display')}</span></td>
                 </tr>
               </tbody>
             </table>

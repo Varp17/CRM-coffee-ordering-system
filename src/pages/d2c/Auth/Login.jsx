@@ -5,6 +5,7 @@ import Button from '../../../components/Button/Button';
 import Input from '../../../components/Input/Input';
 import { useAuthStore } from '../../../store/useAuthStore';
 import toast from 'react-hot-toast';
+import { t } from '../../../utils/i18n';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -93,8 +94,8 @@ const Login = () => {
         {/* Brand Logo Header */}
         <div className="login-brand-header">
           <div className="brand-circle-logo">☕</div>
-          <h2 className="brand-name">Digital Coffee</h2>
-          <p className="brand-tagline">Freshly Brewed D2C Commerce Ecosystem</p>
+          <h2 className="brand-name">{t('login.brandName', 'Digital Coffee')}</h2>
+          <p className="brand-tagline">{t('login.tagline', 'Freshly Brewed D2C Commerce Ecosystem')}</p>
         </div>
 
         {/* Tab Selection */}
@@ -104,13 +105,13 @@ const Login = () => {
               className={`login-tab-btn ${loginMethod === 'otp' ? 'active' : ''}`}
               onClick={() => setLoginMethod('otp')}
             >
-              Secure OTP Login
+              {t('login.otpTab', 'Secure OTP Login')}
             </button>
             <button
               className={`login-tab-btn ${loginMethod === 'password' ? 'active' : ''}`}
               onClick={() => setLoginMethod('password')}
             >
-              Email & Password
+              {t('login.passwordTab', 'Email & Password')}
             </button>
           </div>
         )}
@@ -119,15 +120,18 @@ const Login = () => {
         {otpStep ? (
           /* OTP Entry Step */
           <div className="otp-entry-section animate-scale-in">
-            <h3>Enter 4-Digit OTP Code</h3>
-            <p className="otp-sent-to-info">We sent an verification code to <strong>+91 {phoneNumber}</strong></p>
+            <h3>{t('login.otpTitle', 'Enter 4-Digit OTP Code')}</h3>
+            <p className="otp-sent-to-info">{t('login.otpSentTo', 'We sent an verification code to')} <strong>+91 {phoneNumber}</strong></p>
 
             <div className="otp-digit-boxes-row">
-              {[0, 1, 2, 3].map((idx) => (
-                <div key={idx} className={`otp-digit-box ${otpCode[idx] ? 'filled' : ''}`}>
-                  {otpCode[idx] || ''}
-                </div>
-              ))}
+              {[0, 1, 2, 3].map((idx) => {
+                const digit = String(otpCode).charAt(idx);
+                return (
+                  <div key={idx} className={`otp-digit-box ${digit ? 'filled' : ''}`}>
+                    {digit || ''}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Virtual Numpad */}
@@ -138,10 +142,10 @@ const Login = () => {
                 </button>
               ))}
               <button type="button" className="numpad-clear" onClick={handleOtpClear}>
-                Clear
+                {t('login.clear', 'Clear')}
               </button>
               <button type="button" onClick={() => handleOtpKeyPress('0')}>
-                0
+                {'0'}
               </button>
               <button 
                 type="button" 
@@ -149,7 +153,7 @@ const Login = () => {
                 onClick={handleVerifyOtp}
                 disabled={otpCode.length < 4 || isLoading}
               >
-                Go ➔
+                {t('login.go', 'Go ➜')}
               </button>
             </div>
 
@@ -165,7 +169,7 @@ const Login = () => {
           /* Mobile OTP entry form */
           <form className="login-form-fields animate-slide-up" onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }}>
             <div className="form-group">
-              <label className="form-label-txt">Enter Indian Mobile Number</label>
+              <label className="form-label-txt">{t('login.mobileLabel', 'Enter Indian Mobile Number')}</label>
               <div className="phone-prefix-input-wrap">
                 <span className="phone-prefix-val">+91</span>
                 <input
@@ -187,10 +191,10 @@ const Login = () => {
               type="submit"
               disabled={isLoading || phoneNumber.length < 10}
             >
-              Send Secure OTP Code 🚀
+              {t('login.sendOtp', 'Send Secure OTP Code 🚀')}
             </Button>
             <p className="login-disclaimer-txt">
-              By continuing, you agree to receive automated simulated OTP tokens. Standard developer simulated rates apply.
+              {t('login.disclaimer', 'By continuing, you agree to receive automated simulated OTP tokens. Standard developer simulated rates apply.')}
             </p>
           </form>
         ) : (
