@@ -9,6 +9,7 @@ import { cmsService } from '../../../services/cms';
 import { useCartStore } from '../../../store/useCartStore';
 import toast from 'react-hot-toast';
 import { t } from '../../../utils/i18n';
+import CustomizationModal from '../../../components/CustomizationModal/CustomizationModal';
 
 const Catalog = () => {
   const [products, setProducts] = useState([]);
@@ -17,6 +18,10 @@ const Catalog = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [loading, setLoading] = useState(true);
+  
+  // Customization Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   
   const navigate = useNavigate();
   const addItemToCart = useCartStore((state) => state.addItem);
@@ -64,14 +69,15 @@ const Catalog = () => {
     fetchCatalog();
   }, [sortBy, searchQuery, selectedCategory]);
 
-  const handleAddToCart = (e, product) => {
+  const handleAddToCartClick = (e, product) => {
     e.stopPropagation();
-    const defaultVariant = product.variants && product.variants.length > 0
-      ? product.variants[0]
-      : { id: 'default', name: 'Standard', price: product.price };
-      
-    addItemToCart(product, defaultVariant, 1);
-    toast.success(`${product.title} added to cart!`);
+    setSelectedProduct(product);
+    setModalOpen(true);
+  };
+
+  const handleModalAddToCart = (customDrink, variant, quantity) => {
+    addItemToCart(customDrink, variant, quantity);
+    toast.success(`${customDrink.title} added to cart!`);
   };
 
   const sortOptions = [
@@ -158,7 +164,7 @@ const Catalog = () => {
                 tags={product.tags}
                 inStock={product.in_stock === 1 || product.in_stock === true}
                 actionText="Add to Cart"
-                onAction={(e) => handleAddToCart(e, product)}
+                onAction={(e) => handleAddToCartClick(e, product)}
               />
             </div>
           ))}
@@ -179,6 +185,14 @@ const Catalog = () => {
           </button>
         </div>
       )}
+
+      {/* Customization Modal */}
+      <CustomizationModal
+        isOpen={modalOpen}
+        onClose={() => { setModalOpen(false); setSelectedProduct(null); }}
+        product={selectedProduct}
+        onAddToCart={handleModalAddToCart}
+      />
     </div>
   );
 };

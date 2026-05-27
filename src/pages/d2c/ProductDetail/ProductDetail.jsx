@@ -7,6 +7,7 @@ import { useCartStore } from '../../../store/useCartStore';
 import { formatCurrency } from '../../../utils/formatters';
 import toast from 'react-hot-toast';
 import { t } from '../../../utils/i18n';
+import CustomizationModal from '../../../components/CustomizationModal/CustomizationModal';
 
 const ProductDetail = () => {
   const { id } = useParams(); // id matches product slug
@@ -17,6 +18,7 @@ const ProductDetail = () => {
   const [activeImage, setActiveImage] = useState('');
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   
   const addItemToCart = useCartStore((state) => state.addItem);
 
@@ -62,9 +64,13 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
-    if (!product || !selectedVariant) return;
-    addItemToCart(product, selectedVariant, quantity);
-    toast.success(`${product.title} (${selectedVariant.name}) added to cart!`);
+    if (!product) return;
+    setModalOpen(true);
+  };
+
+  const handleModalAddToCart = (customDrink, variant, modalQty) => {
+    addItemToCart(customDrink, variant, modalQty);
+    toast.success(`${customDrink.title} added to cart!`);
   };
 
   if (loading) {
@@ -170,7 +176,7 @@ const ProductDetail = () => {
               disabled={!(product.in_stock === 1 || product.in_stock === true)}
               fullWidth={true}
             >
-              {(product.in_stock === 1 || product.in_stock === true) ? t('productDetail.addToCart', 'Add to Cart 🛒') : t('productDetail.outOfStock', 'Out of Stock 🚫')}
+              {(product.in_stock === 1 || product.in_stock === true) ? t('productDetail.addToCart', 'Customize & Add to Cart 🛒') : t('productDetail.outOfStock', 'Out of Stock 🚫')}
             </Button>
           </div>
 
@@ -206,6 +212,14 @@ const ProductDetail = () => {
           </div>
         </section>
       )}
+
+      {/* Customization Modal */}
+      <CustomizationModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        product={product}
+        onAddToCart={handleModalAddToCart}
+      />
     </div>
   );
 };

@@ -1,0 +1,74 @@
+.customization-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.custom-section h4 {
+  margin-bottom: var(--space-12);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
+.custom-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.custom-btn {
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+}
+
+.custom-btn:hover {
+  background: var(--color-bg);
+  border-color: var(--color-border-hover);
+}
+
+.custom-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.custom-modal-footer-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.custom-modal-qty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  background: var(--color-bg);
+  padding: var(--space-8);
+  border-radius: var(--radius-md);
+}
+
+.custom-modal-qty button {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+}
+
+.custom-modal-qty button:hover {
+  background: var(--color-surface-hover);
+}
