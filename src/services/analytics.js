@@ -29,4 +29,8 @@ export const analyticsService = {
   getChannelBreakdown: async (params = {}) => {
     return api.get('/reports/channel-breakdown', params);
   },
+
+  getPrepTimes: async (params = {}) => {
+    return api.get('/analytics/prep-times', params);
+  },
 };

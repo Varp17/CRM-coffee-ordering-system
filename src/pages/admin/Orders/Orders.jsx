@@ -3,6 +3,8 @@ import './Orders.css';
 import Button from '../../../components/Button/Button';
 import { useOrderStore } from '../../../store/useOrderStore';
 import { formatCurrency } from '../../../utils/formatters';
+import { orderService } from '../../../services/orders';
+import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
 
@@ -57,9 +59,19 @@ const Orders = () => {
     }
   };
 
-  const openDetail = (order) => {
+  const openDetail = async (order) => {
     setSelectedOrder(order);
     setShowDetailModal(true);
+    
+    try {
+      const res = await orderService.getById(order.id);
+      const detailed = unwrapObject(res);
+      if (detailed) {
+        setSelectedOrder(detailed);
+      }
+    } catch (err) {
+      toast.error('Failed to load full order details: ' + err.message);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -302,6 +314,143 @@ const Orders = () => {
                   <div className="detail-row"><span className="detail-label">Status</span><span className={`status-badge ${getStatusColor(selectedOrder.status)}`}>{selectedOrder.status}</span></div>
                   <div className="detail-row"><span className="detail-label">Placed</span><span>{new Date(selectedOrder.created_at).toLocaleString('en-IN')}</span></div>
                 </div>
+              </div>
+
+              {/* Timeline Section */}
+              <div className="detail-section timeline-section" style={{ marginTop: '20px', padding: '16px', backgroundColor: 'var(--color-surface-hover)', borderRadius: '8px' }}>
+                <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🧭 Order Progress & Service Speed</h4>
+                
+                <div className="fulfillment-timeline" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  position: 'relative',
+                  padding: '10px 0'
+                }}>
+                  {/* Progress Line */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '20px',
+                    left: '5%',
+                    right: '5%',
+                    height: '2px',
+                    backgroundColor: 'var(--color-border)',
+                    zIndex: 1
+                  }}></div>
+
+                  {/* 1. Placed */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%',
+                      backgroundColor: 'var(--color-success)', color: 'white',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
+                    }}>✓</div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Placed</span>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                      {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                    </span>
+                  </div>
+
+                  {/* 2. Confirmed / Paid */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%',
+                      backgroundColor: (selectedOrder.timestamps?.confirmed_at || selectedOrder.confirmed_at) ? 'var(--color-success)' : 'var(--color-border)',
+                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
+                    }}>{(selectedOrder.timestamps?.confirmed_at || selectedOrder.confirmed_at) ? '✓' : '2'}</div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Paid</span>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                      {selectedOrder.timestamps?.confirmed_at ? new Date(selectedOrder.timestamps.confirmed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
+                    </span>
+                  </div>
+
+                  {/* 3. Preparing */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%',
+                      backgroundColor: (selectedOrder.timestamps?.in_progress_at || selectedOrder.in_progress_at) ? 'var(--color-primary)' : 'var(--color-border)',
+                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
+                    }}>{(selectedOrder.timestamps?.in_progress_at || selectedOrder.in_progress_at) ? '✓' : '3'}</div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Preparing</span>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                      {selectedOrder.timestamps?.in_progress_at ? new Date(selectedOrder.timestamps.in_progress_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Queued'}
+                    </span>
+                  </div>
+
+                  {/* 4. Ready */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%',
+                      backgroundColor: (selectedOrder.timestamps?.ready_at || selectedOrder.ready_at) ? 'var(--color-primary-light)' : 'var(--color-border)',
+                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
+                    }}>{(selectedOrder.timestamps?.ready_at || selectedOrder.ready_at) ? '✓' : '4'}</div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Ready</span>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                      {selectedOrder.timestamps?.ready_at ? new Date(selectedOrder.timestamps.ready_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
+                    </span>
+                  </div>
+
+                  {/* 5. Delivered */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%',
+                      backgroundColor: (selectedOrder.timestamps?.completed_at || selectedOrder.completed_at) ? 'var(--color-primary)' : 'var(--color-border)',
+                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
+                    }}>{(selectedOrder.timestamps?.completed_at || selectedOrder.completed_at) ? '✓' : '5'}</div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Delivered</span>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                      {selectedOrder.timestamps?.completed_at ? new Date(selectedOrder.timestamps.completed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Service Speeds Analytics Section */}
+                {selectedOrder.timestamps && (
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    marginTop: '16px',
+                    padding: '10px 14px',
+                    backgroundColor: 'rgba(90, 60, 40, 0.05)',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    borderLeft: '3px solid var(--color-primary)'
+                  }}>
+                    {selectedOrder.timestamps.confirmed_at && (
+                      <div>
+                        <strong>⏱️ Payment Speed: </strong>
+                        <span>
+                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.confirmed_at) - new Date(selectedOrder.created_at)) / 1000))} sec
+                        </span>
+                      </div>
+                    )}
+                    {selectedOrder.timestamps.in_progress_at && selectedOrder.timestamps.confirmed_at && (
+                      <div>
+                        <strong>⏱️ Claim Time: </strong>
+                        <span>
+                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.in_progress_at) - new Date(selectedOrder.timestamps.confirmed_at)) / 1000 / 60))} min
+                        </span>
+                      </div>
+                    )}
+                    {selectedOrder.timestamps.ready_at && selectedOrder.timestamps.in_progress_at && (
+                      <div>
+                        <strong>⏱️ Prep Duration: </strong>
+                        <span>
+                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.ready_at) - new Date(selectedOrder.timestamps.in_progress_at)) / 1000 / 60))} min
+                        </span>
+                      </div>
+                    )}
+                    {selectedOrder.timestamps.completed_at && selectedOrder.timestamps.ready_at && (
+                      <div>
+                        <strong>⏱️ Pickup Delay: </strong>
+                        <span>
+                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.completed_at) - new Date(selectedOrder.timestamps.ready_at)) / 1000 / 60))} min
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {selectedOrder.items && (
