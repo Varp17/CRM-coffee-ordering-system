@@ -22,7 +22,11 @@ const Catalog = ({ onBack, onLogin, onCreateCustom, onCheckout, cart, setCart })
         const res = await productService.getAll();
         const items = unwrapList(res);
         setProducts(items);
-        const uniqueCats = ['All', ...new Set(items.map(p => p.category).filter(Boolean))];
+        const catNames = items.map(p => {
+          if (!p.category) return null;
+          return typeof p.category === 'object' ? p.category.name : p.category;
+        }).filter(Boolean);
+        const uniqueCats = ['All', ...new Set(catNames)];
         setCategories(uniqueCats);
       } catch (err) {
         console.error('[KioskCatalog] Failed to load backend menu:', err);
@@ -35,7 +39,11 @@ const Catalog = ({ onBack, onLogin, onCreateCustom, onCheckout, cart, setCart })
 
   const filteredProducts = selectedCategory === 'All' 
     ? products 
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => {
+        if (!p.category) return false;
+        const catName = typeof p.category === 'object' ? p.category.name : p.category;
+        return catName === selectedCategory;
+      });
 
   const addToCart = (product) => {
     // Basic conversion for POS cart format
