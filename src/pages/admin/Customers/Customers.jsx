@@ -6,6 +6,7 @@ import { analyticsService } from '../../../services/analytics';
 import { formatCurrency, formatDate, formatPhone } from '../../../utils/formatters';
 import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
+import { useConfirmation } from '../../../hooks/useConfirmation';
 
 // ═══════════════════════════════════════════════════════════════
 // Motion System — Cubic Bezier: Weighted Kinetic Luxury Pacing
@@ -332,7 +333,26 @@ const Customers = () => {
     toast.success(`Opening ${type} to ${customer.name || 'patron'}...`);
   }, []);
 
+  const confirmAction = useConfirmation();
+
   const toggleStatus = useCallback(async (id, currentlyActive) => {
+    const targetStatus = currentlyActive ? 'Dormant' : 'Active';
+    const confirmed = await confirmAction({
+      title: 'Modify Patron Status',
+      description: `Alter active registration status for this patron account to ${targetStatus}:`,
+      type: 'level2',
+      payload: {
+        requireCheckbox: true,
+        details: {
+          patron_id: id,
+          current_state: currentlyActive ? 'Active' : 'Dormant',
+          target_state: targetStatus
+        }
+      }
+    });
+
+    if (!confirmed) return;
+
     try {
       toast.success(`Patron status updated`);
       setShowProfile(false);
@@ -340,12 +360,25 @@ const Customers = () => {
     } catch (err) {
       toast.error('Failed to update: ' + err.message);
     }
-  }, [loadCustomers]);
+  }, [loadCustomers, confirmAction]);
 
-  const handleExport = useCallback(() => {
-    toast.success('Generating CRM export...');
-    // Could wire to /reports/export?reportType=customers
-  }, []);
+  const handleExport = useCallback(async () => {
+    const confirmed = await confirmAction({
+      title: 'Export Archive',
+      description: 'Generate and compile patron database registry log dump?',
+      type: 'level1',
+      payload: {
+        details: {
+          report_type: 'customers_archive',
+          format: 'CSV/RAW'
+        }
+      }
+    });
+
+    if (confirmed) {
+      toast.success('Generating CRM export...');
+    }
+  }, [confirmAction]);
 
   // ── Loading State ──
   if (isLoading && customersList.length === 0) {

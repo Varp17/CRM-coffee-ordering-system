@@ -5,6 +5,7 @@ import './Card.css';
 import Button from '../Button/Button';
 import StarRating from '../StarRating/StarRating';
 import { formatCurrency } from '../../utils/formatters';
+import ProductMedia from '../ProductMedia/ProductMedia';
 
 const Card = ({ 
   id,
@@ -13,6 +14,7 @@ const Card = ({
   price,
   originalPrice,
   imageUrl, 
+  category,
   actionText = "Add to Cart", 
   onAction,
   tags = [],
@@ -47,11 +49,11 @@ const Card = ({
     <div className={`product-card ${!inStock ? 'card-out-of-stock' : ''}`}>
       {/* Image Container */}
       <div className="card-image-container" onClick={() => id && navigate(`/catalog/${id}`)}>
-        <img 
-          src={imageUrl || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&q=80'} 
-          alt={title} 
-          className="card-image" 
-          loading="lazy"
+        <ProductMedia
+          imageUrl={imageUrl}
+          productName={title}
+          category={category}
+          className="card-image-media"
         />
         <div className="card-image-overlay">
           <button className="quick-view-btn" onClick={(e) => { e.stopPropagation(); id && navigate(`/catalog/${id}`); }}>

@@ -5,6 +5,7 @@ import { inventoryService } from '../../../services/inventory';
 import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
+import { useConfirmation } from '../../../hooks/useConfirmation';
 
 const Inventory = () => {
   const [currentTab, setCurrentTab] = useState('store'); // 'store' | 'central' | 'vendors'
@@ -62,12 +63,32 @@ const Inventory = () => {
     );
   }, [activeItems, searchQuery]);
 
+  const confirmAction = useConfirmation();
+
   const updateStock = async (id, amount, isCentral) => {
     try {
       const target = (isCentral ? centralItems : storeItems).find(i => i.id === id);
       if (!target) return;
 
       const newQty = Math.max(0, target.stock + amount);
+
+      const confirmed = await confirmAction({
+        title: 'Inventory Adjustment',
+        description: `Adjust ${target.name} stock level manually:`,
+        type: 'level2',
+        payload: {
+          requireCheckbox: true,
+          details: {
+            item: target.name,
+            current: `${target.stock} ${target.unit}`,
+            adjustment: amount > 0 ? `+${amount} ${target.unit}` : `${amount} ${target.unit}`,
+            target: `${newQty} ${target.unit}`
+          }
+        }
+      });
+
+      if (!confirmed) return;
+
       if (amount > 0) {
         await inventoryService.stockIn({
           store_id: 1,

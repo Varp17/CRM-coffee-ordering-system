@@ -1,151 +1,244 @@
+/* ═══════════════════════════════════════════════════════════════
+   Espresso Reserve — Luxurious Light Cafe Kiosk Layout
+   Creamy Latte, Alabaster, and Rich Warm Gold.
+   ═══════════════════════════════════════════════════════════════ */
+
 .kiosk-layout-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #FAF8F5; /* Sandy cream backdrop */
-  color: var(--color-espresso);
-  font-family: var(--font-body);
+  width: 100vw;
+  background: radial-gradient(circle at 50% 50%, #fcfaf7 0%, #f4eee3 100%);
+  color: #2e1f16; /* Deep roasted espresso instead of black */
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  position: relative;
 }
 
+/* Floating Frosted Glass Navbar Pill */
 .kiosk-top-bar {
-  height: 80px;
-  background-color: #FFFFFF;
-  border-bottom: 2px solid rgba(111, 78, 55, 0.08);
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 1200px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(28px) saturate(125%);
+  -webkit-backdrop-filter: blur(28px) saturate(125%);
+  border: 1px solid rgba(179, 146, 104, 0.25);
+  border-radius: 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.5rem;
-  box-shadow: var(--elevation-1);
+  padding: 0 2rem;
+  box-shadow: 
+    0 16px 40px rgba(179, 146, 104, 0.08),
+    0 4px 15px rgba(0, 0, 0, 0.03);
   z-index: 100;
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.kiosk-back-arrow-btn {
-  background-color: var(--color-cream);
-  border: 1px solid rgba(111, 78, 55, 0.12);
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 0.6rem 1.4rem;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all var(--transition-bounce);
-}
-
-.kiosk-back-arrow-btn:hover {
-  background-color: var(--color-surface-hover);
-  transform: translateX(-2px);
-  border-color: var(--color-primary);
-}
-
-.kiosk-progress-bar-steps {
+/* Left, Center, Right slots */
+.kiosk-header-left {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.step-dot {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--color-text-muted);
-  padding: 0.5rem 1.2rem;
-  border-radius: var(--radius-full);
-  border: 1px solid transparent;
-  transition: all var(--transition-normal);
-}
-
-.step-dot.completed {
-  background-color: var(--color-forest-green) !important; /* Premium Forest Green accent */
-  color: #FFFFFF !important;
-  border-color: var(--color-forest-green-light);
-  font-weight: 800;
-  box-shadow: 0 4px 10px rgba(20, 53, 43, 0.25);
-}
-
-.step-line-connector {
-  width: 40px;
-  height: 2px;
-  background-color: rgba(111, 78, 55, 0.08);
-}
-
-.kiosk-right-info {
-  display: flex;
-  align-items: center;
-}
-
-.kiosk-cart-summary-bubble {
-  background: linear-gradient(135deg, var(--color-primary), #8B6347);
-  color: white;
-  font-weight: 850;
-  font-size: 1.05rem;
-  padding: 0.6rem 1.6rem;
-  border-radius: 30px;
-  box-shadow: 0 4px 15px rgba(111, 78, 55, 0.2);
-  display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.kiosk-view-workspace {
-  flex-grow: 1;
-  overflow-y: auto;
-  position: relative;
-  background-color: #FCFAF8; /* Soft warm backdrop */
+.logo-icon-kiosk {
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 4px rgba(179, 146, 104, 0.3));
 }
 
+.terminal-id-kiosk {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #a8845c;
+  font-weight: 700;
+}
+
+.kiosk-header-center {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-shortcut-btn {
+  background: none;
+  border: none;
+  color: rgba(46, 31, 22, 0.65);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.nav-shortcut-btn:hover {
+  color: #a8845c;
+}
+
+.kiosk-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kiosk-control-btn {
+  background-color: rgba(179, 146, 104, 0.05);
+  border: 1px solid rgba(179, 146, 104, 0.18);
+  color: #2e1f16;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kiosk-control-btn:hover {
+  background-color: rgba(179, 146, 104, 0.12);
+  border-color: #a8845c;
+}
+
+.kiosk-back-arrow-btn {
+  background-color: rgba(179, 146, 104, 0.06);
+  border: 1px solid rgba(179, 146, 104, 0.15);
+  color: #2e1f16;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kiosk-back-arrow-btn:hover {
+  background: #a8845c;
+  color: #ffffff;
+  border-color: #a8845c;
+  box-shadow: 0 4px 12px rgba(168, 132, 92, 0.2);
+}
+
+/* Premium Gold Cart Summary Bubble */
+.kiosk-cart-summary-bubble {
+  background: linear-gradient(135deg, #c8a97e, #b39268);
+  color: #ffffff;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 15px rgba(179, 146, 104, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kiosk-cart-summary-bubble:hover {
+  background: #a8845c;
+  box-shadow: 0 4px 10px rgba(168, 132, 92, 0.15);
+}
+
+.kiosk-view-workspace {
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+
+/* Frosted Kiosk Assistive Footer */
 .kiosk-assistive-footer {
-  height: 60px;
-  background-color: var(--color-cream);
-  border-top: 1px solid rgba(111, 78, 55, 0.08);
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 1200px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(179, 146, 104, 0.2);
+  border-radius: 27px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.5rem;
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  font-weight: 600;
+  padding: 0 2rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(46, 31, 22, 0.6);
+  letter-spacing: 0.01em;
+  z-index: 100;
+  box-shadow: 0 8px 30px rgba(179, 146, 104, 0.06);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kiosk-help-trigger-btn {
-  background-color: var(--color-accent);
-  border: 1px solid rgba(111, 78, 55, 0.15);
-  color: var(--color-espresso);
-  font-weight: 800;
-  font-size: 0.9rem;
-  padding: 0.5rem 1.4rem;
-  border-radius: 30px;
+  background-color: rgba(179, 146, 104, 0.05);
+  border: 1px solid rgba(179, 146, 104, 0.2);
+  color: #a8845c;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: 15px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(200, 169, 126, 0.25);
-  transition: all var(--transition-fast);
+  letter-spacing: 0.04em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kiosk-help-trigger-btn:hover {
-  filter: brightness(1.05);
+  background-color: rgba(179, 146, 104, 0.12);
+  border-color: #a8845c;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(168, 132, 92, 0.15);
 }
 
 @media (max-width: 768px) {
   .kiosk-top-bar {
+    width: calc(100% - 24px);
+    top: 12px;
     padding: 0 1rem;
-    height: 70px;
+    height: 56px;
   }
   
-  .kiosk-progress-bar-steps {
+  .kiosk-header-center {
     display: none;
   }
 
   .kiosk-back-arrow-btn {
-    padding: 0.4rem 1rem;
-    font-size: 0.95rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
   }
 
   .kiosk-assistive-footer {
-    flex-direction: column;
-    height: auto;
-    padding: 1rem;
-    gap: 0.6rem;
+    width: calc(100% - 24px);
+    bottom: 12px;
+    flex-direction: row;
+    height: 48px;
+    padding: 0 1rem;
+  }
+
+  .kiosk-assistive-footer p {
+    display: none;
+  }
+
+  .kiosk-help-trigger-btn {
+    width: 100%;
     text-align: center;
   }
 }

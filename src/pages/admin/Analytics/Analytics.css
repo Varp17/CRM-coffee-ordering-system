@@ -1,110 +1,120 @@
-/* Analytics Dash styling */
+/* ═══════════════════════════════════════════════════════════════
+   White-Cube Gallery — Analytics View
+   ═══════════════════════════════════════════════════════════════ */
 
 .analytics-view {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+  gap: 16px;
 }
 
 .tab-toggle-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: var(--space-16);
-  margin-bottom: var(--space-24);
+  margin-top: 8px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
-  gap: var(--space-16);
+  gap: 12px;
 }
 
 .analytics-time-tabs {
   display: inline-flex;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  padding: 3px;
 }
 
 .time-tab-btn {
   border: none;
   background: transparent;
-  padding: var(--space-8) var(--space-16);
-  font-size: var(--font-size-body);
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  font-weight: 450;
+  color: #999;
   cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: all var(--motion-fast);
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+}
+
+.time-tab-btn:hover {
+  color: #555;
 }
 
 .time-tab-btn.active {
-  background-color: var(--color-bg);
-  color: var(--color-primary);
-  box-shadow: var(--elevation-1);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-weight: 500;
 }
 
 .last-sync-tag {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
-  color: var(--color-success);
-  background-color: var(--color-success-light);
-  padding: var(--space-4) var(--space-12);
-  border-radius: var(--radius-full);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #2d9d5c;
+  background-color: rgba(45, 157, 92, 0.06);
+  border: 1px solid rgba(45, 157, 92, 0.1);
+  padding: 4px 12px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .analytics-charts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-24);
-  margin-top: var(--space-32);
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .chart-container {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-32);
-  box-shadow: var(--elevation-1);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .chart-container h3 {
-  font-size: var(--font-size-h3);
-  font-weight: 700;
-  margin-bottom: var(--space-24);
-  color: var(--color-text);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--space-8);
-}
-
-.chart-viewport {
-  width: 100%;
-  margin-top: var(--space-16);
-  position: relative;
-  height: 300px;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #999;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  padding-bottom: 8px;
 }
 
 .analytics-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-24);
-  margin-top: var(--space-32);
-  margin-bottom: var(--space-32);
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .details-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-32);
-  box-shadow: var(--elevation-1);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .details-card h3 {
-  font-size: var(--font-size-h3);
-  font-weight: 700;
-  margin-bottom: var(--space-24);
-  color: var(--color-text);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--space-8);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #999;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  padding-bottom: 8px;
 }
 
 .styled-table-wrap {
@@ -118,19 +128,21 @@
 }
 
 .analytics-table th {
-  padding: var(--space-12) var(--space-16);
-  border-bottom: 2px solid var(--color-border);
-  font-size: var(--font-size-caption);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  color: var(--color-text-secondary);
-  font-weight: 700;
+  color: #999;
+  font-weight: 500;
+  letter-spacing: 0.1em;
 }
 
 .analytics-table td {
-  padding: var(--space-16);
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-body-lg);
-  color: var(--color-text);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  font-size: 0.84rem;
+  color: #444;
 }
 
 .analytics-table tr:last-child td {
@@ -138,30 +150,37 @@
 }
 
 .analytics-table td strong {
-  font-weight: 600;
+  font-weight: 500;
+  color: #1a1a1a;
 }
 
 .profit-col {
-  color: var(--color-success);
-  font-weight: 700;
+  color: #c78d5a;
+  font-weight: 500;
+  font-family: 'SF Mono', monospace;
 }
 
 .alert-badge {
   display: inline-block;
-  font-size: var(--font-size-caption);
-  font-weight: 700;
-  padding: var(--space-4) var(--space-8);
-  border-radius: var(--radius-sm);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .alert-badge.low {
-  background-color: var(--color-danger-light);
-  color: var(--color-danger);
+  background-color: rgba(196, 64, 64, 0.06);
+  color: #c44040;
+  border: 1px solid rgba(196, 64, 64, 0.1);
 }
 
 .alert-badge.ok {
-  background-color: var(--color-success-light);
-  color: var(--color-success);
+  background-color: rgba(45, 157, 92, 0.06);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.1);
 }
 
 @media (max-width: 900px) {

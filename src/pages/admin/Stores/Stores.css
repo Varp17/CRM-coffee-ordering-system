@@ -1,119 +1,134 @@
-/* Multi-store command center styles */
+/* ═══════════════════════════════════════════════════════════════
+   White-Cube Gallery — Stores View
+   ═══════════════════════════════════════════════════════════════ */
 
 .stores-view {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+  gap: 16px;
 }
 
 .stores-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: var(--space-24);
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
 }
 
 .store-panel-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-32);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--elevation-1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.store-panel-card:hover {
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .store-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-16);
+  gap: 12px;
 }
 
 .store-info-left {
   display: flex;
-  gap: var(--space-16);
+  gap: 12px;
 }
 
 .store-geo-pin {
-  font-size: var(--font-size-h2);
+  font-size: 1.4rem;
 }
 
 .store-info-left h3 {
-  font-size: var(--font-size-h3);
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0 0 var(--space-4) 0;
+  font-size: 0.92rem;
+  font-weight: 450;
+  color: #1a1a1a;
+  margin: 0 0 3px 0;
 }
 
 .store-address-txt {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  color: #999;
   margin: 0;
 }
 
 .store-status-badge {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
   text-transform: uppercase;
-  padding: var(--space-4) var(--space-12);
-  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 4px;
 }
 
 .store-status-badge.active {
-  background-color: var(--color-success-light);
-  color: var(--color-success);
+  background-color: rgba(45, 157, 92, 0.06);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.1);
 }
 
 .store-status-badge.suspended {
-  background-color: var(--color-danger-light);
-  color: var(--color-danger);
+  background-color: rgba(196, 64, 64, 0.06);
+  color: #c44040;
+  border: 1px solid rgba(196, 64, 64, 0.1);
 }
 
 .store-status-badge.coming-soon {
-  background-color: var(--color-warning-light);
-  color: var(--color-warning);
+  background-color: rgba(212, 148, 10, 0.06);
+  color: #d4940a;
+  border: 1px solid rgba(212, 148, 10, 0.1);
 }
 
 .store-divider {
   border: 0;
   height: 1px;
-  background-color: var(--color-border);
-  margin: var(--space-24) 0;
+  background-color: rgba(0, 0, 0, 0.05);
+  margin: 16px 0;
 }
 
 .store-metrics-panel {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-16);
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-16);
-  margin-bottom: var(--space-24);
+  gap: 12px;
+  background-color: rgba(0, 0, 0, 0.01);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 16px;
 }
 
 .metric-box {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 2px;
 }
 
 .metric-lbl {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 500;
   text-transform: uppercase;
-  color: var(--color-text-secondary);
+  letter-spacing: 0.1em;
+  color: #999;
 }
 
 .metric-box strong {
-  font-size: var(--font-size-body-lg);
-  color: var(--color-text);
-  font-weight: 700;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.92rem;
+  color: #1a1a1a;
+  font-weight: 400;
 }
 
 .store-panel-actions {
   display: flex;
-  gap: var(--space-16);
+  gap: 8px;
   margin-top: auto;
 }
 

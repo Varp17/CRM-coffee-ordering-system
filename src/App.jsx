@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { ConfirmationProvider } from './providers/ConfirmationProvider';
 
 // Layouts
 import D2CLayout from './layouts/D2CLayout';
@@ -118,128 +119,130 @@ function App() {
   };
 
   return (
-    <Routes>
-      {/* ── 0. Portal — Default Landing / Login Hub ── */}
-      <Route path="/" element={<Portal />} />
+    <ConfirmationProvider>
+      <Routes>
+        {/* ── 0. Portal — Default Landing / Login Hub ── */}
+        <Route path="/" element={<Portal />} />
 
-      {/* ── 1. D2C storefront (Customer Facing) ── */}
-      <Route path="/store" element={<D2CLayout />}>
-        <Route index element={<Home />} />
-        <Route path="catalog" element={<Catalog />} />
-        <Route path="catalog/:id" element={<ProductDetail />} />
-        <Route path="cart" element={<Cart onProceedToCheckout={() => {}} />} />
-        <Route path="checkout" element={<Checkout onBackToCart={() => {}} />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="subscription" element={<Subscription />} />
-        <Route path="collections" element={<Collections />} />
-        <Route path="success" element={<OrderSuccess />} />
-        <Route path="login" element={<CustomerLogin />} />
-        <Route path="custom" element={
-          <KioskCustomDrink
-            onBack={() => navigate('/store/catalog')}
-            onAddToCart={(customDrink) => {
-              const cartStore = useCartStore.getState();
-              const customProduct = {
-                id: customDrink.id,
-                name: customDrink.name,
-                image_url: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=900&auto=format&fit=crop&q=88',
-                description: `Customized base: ${customDrink.customization.base}, milk: ${customDrink.customization.milk}`,
-                base_price: customDrink.price,
-                is_custom: true,
-                customization: customDrink.customization
-              };
-              const customVariant = {
-                id: 'custom-variant',
-                name: customDrink.customization.size,
-                price: customDrink.price
-              };
-              cartStore.addItem(customProduct, customVariant, 1);
-              navigate('/store/cart');
-            }}
-          />
-        } />
-      </Route>
+        {/* ── 1. D2C storefront (Customer Facing) ── */}
+        <Route path="/store" element={<D2CLayout />}>
+          <Route index element={<Home />} />
+          <Route path="catalog" element={<Catalog />} />
+          <Route path="catalog/:id" element={<ProductDetail />} />
+          <Route path="cart" element={<Cart onProceedToCheckout={() => {}} />} />
+          <Route path="checkout" element={<Checkout onBackToCart={() => {}} />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="subscription" element={<Subscription />} />
+          <Route path="collections" element={<Collections />} />
+          <Route path="success" element={<OrderSuccess />} />
+          <Route path="login" element={<CustomerLogin />} />
+          <Route path="custom" element={
+            <KioskCustomDrink
+              onBack={() => navigate('/store/catalog')}
+              onAddToCart={(customDrink) => {
+                const cartStore = useCartStore.getState();
+                const customProduct = {
+                  id: customDrink.id,
+                  name: customDrink.name,
+                  image_url: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=900&auto=format&fit=crop&q=88',
+                  description: `Customized base: ${customDrink.customization.base}, milk: ${customDrink.customization.milk}`,
+                  base_price: customDrink.price,
+                  is_custom: true,
+                  customization: customDrink.customization
+                };
+                const customVariant = {
+                  id: 'custom-variant',
+                  name: customDrink.customization.size,
+                  price: customDrink.price
+                };
+                cartStore.addItem(customProduct, customVariant, 1);
+                navigate('/store/cart');
+              }}
+            />
+          } />
+        </Route>
 
-      {/* ── 2. Admin Command Center ── */}
-      <Route path="/admin/login" element={<Navigate to="/" replace />} />
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="menu" element={<Menu />} />
-        <Route path="recipe-engine" element={<RecipeEngine />} />
-        <Route path="inventory" element={<Inventory />} />
-        <Route path="ingredients" element={<Ingredients />} />
-        <Route path="customers" element={<Customers />} />
-        <Route path="roles" element={<Roles />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="notifications" element={<Notifications />} />
-        <Route path="stores" element={<Stores />} />
-        <Route path="financials" element={<Financials />} />
-        <Route path="cms" element={<CMS />} />
-        <Route path="activity-log" element={<ActivityLog />} />
-      </Route>
+        {/* ── 2. Admin Command Center ── */}
+        <Route path="/admin/login" element={<Navigate to="/" replace />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="menu" element={<Menu />} />
+          <Route path="recipe-engine" element={<RecipeEngine />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="ingredients" element={<Ingredients />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="stores" element={<Stores />} />
+          <Route path="financials" element={<Financials />} />
+          <Route path="cms" element={<CMS />} />
+          <Route path="activity-log" element={<ActivityLog />} />
+        </Route>
 
-      {/* ── 3. Barista Kitchen Display System (KDS) ── */}
-      <Route path="/barista" element={<BaristaLayout />}>
-        <Route index element={<OrderQueue />} />
-        <Route path="active" element={<ActivePrep />} />
-        <Route path="completed" element={<CompletedOrders />} />
-        <Route path="delayed" element={<DelayedOrders />} />
-        <Route path="performance" element={<Performance />} />
-      </Route>
+        {/* ── 3. Barista Kitchen Display System (KDS) ── */}
+        <Route path="/barista" element={<BaristaLayout />}>
+          <Route index element={<OrderQueue />} />
+          <Route path="active" element={<ActivePrep />} />
+          <Route path="completed" element={<CompletedOrders />} />
+          <Route path="delayed" element={<DelayedOrders />} />
+          <Route path="performance" element={<Performance />} />
+        </Route>
 
-      {/* ── 4. Self-Ordering Kiosk Terminal ── */}
-      <Route path="/kiosk" element={<KioskLayout />}>
-        <Route index element={
-          <KioskHome
-            onStart={() => {
-              setKioskCart([]);
-              clearKioskCart();
-              navigate('/kiosk/catalog');
-            }}
-            onQrScan={() => navigate('/kiosk/qr')}
-          />
-        } />
-        <Route path="catalog" element={
-          <KioskCatalog
-            cart={kioskCart}
-            setCart={setKioskCart}
-            onBack={() => navigate('/kiosk')}
-            onLogin={() => navigate('/kiosk/login')}
-            onCreateCustom={() => navigate('/kiosk/custom')}
-            onCheckout={() => navigate('/kiosk/checkout')}
-          />
-        } />
-        <Route path="custom" element={
-          <KioskCustomDrink
-            onBack={() => navigate('/kiosk/catalog')}
-            onAddToCart={(customDrink) => {
-              setKioskCart([...kioskCart, customDrink]);
-              navigate('/kiosk/catalog');
-            }}
-          />
-        } />
-        <Route path="checkout" element={
-          <KioskCheckout
-            cart={kioskCart}
-            total={kioskSubtotal}
-            onBack={() => navigate('/kiosk/catalog')}
-            onComplete={handleKioskComplete}
-          />
-        } />
-        <Route path="login" element={
-          <KioskLogin
-            onLogin={() => navigate('/kiosk/catalog')}
-            onBack={() => navigate('/kiosk/catalog')}
-          />
-        } />
-        <Route path="qr" element={<KioskQrOrder onBack={() => navigate('/kiosk')} />} />
-        <Route path="token" element={<TokenConfirmation />} />
-      </Route>
+        {/* ── 4. Self-Ordering Kiosk Terminal ── */}
+        <Route path="/kiosk" element={<KioskLayout />}>
+          <Route index element={
+            <KioskHome
+              onStart={() => {
+                setKioskCart([]);
+                clearKioskCart();
+                navigate('/kiosk/catalog');
+              }}
+              onQrScan={() => navigate('/kiosk/qr')}
+            />
+          } />
+          <Route path="catalog" element={
+            <KioskCatalog
+              cart={kioskCart}
+              setCart={setKioskCart}
+              onBack={() => navigate('/kiosk')}
+              onLogin={() => navigate('/kiosk/login')}
+              onCreateCustom={() => navigate('/kiosk/custom')}
+              onCheckout={() => navigate('/kiosk/checkout')}
+            />
+          } />
+          <Route path="custom" element={
+            <KioskCustomDrink
+              onBack={() => navigate('/kiosk/catalog')}
+              onAddToCart={(customDrink) => {
+                setKioskCart([...kioskCart, customDrink]);
+                navigate('/kiosk/catalog');
+              }}
+            />
+          } />
+          <Route path="checkout" element={
+            <KioskCheckout
+              cart={kioskCart}
+              total={kioskSubtotal}
+              onBack={() => navigate('/kiosk/catalog')}
+              onComplete={handleKioskComplete}
+            />
+          } />
+          <Route path="login" element={
+            <KioskLogin
+              onLogin={() => navigate('/kiosk/catalog')}
+              onBack={() => navigate('/kiosk/catalog')}
+            />
+          } />
+          <Route path="qr" element={<KioskQrOrder onBack={() => navigate('/kiosk')} />} />
+          <Route path="token" element={<TokenConfirmation />} />
+        </Route>
 
-      {/* ── Catch-all / Redirect to Portal ── */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* ── Catch-all / Redirect to Portal ── */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ConfirmationProvider>
   );
 }
 

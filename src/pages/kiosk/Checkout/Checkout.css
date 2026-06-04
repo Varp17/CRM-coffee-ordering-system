@@ -1,150 +1,134 @@
+/* ═══════════════════════════════════════════════════════════════
+   Espresso Reserve — Cinematic Kiosk Checkout (Light Theme)
+   Creamy Latte, Alabaster, and Rich Warm Gold.
+   ═══════════════════════════════════════════════════════════════ */
+
 .kiosk-checkout {
   height: 100vh;
   width: 100vw;
-  background-color: var(--color-bg);
+  background: radial-gradient(circle at 50% 50%, #fcfaf7 0%, #f4eee3 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--color-text);
+  color: #2e1f16;
+  padding-top: 80px;
+  padding-bottom: 60px;
+  overflow: hidden;
 }
 
 .checkout-card {
-  width: 500px;
-  padding: var(--space-40);
-  border-radius: var(--radius-lg);
+  width: 480px;
+  padding: 2.5rem;
+  border-radius: 16px; /* Soft inviting corners */
   display: flex;
   flex-direction: column;
-  gap: var(--space-32);
+  gap: 2rem;
   position: relative;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--elevation-2);
-}
-
-.checkout-card .back-btn {
-  position: absolute;
-  top: var(--space-24);
-  left: var(--space-24);
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-size: var(--font-size-body-lg);
-  font-weight: 600;
-  min-height: 48px;
-  padding: 0 var(--space-12);
+  background-color: #ffffff;
+  border: 1px solid rgba(179, 146, 104, 0.18);
+  box-shadow: 
+    0 20px 50px rgba(179, 146, 104, 0.1),
+    0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
 .checkout-card h2 {
-  font-size: var(--font-size-h1);
+  font-family: 'Readex Pro', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 300;
   text-align: center;
   margin: 0;
+  color: #2e1f16;
+  letter-spacing: -0.02em;
 }
 
 .order-summary-section h3,
 .payment-section h3 {
-  font-size: var(--font-size-h3);
-  margin: 0 0 var(--space-16) 0;
-  color: var(--color-text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: rgba(46, 31, 22, 0.5);
+  letter-spacing: 0.05em;
+  border-bottom: 1px dashed rgba(179, 146, 104, 0.2);
+  padding-bottom: 4px;
 }
 
 .cart-items-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .cart-item {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-12) 0;
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-body-lg);
-  color: var(--color-text-secondary);
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(179, 146, 104, 0.15);
+  font-size: 0.85rem;
+  color: #2e1f16;
+  font-weight: 500;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
-  font-size: var(--font-size-h2);
-  font-weight: 700;
-  margin-top: var(--space-16);
+  font-family: 'Readex Pro', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-top: 1rem;
 }
 
 .total-price {
-  color: var(--color-primary);
+  font-family: 'JetBrains Mono', monospace;
+  color: #a8845c;
+  font-weight: 700;
 }
 
 .payment-options {
   display: flex;
   flex-direction: column;
-  gap: var(--space-16);
+  gap: 12px;
 }
 
 .payment-option {
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  padding: var(--space-20);
-  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(179, 146, 104, 0.18);
+  color: rgba(46, 31, 22, 0.7);
+  padding: 1.2rem;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: var(--space-16);
-  font-size: var(--font-size-h3);
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
   font-weight: 600;
-  transition: all var(--motion-fast);
-  min-height: 80px;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 64px;
 }
 
 .payment-option:hover {
-  background-color: var(--color-surface-alt);
+  border-color: rgba(179, 146, 104, 0.35);
+  color: #2e1f16;
 }
 
 .payment-option.active {
-  border-color: var(--color-primary);
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  border-color: #a8845c;
+  background-color: rgba(179, 146, 104, 0.08);
+  color: #a8845c;
+  box-shadow: 0 0 10px rgba(168, 132, 92, 0.1);
 }
 
-.payment-option .icon {
-  font-size: var(--font-size-display);
-}
-
-.success-screen {
-  background-color: var(--color-bg);
-}
-
-.success-card {
-  width: 400px;
-  padding: var(--space-40);
-  border-radius: var(--radius-lg);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-24);
-  align-items: center;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--elevation-3);
-}
-
-.success-icon {
-  width: 80px;
-  height: 80px;
-  background-color: var(--color-success-light);
-  color: var(--color-success);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--font-size-display);
-  font-weight: bold;
-}
-
-.order-number {
-  font-size: var(--font-size-h1);
+.checkout-card .btn-large {
+  height: 52px !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-primary);
-  margin: 0;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 26px;
+  margin-top: 1rem;
 }

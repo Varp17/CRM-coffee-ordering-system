@@ -1,158 +1,147 @@
+/* ═══════════════════════════════════════════════════════════════
+   Espresso Reserve — Cinematic Order Token Tracking (Light Theme)
+   Creamy Latte, Alabaster, and Rich Warm Gold.
+   ═══════════════════════════════════════════════════════════════ */
+
 .token-confirmation-view {
-  min-height: calc(100vh - 120px);
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at 50% 50%, #fcfaf7 0%, #f4eee3 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 24px;
-  background-color: #fafaf8; /* Warm off-white background */
-  font-family: 'Outfit', 'Inter', sans-serif;
-  box-sizing: border-box;
+  color: #2e1f16;
+  padding: 2.5rem;
+  overflow: hidden;
 }
 
 .token-success-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-  padding: 48px 40px;
-  width: 100%;
-  max-width: 480px;
+  width: 540px;
+  padding: 3rem;
+  background-color: #ffffff;
+  border: 1px solid rgba(179, 146, 104, 0.18);
+  border-radius: 16px; /* Soft inviting corners */
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  box-sizing: border-box;
-}
-
-/* Success animated icon */
-.success-icon-animation {
-  position: relative;
-  width: 100px;
-  height: 100px;
-}
-
-.icon-circle {
-  width: 100px;
-  height: 100px;
-  background-color: var(--color-primary-light);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 15px rgba(198, 124, 78, 0.15);
-}
-
-.coffee-cup-bounce {
-  font-size: 3.2rem;
-  animation: cupBounce 1.5s infinite ease-in-out;
-}
-
-@keyframes cupBounce {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-8px) scale(1.05);
-  }
+  gap: 2rem;
+  box-shadow: 
+    0 20px 50px rgba(179, 146, 104, 0.1),
+    0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
 .token-success-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--color-secondary);
+  font-family: 'Readex Pro', sans-serif;
+  font-size: 2rem;
+  font-weight: 300;
+  color: #2e1f16;
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
 }
 
 .token-success-subtitle {
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
-  margin: -10px 0 0 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(46, 31, 22, 0.55);
   line-height: 1.5;
+  margin: 0;
 }
 
 /* Large display box for Token */
 .token-display-box {
-  background-color: #fafbfc;
-  border: 1px solid #e9ecef;
-  border-radius: 16px;
-  padding: 24px;
+  background-color: rgba(179, 146, 104, 0.04);
+  border: 1px solid rgba(179, 146, 104, 0.18);
+  padding: 1.5rem;
   width: 100%;
-  box-sizing: border-box;
+  border-radius: 12px;
 }
 
 .token-display-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(46, 31, 22, 0.5);
+  letter-spacing: 0.05em;
   display: block;
   margin-bottom: 8px;
 }
 
 .token-code-number {
-  font-size: 3.6rem;
-  font-weight: 900;
-  color: var(--color-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #a8845c;
   margin: 0;
-  letter-spacing: 1px;
 }
 
-/* Timer box */
-.timer-estimation-box {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background-color: #ebfcf5; /* Fresh green tint */
-  border: 1px solid #c3e6cb;
-  padding: 16px 20px;
-  border-radius: 12px;
-  width: 100%;
-  box-sizing: border-box;
-  text-align: left;
-}
-
-.timer-icon {
-  font-size: 2rem;
-}
-
-.timer-text {
+/* Cinematic progression timeline */
+.cinematic-timeline {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-
-.timer-text strong {
-  font-size: 0.85rem;
-  color: #155724;
-}
-
-.timer-text p {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #155724;
-}
-
-.timer-text span {
-  font-weight: 700;
-}
-
-.kiosk-instruction-alert {
-  background-color: #fff9e6; /* Warning amber tint */
-  border-left: 4px solid var(--color-warning);
-  padding: 14px 18px;
-  border-radius: 0 12px 12px 0;
-  text-align: left;
+  gap: 1.2rem;
   width: 100%;
-  box-sizing: border-box;
+  margin: 1rem 0;
+  text-align: left;
 }
 
-.kiosk-instruction-alert p {
-  margin: 0;
+.timeline-step-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(46, 31, 22, 0.45);
+  padding: 0.8rem 1rem;
+  border: 1px solid transparent;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.timeline-step-row.active {
+  color: #2e1f16;
+  background-color: rgba(179, 146, 104, 0.08);
+  border-color: #a8845c;
+  border-radius: 8px;
+}
+
+.timeline-step-row.completed {
+  color: rgba(46, 31, 22, 0.3);
+  text-decoration: line-through;
+}
+
+.ambient-pulse {
+  width: 6px;
+  height: 6px;
+  background-color: #a8845c;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #a8845c;
+  animation: softPulse 2s infinite ease-in-out;
+}
+
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.token-success-card .btn-large {
+  height: 52px !important;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.85rem;
-  color: #856404;
-  line-height: 1.4;
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 26px;
+  width: 100%;
+  background: linear-gradient(135deg, #c8a97e, #b39268) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.token-success-card .btn-large:hover {
+  background: #a8845c !important;
 }

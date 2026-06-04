@@ -1,91 +1,127 @@
+/* ═══════════════════════════════════════════════════════════════
+   White-Cube Gallery — Ingredients View
+   ═══════════════════════════════════════════════════════════════ */
+
 .ingredients-view {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 16px;
 }
 
 .ingredients-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
+  gap: 12px;
+  background: #ffffff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .ingredients-search-input {
   background: transparent;
   border: none;
-  color: var(--color-text);
+  color: #1a1a1a;
   outline: none;
   width: 100%;
+  font-size: 0.82rem;
+}
+
+.ingredients-search-input::placeholder {
+  color: #bbb;
 }
 
 .ingredients-table th {
+  font-family: 'SF Mono', monospace;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #999;
+  font-weight: 500;
 }
 
 .ingredient-name-cell {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 2px;
 }
 
 .ingredient-id {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.62rem;
+  color: #bbb;
 }
 
 .unit-text {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  color: #999;
+  font-family: 'SF Mono', monospace;
 }
 
 .not-applicable {
-  color: var(--color-text-muted);
+  color: #ccc;
   font-style: italic;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .margin-badge {
-  padding: 0.25rem 0.5rem;
+  padding: 3px 8px;
   border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.margin-badge.high { background: rgba(40, 167, 69, 0.15); color: #51cf66; }
-.margin-badge.medium { background: rgba(255, 193, 7, 0.15); color: #ffd43b; }
-.margin-badge.low { background: rgba(220, 53, 69, 0.15); color: #ff8787; }
+.margin-badge.high {
+  background: rgba(45, 157, 92, 0.06);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.1);
+}
 
-.status-badge.active { color: #38d9a9; }
-.status-badge.inactive { color: #ff8787; }
+.margin-badge.medium {
+  background: rgba(212, 148, 10, 0.06);
+  color: #d4940a;
+  border: 1px solid rgba(212, 148, 10, 0.1);
+}
 
-/* Modal Form Styles */
+.margin-badge.low {
+  background: rgba(196, 64, 64, 0.06);
+  color: #c44040;
+  border: 1px solid rgba(196, 64, 64, 0.1);
+}
+
+.status-badge.active {
+  color: #2d9d5c;
+}
+
+.status-badge.inactive {
+  color: #c44040;
+}
+
+/* ── Modal Form ── */
 .ingredients-modal {
   max-width: 600px;
 }
 
 .ingredients-form {
-  padding: 1.5rem;
+  padding: 24px;
 }
 
 .form-hint {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 12px;
 }
 
 .action-btn-sm.danger {
-  color: #ff8787;
-  border-color: rgba(255, 135, 135, 0.3);
+  color: #c44040;
+  border-color: rgba(196, 64, 64, 0.2);
 }
 
 .action-btn-sm.danger:hover {
-  background: rgba(220, 53, 69, 0.1);
+  background: rgba(196, 64, 64, 0.06);
 }
-

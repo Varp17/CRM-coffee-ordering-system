@@ -565,11 +565,85 @@ ul, ol {
 }
 
 /* ==========================================================================
+   WHITE-CUBE GALLERY — Admin CRM Light Premium Theme Override
+   Museum-grade editorial aesthetic · Monochrome light palette
+   Scoped to .admin-layout so D2C/Kiosk/Barista remain unaffected
+   ========================================================================== */
+
+.admin-layout {
+  /* Core Surfaces */
+  --color-bg:              #f7f7f5;
+  --color-surface:         #ffffff;
+  --color-surface-alt:     #fafaf8;
+  --color-surface-hover:   rgba(0, 0, 0, 0.012);
+  --color-border:          rgba(0, 0, 0, 0.06);
+  --color-border-subtle:   rgba(0, 0, 0, 0.03);
+
+  /* Text Hierarchy — High Contrast Light */
+  --color-text:            #1a1a1a;
+  --color-text-secondary:  #6b6b6b;
+  --color-text-muted:      #999999;
+  --color-text-inverse:    #ffffff;
+
+  /* Brand — Monochrome Primary */
+  --color-primary:         #1a1a1a;
+  --color-primary-hover:   #333333;
+  --color-primary-light:   rgba(0, 0, 0, 0.04);
+  --color-primary-glow:    rgba(0, 0, 0, 0.06);
+
+  /* Warm Accent — Caramel for Revenue/Highlights */
+  --color-accent:          #c78d5a;
+  --color-accent-light:    rgba(199, 141, 90, 0.08);
+  --color-accent-glow:     rgba(199, 141, 90, 0.15);
+
+  /* Status Colors — Muted for Gallery Feel */
+  --color-success:         #2d9d5c;
+  --color-success-light:   rgba(45, 157, 92, 0.08);
+  --color-warning:         #d4940a;
+  --color-warning-light:   rgba(212, 148, 10, 0.08);
+  --color-danger:          #c44040;
+  --color-danger-light:    rgba(196, 64, 64, 0.08);
+  --color-info:            #4a8fd4;
+  --color-info-light:      rgba(74, 143, 212, 0.08);
+
+  /* Elevations — Ultra-Soft for Light Surfaces */
+  --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.015);
+  --elevation-2: 0 2px 8px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --elevation-3: 0 4px 16px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --elevation-4: 0 8px 24px rgba(0, 0, 0, 0.05), 0 4px 8px rgba(0, 0, 0, 0.02);
+  --elevation-float: 0 16px 48px rgba(0, 0, 0, 0.08);
+
+  /* Glow — Subtle Warm */
+  --glow-primary: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --glow-accent:  0 4px 20px rgba(199, 141, 90, 0.1);
+
+  /* Gallery Background */
+  background-color: #f7f7f5;
+  color: #1a1a1a;
+}
+
+/* Admin-scoped text gradient override (mono instead of warm gradient) */
+.admin-layout .text-gradient {
+  background: linear-gradient(135deg, #1a1a1a 0%, #555 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Admin-scoped glass-card override for light theme */
+.admin-layout .glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
    UI CALIBRATION OVERRIDES — High-Density Premium Universal Standards
    ========================================================================== */
 
 /* 13px base font-size */
-html {
+html:not(:has(.d2c-layout)) {
   font-size: 13px !important;
 }
 
@@ -583,7 +657,7 @@ html {
 }
 
 /* 40-50% spacing & padding universal reduction */
-:root {
+:root:not(:has(.d2c-layout)) {
   --space-2:   1px !important;
   --space-4:   2px !important;
   --space-6:   4px !important;
@@ -674,7 +748,7 @@ input, select, textarea, .phone-styled-input, .operator-form-input, .customers-s
 }
 
 /* Icons sizing override */
-.menu-icon, .icon, svg, .logo-icon, .store-icon, .search-icon {
+.menu-icon, .icon, svg.lucide, .logo-icon, .store-icon, .search-icon {
   font-size: 16px !important;
   max-width: 18px !important;
   max-height: 18px !important;
@@ -733,4 +807,293 @@ input, select, textarea, .phone-styled-input, .operator-form-input, .customers-s
   overflow-y: auto !important;
   flex-grow: 1 !important;
 }
+
+/* ==========================================================================
+   MASTER RESPONSIVE ADAPTIVE SYSTEM
+   Works dynamically across: Mobile, Foldable, Tablet, Desktop, Ultrawide, TV
+   ========================================================================== */
+
+/* ── 1. FLUID TYPOGRAPHY SYSTEMS ── */
+:root {
+  --fs-hero:       clamp(2.5rem, 8vw, 7.5rem);
+  --fs-title-lg:   clamp(1.8rem, 5vw, 4.5rem);
+  --fs-title-md:   clamp(1.4rem, 3.5vw, 3rem);
+  --fs-body:       clamp(0.9rem, 1.2vw + 0.2rem, 1.25rem);
+  --fs-mono:       clamp(0.7rem, 0.9vw + 0.1rem, 1.1rem);
+  
+  --touch-mobile:  48px;
+  --touch-kiosk:   72px;
+  --touch-tv:      90px;
+}
+
+/* Apply fluid typography across layouts */
+.massive-editorial-title {
+  font-size: var(--fs-title-lg) !important;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.mono-step-label, .mono-technical-tag, .mono-badge {
+  font-size: var(--fs-mono) !important;
+}
+
+/* ── 2. TOUCH TARGET & ACCESSIBILITY CALIBRATIONS ── */
+button, input, select, .btn, .tactile-card-chip, .small-tactile-chip, .option-chip, .kds-action-btn {
+  min-height: var(--touch-mobile);
+}
+
+/* Kiosk Specific Expansion */
+.kiosk-layout-container button,
+.kiosk-layout-container .btn,
+.kiosk-layout-container .tactile-card-chip,
+.kiosk-layout-container .option-chip,
+.kiosk-layout-container .step-pill,
+.kiosk-layout-container .add-order-btn,
+.kiosk-layout-container .step-nav-btn {
+  min-height: var(--touch-kiosk) !important;
+  font-size: clamp(0.85rem, 1.2vw, 1.1rem) !important;
+  border-radius: 30px !important;
+}
+
+/* ── 3. MOBILE ADAPTATIONS (<= 768px) ── */
+@media (max-width: 768px) {
+  /* Simplified Shaders & Particles for Mobile GPUs */
+  .fluid-dynamics-canvas {
+    transform: scale(0.95);
+  }
+  
+  /* Vertical storytelling stacked layouts */
+  .cinematic-coffee-lab {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    padding: 32px 20px !important;
+  }
+  
+  .kiosk-catalog {
+    grid-template-columns: 1fr !important;
+    padding-top: 88px !important;
+    padding-bottom: 72px !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+  
+  .catalog-sidebar {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(179, 146, 104, 0.15) !important;
+    padding: 12px !important;
+  }
+  
+  .categories-list {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    padding-bottom: 8px !important;
+    gap: 8px !important;
+  }
+  
+  .category-btn {
+    white-space: nowrap !important;
+    padding: 8px 16px !important;
+  }
+  
+  .catalog-main {
+    border-right: none !important;
+    padding: 16px !important;
+  }
+  
+  .catalog-cart-summary {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.1) !important;
+    z-index: 150 !important;
+    padding: 12px 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-top: 1px solid rgba(179, 146, 104, 0.2) !important;
+  }
+  
+  .catalog-cart-summary h3, .catalog-cart-summary .cart-items, .catalog-cart-summary .empty-msg {
+    display: none !important;
+  }
+  
+  .catalog-cart-summary .cart-total {
+    border-top: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .catalog-cart-summary .btn-large {
+    width: auto !important;
+    padding: 0 24px !important;
+    margin: 0 !important;
+  }
+  
+  /* Mobile Customizer Stack */
+  .kiosk-custom-drink {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+  
+  .custom-preview-panel {
+    min-height: 280px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(179, 146, 104, 0.15) !important;
+  }
+}
+
+/* ── 4. TABLET SPLIT INTERACTIVE ADAPTATIONS (769px - 1024px) ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .kiosk-catalog {
+    grid-template-columns: 180px 1fr 280px !important;
+  }
+  
+  .cinematic-coffee-lab {
+    grid-template-columns: 1fr !important;
+    gap: 48px !important;
+  }
+}
+
+/* ── 5. ULTRAWIDE & TV DIGITAL INSTALLATIONS (>= 1920px) ── */
+@media (min-width: 1920px) {
+  :root {
+    --touch-kiosk: 86px !important;
+    --touch-tv:    100px !important;
+  }
+  
+  /* TV Ambient Volumetric scale */
+  .cinematic-coffee-lab {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 100px 80px !important;
+    border-radius: 40px !important;
+  }
+  
+  /* Larger touch targets on 4K/TV commercial Kiosks */
+  .kiosk-layout-container button,
+  .kiosk-layout-container .btn,
+  .kiosk-layout-container .tactile-card-chip,
+  .kiosk-layout-container .option-chip {
+    min-height: var(--touch-tv) !important;
+    border-radius: 45px !important;
+    font-size: 1.25rem !important;
+  }
+  
+  .kiosk-top-bar {
+    max-width: 1800px !important;
+    height: 80px !important;
+    border-radius: 40px !important;
+    top: 40px !important;
+  }
+  
+  .logo-icon-kiosk {
+    font-size: 2rem !important;
+  }
+  
+  .terminal-id-kiosk {
+    font-size: 1.1rem !important;
+  }
+  
+  .nav-shortcut-btn {
+    font-size: 1.15rem !important;
+  }
+  
+  .kiosk-cart-summary-bubble {
+    font-size: 1.15rem !important;
+    padding: 0.6rem 1.6rem !important;
+    border-radius: 30px !important;
+  }
+  
+  .kiosk-product-card {
+    border-radius: 24px !important;
+  }
+  
+  .product-image {
+    height: 220px !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+  
+  .product-details h3 {
+    font-size: 1.4rem !important;
+  }
+  
+  .product-details .price {
+    font-size: 1.2rem !important;
+  }
+  
+  .catalog-cart-summary h3 {
+    font-size: 1.6rem !important;
+  }
+  
+  .cart-item-name {
+    font-size: 1.15rem !important;
+    max-width: 260px !important;
+  }
+  
+  .cart-item-price {
+    font-size: 1.1rem !important;
+  }
+  
+  .cart-total {
+    font-size: 1.8rem !important;
+  }
+}
+
+/* ── 6. BARISTA KITCHEN DISPLAY SYSTEM (KDS) ADAPTATIONS ── */
+.order-queue-view {
+  background-color: var(--color-bg);
+  padding: clamp(8px, 2vh, 24px) !important;
+}
+
+/* Grid layout KDS column scalability */
+.queue-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: clamp(8px, 1.5vw, 24px) !important;
+  height: calc(100vh - 160px) !important;
+}
+
+.order-ticket {
+  border-radius: 12px !important;
+  padding: clamp(10px, 2vh, 20px) !important;
+}
+
+.order-id {
+  font-size: clamp(1.2rem, 2.5vw, 2rem) !important;
+}
+
+.customer-name {
+  font-size: clamp(1rem, 2vw, 1.5rem) !important;
+}
+
+.item-list li {
+  font-size: clamp(0.95rem, 1.8vw, 1.3rem) !important;
+}
+
+/* Expand KDS button touch targets on tablets and wall displays */
+.kds-action-btn {
+  min-height: clamp(48px, 6vh, 80px) !important;
+  font-size: clamp(0.95rem, 1.8vw, 1.25rem) !important;
+  border-radius: 8px !important;
+}
+
+@media (min-width: 1600px) {
+  /* Kitchen wall displays Mode */
+  .order-queue-view {
+    font-size: 1.2rem !important;
+  }
+  .queue-tag {
+    font-size: 1.1rem !important;
+    padding: 12px 24px !important;
+  }
+  .kds-queue-header h2 {
+    font-size: 2.2rem !important;
+  }
+}
+
 

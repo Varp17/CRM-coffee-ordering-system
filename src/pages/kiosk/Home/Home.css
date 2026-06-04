@@ -1,161 +1,206 @@
-/* ==========================================================================
-   KIOSK HOME SCREEN STYLE — Digital Coffee Kiosk Terminal
-   Highly legibly, premium dark mode glassmorphism with luxury warm accents
-   ========================================================================== */
+/* ═══════════════════════════════════════════════════════════════
+   Espresso Reserve — Luxurious Light Cafe Kiosk Home Screen
+   Creamy Latte, Ivory overlays, and rich Gold actions.
+   ═══════════════════════════════════════════════════════════════ */
 
 .kiosk-home {
   position: relative;
   height: 100vh;
   width: 100vw;
-  background: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1978&q=80') no-repeat center center/cover;
+  background: radial-gradient(circle at 50% 50%, #fcfaf7 0%, #f4eee3 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
 
-.kiosk-overlay {
+/* Background video system */
+.kiosk-bg-video-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Deep charcoal espresso gradient to ensure 100% legibility of light text */
-  background: linear-gradient(135deg, rgba(22, 11, 7, 0.92) 0%, rgba(8, 4, 3, 0.96) 100%);
+  z-index: 0;
+  overflow: hidden;
 }
 
+.kiosk-bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kiosk-bg-video.loaded {
+  opacity: 0.38; /* Subdued background movement */
+}
+
+/* Cinematic film grain & Creamy warm overlay */
+.kiosk-grain-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(244, 238, 227, 0.75) 90%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Front content wrapper */
 .kiosk-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  height: 75vh;
-  width: 90%;
-  max-width: 480px; /* Snugger width for a premium console look */
-  text-align: center;
-}
-
-.brand-header {
-  margin-top: var(--space-20);
-}
-
-.brand-title {
-  font-size: 2.8rem;
-  font-family: var(--font-heading);
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  /* Radiant gold/caramel text gradient */
-  background: linear-gradient(135deg, #f5d6b3 0%, #c8a97e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  margin-bottom: var(--space-6);
-}
-
-.brand-subtitle {
-  font-size: 0.95rem;
-  color: #e8e5e1;
-  opacity: 0.85;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-}
-
-.cta-container {
+  align-items: flex-start;
+  height: 100%;
   width: 100%;
+  padding: 120px 6vw 60px; /* Account for floating header */
+  text-align: left;
 }
 
-.start-card {
-  padding: var(--space-32) var(--space-24);
-  border-radius: var(--radius-xl);
+/* Typography composition: asymmetrical, oversized editorial */
+.editorial-text-wrapper {
+  margin-top: auto;
+  margin-bottom: auto;
+  max-width: 800px;
+}
+
+.editorial-word {
+  display: block;
+  font-family: 'Readex Pro', 'Inter', sans-serif;
+  font-size: clamp(4.5rem, 11vw, 8.5rem);
+  font-weight: 200;
+  color: #2e1f16; /* Deep roasted espresso */
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
+}
+
+.editorial-word:last-child {
+  color: #a8845c; /* Warm Gold */
+  font-weight: 400;
+}
+
+/* Layered Telemetry statistics panel */
+.kiosk-telemetry-panel {
+  position: absolute;
+  right: 6vw;
+  top: 30%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-16);
-  align-items: center;
+  gap: 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(168, 132, 92, 0.6);
+  letter-spacing: 0.08em;
+  text-align: right;
+  z-index: 2;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-right: 2px solid rgba(168, 132, 92, 0.25);
+  padding-right: 12px;
+}
+
+.telemetry-val {
+  color: #2e1f16;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* CTA Container on Kiosk Home */
+.home-cta-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  max-width: 380px;
+  margin-top: auto;
 }
 
-.start-card h2 {
-  font-size: 1.8rem;
-  font-weight: 800;
+/* Gold Pill CTA */
+.massive-btn-kiosk {
+  background: linear-gradient(135deg, #c8a97e, #b39268);
   color: #ffffff;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.start-card p {
-  font-size: 0.95rem;
-  color: #d1cbc4; /* Readable light-gray-brown */
-  margin: 0;
-  max-width: 320px;
-  line-height: var(--line-height-snug);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-}
-
-.massive-btn {
-  background: linear-gradient(135deg, #c8a97e 0%, #b89568 100%);
-  color: #1a0e0a;
   border: none;
-  padding: 16px 28px;
-  border-radius: 40px;
-  font-size: 1.15rem;
-  font-weight: 800;
+  height: 60px;
+  border-radius: 30px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: var(--space-12);
-  box-shadow: 0 8px 24px rgba(200, 169, 126, 0.25);
-  transition: all var(--transition-normal);
-  width: 100%;
   justify-content: center;
-  text-shadow: none;
+  gap: 12px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 
+    0 10px 24px rgba(179, 146, 104, 0.3),
+    0 0 0 1px rgba(179, 146, 104, 0.1);
 }
 
-.massive-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(200, 169, 126, 0.45);
-  background: linear-gradient(135deg, #d8ba90 0%, #c8a97e 100%);
+.massive-btn-kiosk:hover {
+  background: #a8845c;
+  box-shadow: 0 4px 15px rgba(168, 132, 92, 0.2);
 }
 
-.massive-btn:active {
-  transform: translateY(1px);
+.qr-btn-kiosk {
+  background-color: rgba(179, 146, 104, 0.05);
+  color: #a8845c;
+  border: 1px solid rgba(179, 146, 104, 0.25);
+  height: 52px;
+  border-radius: 26px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.massive-btn .btn-icon {
-  font-size: 1.4rem;
+.qr-btn-kiosk:hover {
+  background-color: rgba(179, 146, 104, 0.12);
+  border-color: #a8845c;
+  box-shadow: 0 4px 12px rgba(168, 132, 92, 0.15);
 }
 
-.qr-btn {
-  background: transparent !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-  color: #ffffff !important;
-  padding: 14px 28px !important;
-  border-radius: 40px !important;
-  margin-top: var(--space-6) !important;
-  cursor: pointer !important;
-  font-weight: 700 !important;
-  font-size: 0.95rem !important;
-  width: 100% !important;
-  transition: all var(--transition-fast) !important;
+.brand-footer-kiosk {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(46, 31, 22, 0.4);
+  letter-spacing: 0.05em;
+  margin-top: 2rem;
 }
 
-.qr-btn:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
+@media (max-width: 1024px) {
+  .kiosk-telemetry-panel {
+    display: none;
+  }
 }
 
-.brand-footer {
-  color: #b3aba2;
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  margin-bottom: var(--space-16);
+@media (max-width: 768px) {
+  .kiosk-content {
+    padding: 100px 6vw 20px;
+  }
+  
+  .editorial-word {
+    font-size: 3.5rem;
+  }
+
+  .home-cta-container {
+    max-width: 100%;
+  }
 }

@@ -17,8 +17,13 @@ import { useCartStore } from '../../../store/useCartStore';
 import { formatCurrency } from '../../../utils/formatters';
 import toast from 'react-hot-toast';
 import { t } from '../../../utils/i18n';
-import RecipeDiscoverer from '../../../components/RecipeDiscoverer/RecipeDiscoverer';
+import SensoryProfiler from '../../../components/SensoryProfiler/SensoryProfiler';
+import InlineDrinkBuilder from '../../../components/InlineDrinkBuilder/InlineDrinkBuilder';
 import LoyaltyClub from '../../../components/LoyaltyClub/LoyaltyClub';
+import AromaParticles from '../../../components/system/AromaParticles';
+import RoastProfileSlider from '../../../components/system/RoastProfileSlider';
+import BrewMethodGuide from '../../../components/system/BrewMethodGuide';
+
 
 // Scroll-triggered section wrapper
 const ScrollReveal = ({ children, className = '', delay = 0 }) => {
@@ -129,6 +134,7 @@ const Home = () => {
             loading="eager"
           />
           <div className="hero-overlay" />
+          <AromaParticles />
 
           {/* Background video layer */}
           <video
@@ -266,8 +272,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* INTERACTIVE RECIPE DISCOVERER */}
-      <RecipeDiscoverer />
+      {/* SENSORY TASTE PROFILER */}
+      <SensoryProfiler />
 
       {/* SECTION 2: BRAND PILLARS */}
       <section className="pillars-section">
@@ -297,6 +303,11 @@ const Home = () => {
           </StaggerContainer>
         </div>
       </section>
+
+      {/* ROAST PROFILE SELECTOR */}
+      <ScrollReveal>
+        <RoastProfileSlider />
+      </ScrollReveal>
 
       {/* GAMIFIED LOYALTY CLUB */}
       <LoyaltyClub />
@@ -343,31 +354,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* SECTION 4: DRINK BUILDER TEASER */}
+      {/* SECTION 4: FULL INTERACTIVE DRINK BUILDER */}
       <section className="builder-section dark-section">
         <div className="section-container">
-          <div className="builder-layout">
-            <ScrollReveal className="builder-visual">
-              <CupAnimation size={240} autoPlay={true} />
-            </ScrollReveal>
-            <ScrollReveal className="builder-content" delay={0.15}>
-              <span className="eyebrow" style={{ color: 'var(--color-accent)' }}>{t('home.builderEyebrow', 'Interactive Experience')}</span>
-              <h2>{t('home.builderTitle', 'Build Your Own Brew')}</h2>
-              <p>
-                {t('home.builderSubtitle', 'Choose your base, pick your milk, add syrups and toppings — watch your drink come alive with our interactive configurator. Every ingredient updates the price and visual in real-time.')}
-              </p>
-              <ul className="builder-features">
-                <li><Coffee size={16} /> {t('home.builderFeat1', 'Choose from Espresso, Cold Brew, or Matcha')}</li>
-                <li><Coffee size={16} /> {t('home.builderFeat2', 'Customize milk, syrups, and toppings')}</li>
-                <li><Coffee size={16} /> {t('home.builderFeat3', 'Real-time pricing and visual preview')}</li>
-                <li><Coffee size={16} /> {t('home.builderFeat4', 'Save your favorite recipes')}</li>
-              </ul>
-              <Button variant="accent" size="large" onClick={() => navigate('/kiosk/custom')}>
-                {t('home.startBuilding', 'Start Building')}
-                <ArrowRight size={18} />
-              </Button>
-            </ScrollReveal>
-          </div>
+          <ScrollReveal>
+            <InlineDrinkBuilder />
+          </ScrollReveal>
         </div>
       </section>
 
@@ -401,6 +393,11 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* BREW METHOD GUIDE */}
+      <ScrollReveal>
+        <BrewMethodGuide />
+      </ScrollReveal>
 
       {/* SECTION 5: TESTIMONIALS */}
       {testimonials.length > 0 && (

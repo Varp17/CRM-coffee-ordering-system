@@ -1,79 +1,91 @@
-/* Financials Dashboard styling */
+/* ═══════════════════════════════════════════════════════════════
+   White-Cube Gallery — Financials View
+   ═══════════════════════════════════════════════════════════════ */
 
 .financials-view {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+  gap: 16px;
 }
 
 .financials-kpi-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-16);
-  margin-top: var(--space-16);
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .finance-kpi {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-24);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--elevation-1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.finance-kpi:hover {
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .finance-kpi span:first-child {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
-  color: var(--color-text-secondary);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: #999;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.12em;
 }
 
 .finance-kpi strong {
-  font-size: var(--font-size-display);
-  color: var(--color-text);
-  margin: var(--space-8) 0;
-  font-weight: 800;
+  font-family: 'SF Mono', monospace;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  margin: 6px 0;
+  font-weight: 200;
 }
 
 .finance-kpi strong.gst-liability-text {
-  color: var(--color-primary);
+  color: #c78d5a;
 }
 
 .finance-kpi-sub {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  color: #999;
 }
 
-/* Split grid */
+/* ── Split Grid ── */
 .financials-split-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: var(--space-24);
+  gap: 16px;
 }
 
 .finance-panel-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-32);
-  box-shadow: var(--elevation-1);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .finance-panel-card h3 {
-  font-size: var(--font-size-h3);
-  font-weight: 800;
-  color: var(--color-text);
-  margin-bottom: var(--space-8);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #999;
+  margin-bottom: 8px;
 }
 
 .panel-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-24);
+  margin-bottom: 16px;
 }
 
 .panel-card-header h3 {
@@ -81,13 +93,16 @@
 }
 
 .ledger-tag {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
-  background-color: var(--color-bg);
-  padding: var(--space-4) var(--space-8);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #555;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .ledger-table-wrap {
@@ -100,19 +115,22 @@
 }
 
 .ledger-table th {
-  padding: var(--space-12) var(--space-16);
-  border-bottom: 2px solid var(--color-border);
-  font-size: var(--font-size-caption);
-  color: var(--color-text-secondary);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.62rem;
+  color: #999;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
   text-align: left;
+  font-weight: 500;
 }
 
 .ledger-table td {
-  padding: var(--space-16);
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-body-lg);
-  color: var(--color-text);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  font-size: 0.84rem;
+  color: #444;
 }
 
 .ledger-table tr:last-child td {
@@ -121,110 +139,116 @@
 
 .num-col {
   text-align: right !important;
+  font-family: 'SF Mono', monospace;
 }
 
 .ledger-table td code {
-  background-color: var(--color-bg);
-  padding: var(--space-4) var(--space-8);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  border: 1px solid var(--color-border);
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.78rem;
 }
 
 .text-debit {
-  color: var(--color-success);
-  font-weight: 700;
+  color: #2d9d5c;
+  font-weight: 500;
+  font-family: 'SF Mono', monospace;
 }
 
 .text-credit {
-  color: var(--color-primary);
-  font-weight: 700;
+  color: #c78d5a;
+  font-weight: 500;
+  font-family: 'SF Mono', monospace;
 }
 
-/* Integration side */
+/* ── Integration Side ── */
 .integration-subtitle {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-  margin-bottom: var(--space-32);
+  font-size: 0.82rem;
+  color: #888;
+  line-height: 1.5;
+  margin-bottom: 20px;
 }
 
 .integration-workspace {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+  gap: 16px;
 }
 
 .target-select-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: 6px;
 }
 
 .target-select-row label {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
-  color: var(--color-text-secondary);
+  font-family: 'SF Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: #999;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
 }
 
 .target-buttons {
   display: flex;
-  gap: var(--space-8);
+  gap: 8px;
 }
 
 .target-btn {
   flex: 1;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-bg);
-  padding: var(--space-12);
-  font-size: var(--font-size-body);
-  font-weight: 700;
-  color: var(--color-text);
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  padding: 10px;
+  font-size: 0.82rem;
+  font-weight: 450;
+  color: #555;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all var(--motion-fast);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .target-btn:hover {
-  border-color: var(--color-primary);
+  border-color: rgba(0, 0, 0, 0.18);
 }
 
 .target-btn.active {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background-color: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
 }
 
 .erp-sync-card {
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-20);
+  background-color: rgba(0, 0, 0, 0.01);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  padding: 16px;
 }
 
 .sync-status-indicator {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
-  font-size: var(--font-size-body);
-  color: var(--color-text);
-  margin-bottom: var(--space-8);
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #1a1a1a;
+  margin-bottom: 6px;
 }
 
 .status-dot.online {
-  width: 8px;
-  height: 8px;
-  background-color: var(--color-success);
+  width: 6px;
+  height: 6px;
+  background-color: #2d9d5c;
   border-radius: 50%;
-  animation: pulse-dot 1.5s infinite;
+  animation: pulse-dot 2s infinite;
+  box-shadow: 0 0 6px rgba(45, 157, 92, 0.3);
 }
 
 .sync-text-desc {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  line-height: 1.45;
+  font-size: 0.8rem;
+  color: #888;
+  line-height: 1.5;
 }
 
 @keyframes pulse-dot {

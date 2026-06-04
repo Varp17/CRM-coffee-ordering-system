@@ -1,0 +1,673 @@
+/* ==========================================================================
+   CINEMATIC LUXURY COFFEE CONFIGURATOR CSS OVERHAUL
+   Apple Vision Pro × Luxury Coffee Lab × Interactive Product Cinema
+   ========================================================================== */
+
+.cinematic-coffee-lab {
+  display: grid;
+  grid-template-columns: 0.95fr 1.25fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  background: radial-gradient(circle at 30% 30%, #1e130c 0%, var(--color-espresso) 80%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-xl);
+  padding: 80px 64px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  min-height: 680px;
+  perspective: 1000px; /* Enable perspective for camera drift parallax */
+}
+
+/* ── Ambient Stage Backdrop ── */
+.lab-stage-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spotlight-radial {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(200, 169, 126, 0.12) 0%, rgba(111, 78, 55, 0.03) 50%, transparent 85%);
+  filter: blur(60px);
+  animation: spotlightPulse 12s ease-in-out infinite alternate;
+}
+
+@keyframes spotlightPulse {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.8; }
+  100% { transform: translate(-45%, -55%) scale(1.1); opacity: 1.1; }
+}
+
+.volumetric-smoke {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.01) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(200,169,126,0.01) 0%, transparent 60%);
+  filter: blur(30px);
+  animation: smokeDrift 20s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes smokeDrift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* ── Left column: Product Stage ── */
+.lab-visualizer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 2;
+  position: relative;
+  width: 100%;
+}
+
+.museum-glass-platform {
+  width: 240px;
+  height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Realistic Ground Projection Shadow */
+.museum-glass-platform::after {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  width: 180px;
+  height: 18px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 70%);
+  filter: blur(8px);
+  transform: translateZ(-20px);
+  pointer-events: none;
+}
+
+/* Glass cylinder with Fresnel reflection & Specular highlights */
+.glass-refractive-cup {
+  width: 160px;
+  height: 250px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top: none;
+  border-bottom-left-radius: 50px 130px;
+  border-bottom-right-radius: 50px 130px;
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: 
+    inset 0 -15px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 15px rgba(255, 255, 255, 0.05),
+    0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  backdrop-filter: blur(0.5px);
+}
+
+/* Cup Rim */
+.glass-refractive-cup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+}
+
+/* Curved refraction edge highlight */
+.glass-curved-refraction {
+  position: absolute;
+  top: 15px;
+  left: 6px;
+  bottom: 15px;
+  width: 14px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.15), rgba(255,255,255,0.02) 70%, transparent);
+  border-radius: 10px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.glass-fresnel-highlight {
+  position: absolute;
+  top: 0;
+  right: 6px;
+  bottom: 0;
+  width: 18px;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03) 80%, transparent);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.glass-specular-light {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  width: 3px;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 70%, transparent);
+  border-radius: 50%;
+  z-index: 6;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+.glass-liquid-innerglow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: color-dodge;
+  transition: background 0.8s ease;
+}
+
+/* Fluid dynamics Canvas */
+.liquid-compositor-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.fluid-dynamics-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+}
+
+/* Floating Telemetry HUD Labels */
+.telemetry-hud {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  border-radius: 4px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: all 0.3s ease;
+}
+
+.HUD-top-left     { top: 20px; left: -40px; }
+.HUD-top-right    { top: 20px; right: -40px; }
+.HUD-bottom-left  { bottom: 60px; left: -60px; }
+.HUD-bottom-right { bottom: 60px; right: -60px; }
+
+.hud-metric {
+  color: var(--color-accent);
+  font-size: 0.55rem;
+  margin-bottom: 2px;
+  font-weight: bold;
+}
+
+.hud-val {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 3D Topping Foam Sculptures */
+.foam-sculpture {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  height: 52px;
+  z-index: 4;
+  will-change: transform;
+}
+
+.whipped-cream-mesh {
+  top: 15%;
+  background: radial-gradient(circle at 50% 15%, #fffbf5 10%, #efebe2 50%, #d5cfc2 90%);
+  border-radius: 50% 50% 15px 15px;
+  box-shadow: 
+    inset 0 -5px 10px rgba(0, 0, 0, 0.1), 
+    0 5px 12px rgba(0, 0, 0, 0.25);
+  filter: blur(0.3px);
+  animation: breatheFoam 6s ease-in-out infinite alternate;
+}
+
+.cold-foam-mesh {
+  top: 20%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(245, 240, 230, 0.88));
+  border-radius: 35% 35% 12px 12px;
+  box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.08);
+  animation: breatheFoam 8s ease-in-out infinite alternate;
+}
+
+@keyframes breatheFoam {
+  0% { transform: scaleY(0.96) scaleX(0.98); }
+  100% { transform: scaleY(1.04) scaleX(1.02); }
+}
+
+/* Floating ice cubes */
+.glass-ice-cubes {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.ice-cube-block {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.08) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.4),
+    0 6px 12px rgba(0,0,0,0.15);
+}
+
+.cube-0 { bottom: 60px; left: 26px; }
+.cube-1 { bottom: 95px; right: 22px; }
+.cube-2 { bottom: 135px; left: 45px; }
+
+/* Condensed sliding drops */
+.glass-condensation-droplets {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.drop {
+  position: absolute;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 1px;
+}
+
+.drop::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  left: -1px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+}
+
+.drop-1 { height: 16px; top: 80px; left: 40px; }
+.drop-2 { height: 24px; top: 120px; right: 30px; }
+.drop-3 { height: 12px; top: 60px; left: 90px; }
+
+.telemetry-readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.telemetry-readout .mono-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+}
+
+.telemetry-readout .telemetry-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-on-dark);
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* ── Right Column: Configurator ── */
+.lab-configurator-column {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  z-index: 2;
+  position: relative;
+}
+
+.mono-technical-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.2em;
+}
+
+.massive-editorial-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 4.4rem);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--color-text-inverse);
+  margin: 0;
+}
+
+.lab-desc-copy {
+  font-size: 0.95rem;
+  color: rgba(232, 229, 225, 0.55);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 480px;
+}
+
+.category-composition-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mono-step-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.15em;
+}
+
+.asymmetric-chips-row {
+  display: flex;
+  gap: 16px;
+}
+
+/* Tactile Asymmetric Cards with 3D Depth support */
+.tactile-card-chip {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  transform-style: preserve-3d;
+  flex: 1;
+  text-align: left;
+  position: relative;
+  will-change: transform;
+}
+
+/* Subtle glowing highlight wrapper */
+.tactile-chip-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+
+.tactile-card-chip:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.tactile-card-chip.active {
+  background: rgba(200, 169, 126, 0.04);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+/* Shimmering Gold glow state */
+.tactile-card-chip.active .tactile-chip-glow {
+  border-color: var(--color-accent);
+  box-shadow: 
+    0 0 20px rgba(200, 169, 126, 0.25),
+    inset 0 0 10px rgba(200, 169, 126, 0.1);
+  animation: edgeShimmer 3s linear infinite;
+}
+
+@keyframes edgeShimmer {
+  0% { opacity: 0.85; }
+  50% { opacity: 1; }
+  100% { opacity: 0.85; }
+}
+
+.tactile-chip-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 2px;
+  transform: translateZ(15px); /* Move text forward in 3D space */
+}
+
+.tactile-chip-text strong {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tactile-chip-text span {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.tactile-chip-price {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  color: var(--color-accent);
+  transform: translateZ(15px);
+}
+
+.tactile-chip-free {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-success);
+  transform: translateZ(15px);
+}
+
+/* Syrups & Toppings Small row */
+.small-tactile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.small-tactile-chip {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.small-tactile-chip:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.small-tactile-chip.active {
+  background: rgba(200, 169, 126, 0.03);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  box-shadow: 0 0 15px rgba(200, 169, 126, 0.18);
+}
+
+.chip-price-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.dual-configuration-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Action Row at Bottom */
+.lab-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 32px;
+}
+
+.lab-price-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lab-price-metric .price-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.15em;
+}
+
+.rolling-price-digits {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--color-text-inverse);
+  letter-spacing: -0.02em;
+}
+
+/* Finalize Action Button with Shine Sweep */
+.lab-finalize-btn {
+  background: var(--color-accent);
+  color: var(--color-espresso);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 18px 40px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-shine-sweep {
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.lab-finalize-btn:hover:not(:disabled) .btn-shine-sweep {
+  animation: shineSweep 1.2s ease-in-out infinite;
+}
+
+.lab-finalize-btn:hover:not(:disabled) {
+  background: #e0be95;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(200, 169, 126, 0.25);
+}
+
+.lab-finalize-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(200, 169, 126, 0.15);
+}
+
+.lab-finalize-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes shineSweep {
+  from { left: -50%; }
+  to { left: 150%; }
+}
+
+@media (max-width: 1200px) {
+  .HUD-top-left     { left: -20px; }
+  .HUD-top-right    { right: -20px; }
+  .HUD-bottom-left  { left: -20px; }
+  .HUD-bottom-right { right: -20px; }
+}
+
+@media (max-width: 992px) {
+  .cinematic-coffee-lab {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 48px 24px;
+  }
+  .dual-configuration-grid {
+    grid-template-columns: 1fr;
+  }
+  .lab-visualizer-column {
+    display: grid !important;
+    grid-template-areas: 
+      "cup cup"
+      "hud1 hud2"
+      "hud3 hud4"
+      "title title";
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+  .museum-glass-platform {
+    grid-area: cup;
+    margin: 0 auto;
+  }
+  .HUD-top-left { grid-area: hud1; }
+  .HUD-top-right { grid-area: hud2; }
+  .HUD-bottom-left { grid-area: hud3; }
+  .HUD-bottom-right { grid-area: hud4; }
+  .telemetry-readout {
+    grid-area: title;
+  }
+  .telemetry-hud {
+    position: static !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 150px;
+    text-align: center;
+    align-items: center;
+  }
+}

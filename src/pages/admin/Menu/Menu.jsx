@@ -5,6 +5,7 @@ import { productService } from '../../../services/products';
 import { formatCurrency } from '../../../utils/formatters';
 import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
+import { useConfirmation } from '../../../hooks/useConfirmation';
 
 const Menu = () => {
   const [productsList, setProductsList] = useState([]);
@@ -83,8 +84,25 @@ const Menu = () => {
     setShowModal(true);
   };
 
+  const confirmAction = useConfirmation();
+
   const handleDelete = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    const product = productsList.find(p => p.id === productId);
+    const confirmed = await confirmAction({
+      title: 'Delete Product',
+      description: `You are about to permanently remove product "${product?.name || 'Item'}".`,
+      type: 'level3',
+      payload: {
+        details: {
+          name: product?.name,
+          category: product?.category_name,
+          price: formatCurrency(product?.base_price || product?.basePrice)
+        }
+      },
+      isDestructive: true
+    });
+
+    if (confirmed) {
       try {
         await productService.delete(productId);
         toast.success('Product deleted successfully');
@@ -109,6 +127,24 @@ const Menu = () => {
         payload.image_url = formData.image_url;
       }
 
+      // Check if price changed for Level 2 sensitive confirmation
+      const isPriceChanged = editingProduct && Number(formData.base_price) !== Number(editingProduct.base_price || editingProduct.basePrice || 0);
+      if (isPriceChanged) {
+        const confirmed = await confirmAction({
+          title: 'Update Pricing',
+          description: `Change ${editingProduct.name} price:`,
+          type: 'level2',
+          payload: {
+            requireText: true,
+            details: {
+              original: formatCurrency(editingProduct.base_price || editingProduct.basePrice || 0),
+              new: formatCurrency(formData.base_price)
+            }
+          }
+        });
+        if (!confirmed) return;
+      }
+
       if (editingProduct) {
         await productService.update(editingProduct.id, payload);
         toast.success('Product updated successfully');
@@ -124,13 +160,28 @@ const Menu = () => {
   };
 
   const toggleStatus = async (product) => {
-    try {
-      const newStatus = product.is_active ? 0 : 1;
-      await productService.update(product.id, { is_active: newStatus });
-      toast.success(`Product marked as ${newStatus ? 'Active' : 'Inactive'}`);
-      loadProductsAndCategories();
-    } catch (err) {
-      toast.error('Failed to toggle status: ' + err.message);
+    const newStatus = product.is_active ? 0 : 1;
+    const confirmed = await confirmAction({
+      title: 'Update Product Status',
+      description: `Mark product "${product.name}" as ${newStatus ? 'Active' : 'Inactive'}?`,
+      type: 'level1',
+      payload: {
+        details: {
+          name: product.name,
+          current: product.is_active ? 'Active' : 'Inactive',
+          target: newStatus ? 'Active' : 'Inactive'
+        }
+      }
+    });
+
+    if (confirmed) {
+      try {
+        await productService.update(product.id, { is_active: newStatus });
+        toast.success(`Product marked as ${newStatus ? 'Active' : 'Inactive'}`);
+        loadProductsAndCategories();
+      } catch (err) {
+        toast.error('Failed to toggle status: ' + err.message);
+      }
     }
   };
 

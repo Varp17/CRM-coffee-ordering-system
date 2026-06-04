@@ -30,29 +30,39 @@ const KioskLayout = () => {
   };
 
   const currentStep = getStepProgress();
-  const showProgress = currentStep > 0 && currentStep < 4;
+  const isHomeScreen = location.pathname === '/kiosk';
+  const showNavbar = currentStep < 4; // Hide on Token Confirmation page for complete focus
 
   return (
     <div className="kiosk-layout-container">
-      {/* Fullscreen Touch Header */}
-      {showProgress && (
+      {/* Immersive Floating Glass Navbar (Always visible except Token Confirmation page) */}
+      {showNavbar && (
         <header className="kiosk-top-bar">
-          <button className="kiosk-back-arrow-btn" onClick={() => navigate(-1)}>
-            ⬅ Back
-          </button>
+          {/* Left Slot: Logo & Terminal ID */}
+          <div className="kiosk-header-left" onClick={() => navigate('/kiosk')} style={{ cursor: 'pointer' }}>
+            <span className="logo-icon-kiosk">☕</span>
+            <span className="terminal-id-kiosk">DC // T1-MUSEUM</span>
+          </div>
           
-          <div className="kiosk-progress-bar-steps">
-            <div className={`step-dot ${currentStep >= 1 ? 'completed' : ''}`}>1. Select Drink</div>
-            <div className="step-line-connector"></div>
-            <div className={`step-dot ${currentStep >= 2 ? 'completed' : ''}`}>2. Customize</div>
-            <div className="step-line-connector"></div>
-            <div className={`step-dot ${currentStep >= 3 ? 'completed' : ''}`}>3. Payment Checkout</div>
+          {/* Center Slot: Category Navigation Shortcuts */}
+          <div className="kiosk-header-center">
+            <button className="nav-shortcut-btn" onClick={() => navigate('/kiosk/catalog')}>DRINKS</button>
+            <button className="nav-shortcut-btn" onClick={() => navigate('/kiosk/catalog')}>DESSERTS</button>
+            <button className="nav-shortcut-btn" onClick={() => navigate('/kiosk/custom')}>CUSTOM LAB</button>
           </div>
 
-          <div className="kiosk-right-info">
-            <span className="kiosk-cart-summary-bubble">
-              🛒 {cart.length} {cart.length === 1 ? 'item' : 'items'}
-            </span>
+          {/* Right Slot: Cart Summary & Controls */}
+          <div className="kiosk-header-right">
+            {!isHomeScreen && (
+              <button className="kiosk-back-arrow-btn" onClick={() => navigate(-1)} style={{ marginRight: '8px' }}>
+                ← BACK
+              </button>
+            )}
+            <button className="kiosk-cart-summary-bubble" onClick={() => navigate('/kiosk/catalog')}>
+              CART [{cart.length}]
+            </button>
+            <button className="kiosk-control-btn">[A]</button>
+            <button className="kiosk-control-btn">[EN]</button>
           </div>
         </header>
       )}
@@ -63,11 +73,11 @@ const KioskLayout = () => {
       </main>
 
       {/* Floating Kiosk Help Footer */}
-      {currentStep > 0 && (
+      {currentStep > 0 && currentStep < 4 && (
         <footer className="kiosk-assistive-footer">
-          <p>Need assistance? Tap the "Help" icon on the bottom right of the terminal.</p>
+          <p>FOR SERVICE ASSISTANCE, CALL SYSTEM STAFF AT ANY TIME</p>
           <button className="kiosk-help-trigger-btn" onClick={() => alert('Assistance is on the way! A barista will help you shortly.')}>
-            ❓ Call Staff Help
+            [?] STAFF ASSIST
           </button>
         </footer>
       )}

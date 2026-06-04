@@ -12,36 +12,48 @@ import Roles from '../Roles/Roles'; // Import the new Roles component
 const Layout = () => {
   const [currentTab, setCurrentTab] = useState('dashboard');
 
+  const navItems = [
+    { key: 'dashboard', label: 'Dashboard' },
+    { key: 'orders', label: 'Orders' },
+    { key: 'menu', label: 'Menu' },
+    { key: 'inventory', label: 'Inventory' },
+    { key: 'ingredients', label: 'Ingredients' },
+    { key: 'customers', label: 'Customers' },
+    { key: 'roles', label: 'Roles' },
+    { key: 'cms', label: 'Website CMS' },
+    { key: 'settings', label: 'Settings' },
+  ];
+
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      <div className="sidebar ">
+      <div className="sidebar">
         <div className="sidebar-header">
-          <h2 className="text-gradient">Coffee Admin</h2>
+          <h2>TOOF · Admin</h2>
         </div>
         <ul className="sidebar-nav">
-          <li className={currentTab === 'dashboard' ? 'active' : ''} onClick={() => setCurrentTab('dashboard')}>Dashboard</li>
-          <li className={currentTab === 'orders' ? 'active' : ''} onClick={() => setCurrentTab('orders')}>Orders</li>
-          <li className={currentTab === 'menu' ? 'active' : ''} onClick={() => setCurrentTab('menu')}>Menu</li>
-          <li className={currentTab === 'inventory' ? 'active' : ''} onClick={() => setCurrentTab('inventory')}>Inventory</li>
-          <li className={currentTab === 'ingredients' ? 'active' : ''} onClick={() => setCurrentTab('ingredients')}>Ingredients</li>
-          <li className={currentTab === 'customers' ? 'active' : ''} onClick={() => setCurrentTab('customers')}>Customers</li>
-          <li className={currentTab === 'roles' ? 'active' : ''} onClick={() => setCurrentTab('roles')}>Roles</li>
-          <li className={currentTab === 'cms' ? 'active' : ''} onClick={() => setCurrentTab('cms')}>Website CMS</li>
-          <li className={currentTab === 'settings' ? 'active' : ''} onClick={() => setCurrentTab('settings')}>Settings</li>
+          {navItems.map(item => (
+            <li
+              key={item.key}
+              className={currentTab === item.key ? 'active' : ''}
+              onClick={() => setCurrentTab(item.key)}
+            >
+              {item.label}
+            </li>
+          ))}
         </ul>
         <div className="sidebar-footer">
-          <p>Logged in as Admin</p>
-          <button className="logout-btn">Logout</button>
+          <p>Signed in as Admin</p>
+          <button className="logout-btn">Sign Out</button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="main-content">
-        <header className="content-header ">
-          <h1>{currentTab.toUpperCase()}</h1>
+        <header className="content-header">
+          <h1>{currentTab.replace('_', ' ')}</h1>
           <div className="user-profile">
-            <span>🔔</span>
+            <span style={{ fontSize: '0.85rem', cursor: 'pointer' }}>🔔</span>
             <div className="avatar">A</div>
           </div>
         </header>
@@ -55,7 +67,7 @@ const Layout = () => {
           {currentTab === 'customers' && <Customers />}
           {currentTab === 'roles' && <Roles />}
           {currentTab === 'cms' && <CMS />}
-          {currentTab === 'settings' && <div className="placeholder-view">Settings View</div>}
+          {currentTab === 'settings' && <div className="placeholder-view">Settings — Coming Soon</div>}
         </div>
       </div>
     </div>
@@ -63,4 +75,3 @@ const Layout = () => {
 };
 
 export default Layout;
-

@@ -163,10 +163,12 @@ const Catalog = () => {
               onClick={() => navigate(`/catalog/${product.slug || product.uuid || product.id}`)}
             >
               <Card 
+                id={product.uuid || product.id}
                 title={product.title}
                 description={product.short_description || product.description}
                 price={product.price}
                 imageUrl={product.image_url}
+                category={product.category}
                 rating={product.rating || 4.8}
                 reviewCount={product.review_count || 120}
                 tags={product.tags}
