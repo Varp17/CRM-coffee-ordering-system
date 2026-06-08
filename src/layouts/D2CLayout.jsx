@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { t } from '../utils/i18n';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
@@ -9,55 +9,12 @@ import {
   ShoppingBag,
   User,
   Home,
-  BookOpen,
-  Menu,
   X,
-  Heart,
-  ChevronDown,
-  Package,
-  MapPin,
-  Mail,
+  Menu,
   ArrowRight,
-  Sparkles,
+  Phone,
+  Mail,
 } from 'lucide-react';
-
-const Instagram = ({ size = 24, className, style }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    style={style}
-  >
-    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-  </svg>
-);
-
-const Twitter = ({ size = 24, className, style }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    style={style}
-  >
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-  </svg>
-);
 import './D2CLayout.css';
 
 const D2CLayout = () => {
@@ -70,56 +27,56 @@ const D2CLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Shrink header on scroll
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Prevent body scroll when drawer is open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { to: '/store', label: 'Home', icon: Home, end: true },
-    { to: '/store/catalog', label: 'Menu', icon: BookOpen },
-    { to: '/store/collections', label: 'Collections', icon: Sparkles },
-    { to: '/store/subscription', label: 'Plans', icon: Package },
+    { to: '/store', label: 'Home', end: true },
+    { to: '/store/catalog', label: 'Shop' },
+    { to: '/store/subscription', label: 'Subscriptions' },
+    { to: '/store/about', label: 'About' },
+    { to: '/store/contact', label: 'Contact' },
   ];
 
   return (
     <div className="d2c-layout">
+
       {/* ─── Announcement Bar ─── */}
       <div className="announcement-bar">
-        <div className="announcement-content">
-          <span className="announcement-sparkle">{'✦'}</span>
-          {t('layout.freeShipping', 'Free shipping on orders over ₹999')}
-          <span className="announcement-divider">{'|'}</span>
-          {t('layout.welcomeCode', 'Use code')} <strong>{'WELCOME20'}</strong> {t('layout.welcomeDiscount', 'for 20% off your first order')}
-          <span className="announcement-sparkle">{'✦'}</span>
+        <div className="announcement-inner">
+          <span className="ann-dot">✦</span>
+          <span>{t('layout.freeShipping', 'Free delivery on orders over ₹999')}</span>
+          <span className="ann-divider">·</span>
+          <span>Use <strong>WELCOME20</strong> for 20% off your first order</span>
+          <span className="ann-dot">✦</span>
         </div>
       </div>
 
       {/* ─── Header ─── */}
       <header className={`d2c-header ${scrolled ? 'header-scrolled' : ''}`}>
-        <div className="header-container">
+        <div className="header-inner">
+
           {/* Logo */}
-          <Link to="/store" className="brand-logo">
-            <div className="logo-mark">
-              <Coffee size={20} strokeWidth={2.5} />
+          <Link to="/store" className="brand-logo" aria-label="Digital Coffee — Home">
+            <div className="logo-icon-wrap">
+              <Coffee size={18} strokeWidth={2.5} />
             </div>
-            <span className="logo-text">{t('layout.brandName', 'Digital Coffee')}</span>
+            <span className="logo-wordmark">{t('layout.brandName', 'Digital Coffee')}</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <nav className="desktop-nav" role="navigation" aria-label="Main navigation">
             {navLinks.map((link) => (
               <NavLink
@@ -135,8 +92,9 @@ const D2CLayout = () => {
 
           {/* Header Actions */}
           <div className="header-actions">
-            <Link to="/store/cart" className="cart-trigger" aria-label={`Cart with ${cartCount} items`}>
-              <ShoppingBag size={20} strokeWidth={2} />
+            {/* Cart */}
+            <Link to="/store/cart" className="cart-btn" aria-label={`Cart — ${cartCount} items`} id="cart-button">
+              <ShoppingBag size={19} strokeWidth={2} />
               <AnimatePresence mode="wait">
                 {cartCount > 0 && (
                   <motion.span
@@ -153,30 +111,27 @@ const D2CLayout = () => {
               </AnimatePresence>
             </Link>
 
+            {/* Auth */}
             {user ? (
-              <div className="user-profile-menu">
-                <Link to="/store/profile" className="profile-btn">
-                  <User size={16} strokeWidth={2.5} />
-                  <span className="profile-name">{user.name.split(' ')[0]}</span>
-                </Link>
-                <button onClick={logout} className="logout-btn-header" title="Logout" aria-label="Logout">
-                  <X size={14} />
-                </button>
-              </div>
+              <Link to="/store/profile" className="account-btn" id="account-button">
+                <User size={16} strokeWidth={2.5} />
+                <span>{user.name.split(' ')[0]}</span>
+              </Link>
             ) : (
-              <Link to="/store/login" className="login-btn-header">
+              <Link to="/store/login" className="signin-btn" id="signin-button">
                 {t('layout.signIn', 'Sign In')}
               </Link>
             )}
 
             {/* Mobile Hamburger */}
             <button
-              className="mobile-menu-trigger"
+              className="hamburger"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
+              id="mobile-menu-toggle"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
@@ -200,16 +155,22 @@ const D2CLayout = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              aria-label="Mobile navigation"
             >
-              <div className="drawer-header">
+              <div className="drawer-head">
                 <Link to="/store" className="brand-logo" onClick={() => setMobileMenuOpen(false)}>
-                  <div className="logo-mark"><Coffee size={18} strokeWidth={2.5} /></div>
-                  <span className="logo-text">{t('layout.brandName', 'Digital Coffee')}</span>
+                  <div className="logo-icon-wrap"><Coffee size={18} /></div>
+                  <span className="logo-wordmark">{t('layout.brandName', 'Digital Coffee')}</span>
                 </Link>
-                <button className="drawer-close" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
+                <button
+                  className="drawer-close"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                >
                   <X size={20} />
                 </button>
               </div>
+
               <nav className="drawer-nav">
                 {navLinks.map((link) => (
                   <NavLink
@@ -219,20 +180,26 @@ const D2CLayout = () => {
                     className={({ isActive }) => `drawer-link ${isActive ? 'active' : ''}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <link.icon size={18} />
                     <span>{link.label}</span>
+                    <ArrowRight size={15} />
                   </NavLink>
                 ))}
               </nav>
+
               <div className="drawer-footer">
                 {user ? (
-                  <Link to="/store/profile" className="drawer-profile" onClick={() => setMobileMenuOpen(false)}>
-                    <User size={18} />
-                    <span>{user.name}</span>
-                  </Link>
+                  <div className="drawer-user">
+                    <Link to="/store/profile" className="drawer-profile-btn" onClick={() => setMobileMenuOpen(false)}>
+                      <User size={16} />
+                      <span>{user.name}</span>
+                    </Link>
+                    <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="drawer-logout">
+                      Sign out
+                    </button>
+                  </div>
                 ) : (
-                  <Link to="/store/login" className="drawer-login-btn" onClick={() => setMobileMenuOpen(false)}>
-                    {t('layout.signIn', 'Sign In')}
+                  <Link to="/store/login" className="drawer-signin" onClick={() => setMobileMenuOpen(false)}>
+                    Sign In
                     <ArrowRight size={16} />
                   </Link>
                 )}
@@ -242,92 +209,95 @@ const D2CLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* ─── Main Content ─── */}
-      <main className="d2c-main-content">
+      {/* ─── Page Content ─── */}
+      <main className="d2c-main">
         <Outlet />
       </main>
 
       {/* ─── Footer ─── */}
       <footer className="d2c-footer">
-        <div className="footer-main">
+        <div className="footer-top">
           <div className="footer-container">
+
             {/* Brand Column */}
-            <div className="footer-brand">
-              <div className="footer-logo">
-                <div className="logo-mark logo-mark-light"><Coffee size={18} strokeWidth={2.5} /></div>
+            <div className="footer-brand-col">
+              <Link to="/store" className="footer-logo">
+                <div className="footer-logo-icon"><Coffee size={16} strokeWidth={2.5} /></div>
                 <span className="footer-logo-text">{t('layout.brandName', 'Digital Coffee')}</span>
-              </div>
+              </Link>
               <p className="footer-tagline">
-                {t('layout.footerTagline', 'Premium specialty coffee, slow-brewed concentrates, and artisanal gear. Delivered fresh across Bengaluru.')}
+                {t('layout.footerTagline', 'Premium specialty coffee, slow-brewed concentrates, and artisanal gear — delivered fresh across Bengaluru.')}
               </p>
               <div className="footer-socials">
-                <a href="#" className="social-link" aria-label="Instagram"><Instagram size={18} /></a>
-                <a href="#" className="social-link" aria-label="Twitter"><Twitter size={18} /></a>
-                <a href="#" className="social-link" aria-label="Email"><Mail size={18} /></a>
+                <a href="#" className="social-icon" aria-label="Instagram">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/></svg>
+                </a>
+                <a href="#" className="social-icon" aria-label="Twitter / X">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46L20 4"/></svg>
+                </a>
+                <a href="#" className="social-icon" aria-label="YouTube">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12c0-1.1.9-2 2-2h1.5l1-3h1l-1 3h3l1-3h1l-1 3H14l1-3h1l-1 3h1.5c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-6z"/><circle cx="9" cy="12" r="2"/></svg>
+                </a>
+                <a href="mailto:hello@digitalcoffee.in" className="social-icon" aria-label="Email">
+                  <Mail size={16} />
+                </a>
               </div>
             </div>
 
-            {/* Links Columns */}
+            {/* Links */}
             <div className="footer-links-grid">
-              <div className="link-group">
-                <h4>{t('layout.footerShop', 'Shop')}</h4>
-                <Link to="/store/catalog">{t('layout.allProducts', 'All Products')}</Link>
-                <Link to="/store/collections">{t('layout.collections', 'Collections')}</Link>
-                <Link to="/store/subscription">{t('layout.coffeePlans', 'Coffee Plans')}</Link>
+              <div className="footer-col">
+                <h4>Shop</h4>
+                <Link to="/store/catalog">All Products</Link>
+                <Link to="/store/subscription">Subscriptions</Link>
+                <Link to="/store/collections">Collections</Link>
               </div>
-              <div className="link-group">
-                <h4>{t('layout.footerCompany', 'Company')}</h4>
-                <a href="#">{t('layout.aboutUs', 'About Us')}</a>
-                <a href="#">{t('layout.ourStory', 'Our Story')}</a>
-                <a href="#">{t('layout.careers', 'Careers')}</a>
+              <div className="footer-col">
+                <h4>Company</h4>
+                <Link to="/store/about">About Us</Link>
+                <Link to="/store/contact">Contact</Link>
+                <a href="#">Careers</a>
               </div>
-              <div className="link-group">
-                <h4>{t('layout.footerSupport', 'Support')}</h4>
-                <a href="#">{t('layout.contact', 'Contact')}</a>
-                <a href="#">{t('layout.shipping', 'Shipping')}</a>
-                <a href="#">{t('layout.returns', 'Returns')}</a>
-                <a href="#">{t('layout.faq', 'FAQ')}</a>
+              <div className="footer-col">
+                <h4>Support</h4>
+                <a href="#">Shipping</a>
+                <a href="#">Returns</a>
+                <a href="#">FAQ</a>
+                <Link to="/store/contact">Get Help</Link>
               </div>
-              <div className="link-group">
-                <h4>{t('layout.footerPlatform', 'Platform')}</h4>
-                <Link to="/kiosk">{t('layout.selfOrderKiosk', 'Self-Order Kiosk')}</Link>
-                <Link to="/barista">{t('layout.baristaKDS', 'Barista KDS')}</Link>
-                <Link to="/admin">{t('layout.adminPortal', 'Admin Portal')}</Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Newsletter */}
-          <div className="footer-newsletter">
-            <div className="newsletter-inner section-container">
-              <div className="newsletter-text">
-                <h4>{t('layout.stayInLoop', 'Stay in the loop')}</h4>
-                <p>{t('layout.newsletterDesc', 'Join 12,000+ coffee lovers. New arrivals, offers, and brewing tips.')}</p>
-              </div>
-              <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
-                <input
-                  type="email"
-                  placeholder={t('layout.emailPlaceholder', 'Your email address')}
-                  className="newsletter-input"
-                  aria-label={t('layout.emailAriaLabel', 'Email for newsletter')}
-                />
-                <button type="submit" className="newsletter-btn">
-                  {t('layout.subscribe', 'Subscribe')}
-                  <ArrowRight size={14} />
-                </button>
-              </form>
             </div>
           </div>
         </div>
 
+        {/* Newsletter Strip */}
+        <div className="footer-newsletter-strip">
+          <div className="newsletter-strip-inner footer-container">
+            <div className="newsletter-text">
+              <strong>Stay in the loop</strong>
+              <span>Join 12,000+ coffee lovers. New arrivals, offers, and brewing tips.</span>
+            </div>
+            <form className="newsletter-form-footer" onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="newsletter-input-footer"
+                aria-label="Email for newsletter"
+              />
+              <button type="submit" className="newsletter-btn-footer">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="footer-bottom">
-          <div className="footer-bottom-inner section-container">
-            <p>&copy; {new Date().getFullYear()} Digital Coffee Pvt. Ltd. All rights reserved.</p>
-            <div className="footer-bottom-links">
-              <a href="#">{t('layout.privacy', 'Privacy')}</a>
-              <a href="#">{t('layout.terms', 'Terms')}</a>
-              <a href="#">{t('layout.cookies', 'Cookies')}</a>
+        <div className="footer-bottom-bar">
+          <div className="footer-container footer-bottom-inner">
+            <p>© {new Date().getFullYear()} Digital Coffee Pvt. Ltd. All rights reserved.</p>
+            <div className="footer-legal-links">
+              <a href="#">Privacy</a>
+              <a href="#">Terms</a>
+              <a href="#">Cookies</a>
             </div>
           </div>
         </div>
@@ -335,24 +305,24 @@ const D2CLayout = () => {
 
       {/* ─── Mobile Bottom Navigation ─── */}
       <nav className="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
-        <NavLink to="/store" end className={({ isActive }) => `mob-nav-item ${isActive ? 'active' : ''}`}>
+        <NavLink to="/store" end className={({ isActive }) => `mob-item ${isActive ? 'active' : ''}`} id="mob-nav-home">
           <Home size={20} strokeWidth={2} />
-          <span className="mob-text">{t('layout.navHome', 'Home')}</span>
+          <span>Home</span>
         </NavLink>
-        <NavLink to="/store/catalog" className={({ isActive }) => `mob-nav-item ${isActive ? 'active' : ''}`}>
-          <BookOpen size={20} />
-          <span className="mob-text">{t('layout.navMenu', 'Menu')}</span>
+        <NavLink to="/store/catalog" className={({ isActive }) => `mob-item ${isActive ? 'active' : ''}`} id="mob-nav-shop">
+          <Coffee size={20} strokeWidth={2} />
+          <span>Shop</span>
         </NavLink>
-        <NavLink to="/store/cart" className={({ isActive }) => `mob-nav-item ${isActive ? 'active' : ''}`}>
-          <div className="mob-cart-wrap">
-            <ShoppingBag size={20} />
-            {cartCount > 0 && <span className="mob-badge">{cartCount}</span>}
+        <NavLink to="/store/cart" className={({ isActive }) => `mob-item mob-cart ${isActive ? 'active' : ''}`} id="mob-nav-cart">
+          <div className="mob-cart-icon">
+            <ShoppingBag size={20} strokeWidth={2} />
+            {cartCount > 0 && <span className="mob-cart-badge">{cartCount}</span>}
           </div>
-          <span className="mob-text">{t('layout.navCart', 'Cart')}</span>
+          <span>Cart</span>
         </NavLink>
-        <NavLink to="/store/profile" className={({ isActive }) => `mob-nav-item ${isActive ? 'active' : ''}`}>
-          <User size={20} />
-          <span className="mob-text">{t('layout.navProfile', 'Profile')}</span>
+        <NavLink to="/store/profile" className={({ isActive }) => `mob-item ${isActive ? 'active' : ''}`} id="mob-nav-account">
+          <User size={20} strokeWidth={2} />
+          <span>Account</span>
         </NavLink>
       </nav>
     </div>

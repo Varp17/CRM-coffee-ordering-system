@@ -7,6 +7,7 @@ import AnimatedCounter from '../../../components/Motion/AnimatedCounter';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { customDrinkService } from '../../../services/customDrinks';
 import toast from 'react-hot-toast';
+import { useCompatibility, getCompatibleMilksStatic, isSweetenerCompatibleStatic, isToppingCompatibleStatic } from '../../../utils/compatibility';
 
 const ASSETS = {
   finishedLatte: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=900&auto=format&fit=crop&q=88',
@@ -22,32 +23,34 @@ const INGREDIENTS = {
     { id: 'L', name: 'LARGE', label: '450 ml', price: 40 },
   ],
   bases: [
-    { id: 'espresso', name: 'ESPRESSO', price: 150, color: '#3b1f13', image: ASSETS.icedLatte, temp: '92°C', texture: 'VELVETY', extraction: '25 SEC', aroma: '96 BOLD' },
-    { id: 'cold-brew', name: 'COLD BREW', price: 180, color: '#221007', image: ASSETS.coldBrew, temp: '04°C', texture: 'SMOOTH', extraction: '18 HOURS', aroma: '92 CRISP' },
-    { id: 'matcha', name: 'MATCHA', price: 200, color: '#78945b', image: ASSETS.matcha, temp: '80°C', texture: 'CREAMY', extraction: '3 MINS', aroma: '95 EARTHY' },
+    { id: '50-50', name: '50:50 CONCENTRATE', price: 100, color: '#1f0d04', image: ASSETS.coldBrew, temp: '04°C', texture: 'SMOOTH', extraction: '18 HOURS', aroma: '92 CRISP', ingredientId: 1 },
+    { id: '70-30', name: '70:30 CONCENTRATE', price: 120, color: '#2a1509', image: ASSETS.icedLatte, temp: '04°C', texture: 'FULL', extraction: '18 HOURS', aroma: '94 BALANCED', ingredientId: 2 },
+    { id: 'sif', name: 'SIF CONCENTRATE', price: 130, color: '#3b1f13', image: ASSETS.finishedLatte, temp: '04°C', texture: 'STRONG', extraction: 'SLOW DRIP', aroma: '96 BOLD', ingredientId: 4 },
+    { id: 'cascara', name: 'CASCARA CONCENTRATE', price: 150, color: '#5c3d2e', image: ASSETS.matcha, temp: '04°C', texture: 'LIGHT', extraction: '18 HOURS', aroma: '90 FRUITY', ingredientId: 46 },
+    { id: 'arabica', name: '100% ARABICA', price: 140, color: '#221007', image: ASSETS.coldBrew, temp: '04°C', texture: 'SMOOTH', extraction: '18 HOURS', aroma: '95 CLEAN', ingredientId: 3 },
   ],
   milks: [
-    { id: 'whole', name: 'WHOLE MILK', price: 0, visual: '#fff6e8' },
-    { id: 'oat', name: 'OAT MILK', price: 60, visual: '#f4e4c7' },
-    { id: 'almond', name: 'ALMOND MILK', price: 50, visual: '#f8ead7' },
+    { id: 'dairy', name: 'NANDINI MILK', price: 0, visual: '#fff6e8', ingredientId: 8 },
+    { id: 'condensed', name: 'CONDENSED MILK', price: 20, visual: '#f0e0c1', ingredientId: 15 },
     { id: 'none', name: 'NO MILK', price: 0, visual: 'transparent' },
   ],
   syrups: [
-    { id: 'vanilla', name: 'VANILLA SYRUP', price: 30 },
-    { id: 'caramel', name: 'CARAMEL SYRUP', price: 30 },
-    { id: 'hazelnut', name: 'HAZELNUT SYRUP', price: 40 },
+    { id: 'sugar', name: 'SUGAR SYRUP', price: 15, ingredientId: 12 },
+    { id: 'honey', name: 'HONEY', price: 20, ingredientId: 14 },
+    { id: 'jaggery', name: 'JAGGERY SYRUP', price: 15, ingredientId: 13 },
   ],
   toppings: [
-    { id: 'whipped-cream', name: 'WHIPPED CREAM', price: 25, kind: 'foam' },
-    { id: 'cold-foam', name: 'COLD FOAM', price: 35, kind: 'foam' },
-    { id: 'ice', name: 'ICE', price: 0, kind: 'ice' },
+    { id: 'cinnamon', name: 'CINNAMON POWDER', price: 10, kind: 'powder', ingredientId: 31 },
+    { id: 'whipped-cream', name: 'WHIPPED CREAM', price: 25, kind: 'foam', ingredientId: 27 },
+    { id: 'chocolate-drizzle', name: 'CHOCOLATE DRIZZLE', price: 20, kind: 'drizzle', ingredientId: 21 },
+    { id: 'ice', name: 'ICE', price: 0, kind: 'ice', ingredientId: 45 },
   ],
 };
 
 const defaultSelection = {
   size: 'M',
-  base: 'espresso',
-  milk: 'whole',
+  base: '50-50',
+  milk: 'dairy',
   syrups: [],
   toppings: [],
 };
@@ -55,21 +58,22 @@ const defaultSelection = {
 const getById = (items, id) => items.find((item) => item.id === id);
 
 const getLiquidColor = (baseId, milkId) => {
-  if (baseId === 'espresso') {
-    if (milkId === 'none') return '#3b1f13';
-    if (milkId === 'whole') return '#79503b';
-    if (milkId === 'oat') return '#865e49';
-    return '#8c6754';
-  } else if (baseId === 'cold-brew') {
+  if (baseId === '50-50' || baseId === 'arabica') {
     if (milkId === 'none') return '#1d0b03';
-    if (milkId === 'whole') return '#624131';
-    if (milkId === 'oat') return '#6f4f3e';
-    return '#755545';
+    if (milkId === 'dairy') return '#624131';
+    return '#6f4f3e';
+  } else if (baseId === '70-30') {
+    if (milkId === 'none') return '#2a1509';
+    if (milkId === 'dairy') return '#79503b';
+    return '#8c6754';
+  } else if (baseId === 'sif') {
+    if (milkId === 'none') return '#3b1f13';
+    if (milkId === 'dairy') return '#79503b';
+    return '#8c6754';
   } else {
-    if (milkId === 'none') return '#5f7b44';
-    if (milkId === 'whole') return '#8ca973';
-    if (milkId === 'oat') return '#97b37e';
-    return '#9dbc85';
+    if (milkId === 'none') return '#5c3d2e';
+    if (milkId === 'dairy') return '#8ca973';
+    return '#97b37e';
   }
 };
 
@@ -166,11 +170,10 @@ function DrinkPreview({ selection, total, stage, isAdding, brewStage, mousePos }
       // Fluid viscosity
       let waveAmplitude = 5;
       let waveFrequency = 0.02;
-      if (selection.base === 'cold-brew') {
+      if (selection.base !== 'cascara') {
         waveAmplitude = 3;
-      } else if (selection.base === 'matcha') {
-        waveAmplitude = 7;
-        waveFrequency = 0.03;
+      } else {
+        waveAmplitude = 5;
       }
       if (brewStage === 'pouring') {
         waveAmplitude = 12;
@@ -267,7 +270,7 @@ function DrinkPreview({ selection, total, stage, isAdding, brewStage, mousePos }
       ctx.restore();
 
       // Dynamic steam (Hot vs Cold)
-      const isHot = selection.base !== 'cold-brew';
+      const isHot = false;
       if (isHot) {
         if (Math.random() > 0.7) {
           particles.push({
@@ -299,7 +302,6 @@ function DrinkPreview({ selection, total, stage, isAdding, brewStage, mousePos }
 
   const computedTexture = useMemo(() => {
     if (activeFoamType === 'whipped-cream') return 'VOLUMETRIC PEAK';
-    if (activeFoamType === 'cold-foam') return 'SILKY MICROFOAM';
     return base?.texture || 'NEAT';
   }, [activeFoamType, base]);
 
@@ -346,7 +348,7 @@ function DrinkPreview({ selection, total, stage, isAdding, brewStage, mousePos }
             {hasFoam && hasMilk && (
               <motion.div
                 key={activeFoamType}
-                className={`foam-sculpture ${activeFoamType === 'whipped-cream' ? 'whipped-cream-mesh' : 'cold-foam-mesh'}`}
+                className="foam-sculpture whipped-cream-mesh"
                 initial={{ opacity: 0, scale: 0.8, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8 }}
@@ -485,7 +487,7 @@ function StepPanel({ stage, selection, selectBase, selectMilk, setSelection, tog
         <h3>CHOOSE MILK <span className="category-selection-hint">[REQUIRED]</span></h3>
         <div className="options-chip-list">
           {INGREDIENTS.milks.map((item) => {
-            const disabled = selection.base === 'matcha' && !['oat', 'none'].includes(item.id);
+            const disabled = !isMilkCompatible(selection.base, item.id);
             return (
               <OptionButton
                 key={item.id}
@@ -498,9 +500,6 @@ function StepPanel({ stage, selection, selectBase, selectMilk, setSelection, tog
             );
           })}
         </div>
-        {selection.base === 'matcha' && (
-          <p className="rule-note">Matcha pairs with oat milk by default; dairy options are disabled for this recipe.</p>
-        )}
       </motion.div>
     );
   }
@@ -519,9 +518,12 @@ function StepPanel({ stage, selection, selectBase, selectMilk, setSelection, tog
       <div className="ingredient-category">
         <h3>ADD SYRUPS <span className="category-selection-hint">[OPTIONAL]</span></h3>
         <div className="options-chip-list">
-          {INGREDIENTS.syrups.map((item) => (
-            <OptionButton key={item.id} item={item} active={selection.syrups.includes(item.id)} onClick={() => toggleListItem('syrups', item.id)} icon={Sparkles} />
-          ))}
+          {INGREDIENTS.syrups.map((item) => {
+            const disabled = !isSweetenerCompatible(selection.base, item.id);
+            return (
+              <OptionButton key={item.id} item={item} active={selection.syrups.includes(item.id)} disabled={disabled} onClick={() => toggleListItem('syrups', item.id)} icon={Sparkles} />
+            );
+          })}
         </div>
       </div>
 
@@ -529,7 +531,8 @@ function StepPanel({ stage, selection, selectBase, selectMilk, setSelection, tog
         <h3>ADD TOPPINGS <span className="category-selection-hint">[OPTIONAL]</span></h3>
         <div className="options-chip-list">
           {INGREDIENTS.toppings.map((item) => {
-            const disabled = selection.milk === 'none' && item.kind === 'foam';
+            const sweetener = selection.syrups.length > 0 ? selection.syrups[0] : null;
+            const disabled = !isToppingCompatible(selection.base, selection.milk, sweetener, item.id);
             return (
               <OptionButton
                 key={item.id}
@@ -542,7 +545,6 @@ function StepPanel({ stage, selection, selectBase, selectMilk, setSelection, tog
             );
           })}
         </div>
-        {selection.milk === 'none' && <p className="rule-note">Foam toppings need milk and are unavailable for black drinks.</p>}
       </div>
     </motion.div>
   );
@@ -553,6 +555,7 @@ const CustomDrink = ({ onBack, onAddToCart }) => {
   const [stage, setStage] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
   const [selection, setSelection] = useState(defaultSelection);
+  const [freeRedosUsed, setFreeRedosUsed] = useState(0);
   const { isAuthenticated } = useAuthStore();
   const [importingInfo, setImportingInfo] = useState(null);
   const [isSavingFavorite, setIsSavingFavorite] = useState(false);
@@ -563,6 +566,8 @@ const CustomDrink = ({ onBack, onAddToCart }) => {
   // Camera drift coordinates
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+
+  const { isMilkCompatible, isSweetenerCompatible, isToppingCompatible, getCompatibleMilks } = useCompatibility(selection.base, selection);
 
   useEffect(() => {
     const handleGlobalMouseMove = (e) => {
@@ -600,21 +605,22 @@ const CustomDrink = ({ onBack, onAddToCart }) => {
           if (res && res.ingredients) {
             const recipe = typeof res.ingredients === 'string' ? JSON.parse(res.ingredients) : res.ingredients;
             const newSelection = { ...defaultSelection };
-            if (recipe.some(i => i.ingredient_id === 1)) newSelection.base = 'cold-brew';
-            else if (recipe.some(i => i.ingredient_id === 2)) newSelection.base = 'espresso';
-            if (recipe.some(i => i.ingredient_id === 4)) newSelection.milk = 'whole';
-            else if (recipe.some(i => i.ingredient_id === 5)) newSelection.milk = 'oat';
-            else if (recipe.some(i => i.ingredient_id === 6)) newSelection.milk = 'almond';
+            if (recipe.some(i => i.ingredient_id === 1)) newSelection.base = '50-50';
+            else if (recipe.some(i => i.ingredient_id === 2)) newSelection.base = '70-30';
+            else if (recipe.some(i => i.ingredient_id === 4)) newSelection.base = 'sif';
+            else if (recipe.some(i => i.ingredient_id === 3)) newSelection.base = 'arabica';
+            if (recipe.some(i => i.ingredient_id === 8)) newSelection.milk = 'dairy';
+            else if (recipe.some(i => i.ingredient_id === 15)) newSelection.milk = 'condensed';
             else newSelection.milk = 'none';
             const syrups = [];
-            if (recipe.some(i => i.ingredient_id === 9)) syrups.push('vanilla');
-            if (recipe.some(i => i.ingredient_id === 10)) syrups.push('caramel');
-            if (recipe.some(i => i.ingredient_id === 11)) syrups.push('hazelnut');
+            if (recipe.some(i => i.ingredient_id === 12)) syrups.push('sugar');
+            if (recipe.some(i => i.ingredient_id === 14)) syrups.push('honey');
+            if (recipe.some(i => i.ingredient_id === 13)) syrups.push('jaggery');
             newSelection.syrups = syrups;
             const toppings = [];
-            if (recipe.some(i => i.ingredient_id === 14)) toppings.push('whipped-cream');
-            if (recipe.some(i => i.ingredient_id === 20)) toppings.push('cold-foam');
-            if (recipe.some(i => i.ingredient_id === 17)) toppings.push('ice');
+            if (recipe.some(i => i.ingredient_id === 27)) toppings.push('whipped-cream');
+            if (recipe.some(i => i.ingredient_id === 21)) toppings.push('chocolate-drizzle');
+            if (recipe.some(i => i.ingredient_id === 45)) toppings.push('ice');
             newSelection.toppings = toppings;
             setSelection(newSelection);
             setDrinkName(res.name);
@@ -640,22 +646,21 @@ const CustomDrink = ({ onBack, onAddToCart }) => {
     
     setIsSavingFavorite(true);
     try {
-      const baseProductId = selection.base === 'cold-brew' ? 8 : 9;
+      const baseProductId = selection.base === '50-50' ? 27 : selection.base === '70-30' ? 28 : selection.base === 'sif' ? 29 : selection.base === 'cascara' ? 30 : 31;
       const ingredientsList = [];
-      if (selection.base === 'cold-brew') {
-        ingredientsList.push({ ingredient_id: 1, quantity: 120 });
-      } else {
-        ingredientsList.push({ ingredient_id: 2, quantity: 60 });
-      }
-      if (selection.milk === 'whole') ingredientsList.push({ ingredient_id: 4, quantity: 150 });
-      else if (selection.milk === 'oat') ingredientsList.push({ ingredient_id: 5, quantity: 150 });
-      else if (selection.milk === 'almond') ingredientsList.push({ ingredient_id: 6, quantity: 150 });
-      if (selection.syrups.includes('vanilla')) ingredientsList.push({ ingredient_id: 9, quantity: 15 });
-      if (selection.syrups.includes('caramel')) ingredientsList.push({ ingredient_id: 10, quantity: 15 });
-      if (selection.syrups.includes('hazelnut')) ingredientsList.push({ ingredient_id: 11, quantity: 15 });
-      if (selection.toppings.includes('whipped-cream')) ingredientsList.push({ ingredient_id: 14, quantity: 30 });
-      if (selection.toppings.includes('cold-foam')) ingredientsList.push({ ingredient_id: 20, quantity: 20 });
-      if (selection.toppings.includes('ice')) ingredientsList.push({ ingredient_id: 17, quantity: 5 });
+      if (selection.base === '50-50') ingredientsList.push({ ingredient_id: 1, quantity: 120 });
+      else if (selection.base === '70-30') ingredientsList.push({ ingredient_id: 2, quantity: 120 });
+      else if (selection.base === 'sif') ingredientsList.push({ ingredient_id: 4, quantity: 135 });
+      else if (selection.base === 'cascara') ingredientsList.push({ ingredient_id: 46, quantity: 120 });
+      else ingredientsList.push({ ingredient_id: 3, quantity: 120 });
+      if (selection.milk === 'dairy') ingredientsList.push({ ingredient_id: 8, quantity: 150 });
+      else if (selection.milk === 'condensed') ingredientsList.push({ ingredient_id: 15, quantity: 30 });
+      if (selection.syrups.includes('sugar')) ingredientsList.push({ ingredient_id: 12, quantity: 15 });
+      if (selection.syrups.includes('honey')) ingredientsList.push({ ingredient_id: 14, quantity: 20 });
+      if (selection.syrups.includes('jaggery')) ingredientsList.push({ ingredient_id: 13, quantity: 15 });
+      if (selection.toppings.includes('whipped-cream')) ingredientsList.push({ ingredient_id: 27, quantity: 30 });
+      if (selection.toppings.includes('chocolate-drizzle')) ingredientsList.push({ ingredient_id: 21, quantity: 20 });
+      if (selection.toppings.includes('ice')) ingredientsList.push({ ingredient_id: 45, quantity: 3 });
 
       await customDrinkService.create({
         base_product_id: baseProductId,
@@ -711,17 +716,31 @@ const CustomDrink = ({ onBack, onAddToCart }) => {
   }, [selection]);
 
   const selectBase = (id) => {
-    setSelection((prev) => ({
-      ...prev,
-      base: id,
-      milk: id === 'matcha' && !['oat', 'none'].includes(prev.milk) ? 'oat' : prev.milk,
-    }));
+    setSelection((prev) => {
+      const compatibleMilks = getCompatibleMilksStatic(id);
+      const newMilk = compatibleMilks.includes(prev.milk) ? prev.milk : compatibleMilks[0];
+      const sweetener = prev.syrups.length > 0 ? prev.syrups[0] : null;
+      return {
+        ...prev,
+        base: id,
+        milk: newMilk,
+        syrups: prev.syrups.filter((s) => isSweetenerCompatibleStatic(id, s)),
+        toppings: prev.toppings.filter((t) => isToppingCompatibleStatic(id, newMilk, sweetener, t)),
+      };
+    });
     setStage(1);
     triggerBrewCycle();
   };
 
   const selectMilk = (id) => {
-    setSelection((prev) => ({ ...prev, milk: id, toppings: id === 'none' ? prev.toppings.filter((toppingId) => getById(INGREDIENTS.toppings, toppingId)?.kind !== 'foam') : prev.toppings }));
+    setSelection((prev) => {
+      const sweetener = prev.syrups.length > 0 ? prev.syrups[0] : null;
+      return {
+        ...prev,
+        milk: id,
+        toppings: prev.toppings.filter((toppingId) => isToppingCompatibleStatic(prev.base, id, sweetener, toppingId)),
+      };
+    });
     setStage(2);
     triggerBrewCycle();
   };
@@ -846,35 +865,35 @@ const CustomDrink = ({ onBack, onAddToCart }) => {
         </div>
 
         <div className="build-actions">
-          <button className="step-nav-btn" disabled={stage === 0 || isAdding} onClick={() => setStage((current) => Math.max(0, current - 1))}>PREV</button>
-          {stage < 2 ? (
-            <button className="step-nav-btn primary-step" onClick={() => setStage((current) => Math.min(2, current + 1))}>NEXT</button>
-          ) : (
-            <button 
-              type="button" 
-              className="step-nav-btn" 
-              disabled={isSavingFavorite || !requiredSelectionsMade}
-              onClick={handleSaveFavorite}
-              style={{ color: '#c8a97e' }}
-            >
-              [ SAVE ]
-            </button>
-          )}
-
-          <div className="action-total">
-            <span>TOTAL</span>
-            <strong>{formatCurrency(total)}</strong>
-          </div>
-          
-          <motion.button
-            whileTap={requiredSelectionsMade ? { scale: 0.98 } : {}}
-            className="add-order-btn"
-            disabled={stage < 2 || !requiredSelectionsMade || isAdding}
-            onClick={addToOrder}
-          >
-            {isAdding ? 'ADDING...' : stage < 2 ? 'FINISH STEPS' : 'ADD TO ORDER'}
-          </motion.button>
+          <span>TOTAL</span>
+          <strong>{formatCurrency(total)}</strong>
         </div>
+
+        {!isAdding && requiredSelectionsMade && freeRedosUsed < 1 && (
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            className="discard-btn"
+            onClick={() => {
+              setSelection(defaultSelection);
+              setStage(0);
+              setDrinkName('CUSTOM LAB BREW');
+              setFreeRedosUsed(prev => prev + 1);
+              triggerBrewCycle();
+              toast.success('Drink discarded! You have 1 free redo. Use it wisely. ☕');
+            }}
+          >
+            {freeRedosUsed === 0 ? 'DISCARD & REDO (FREE)' : 'DISCARD & REDO'}
+          </motion.button>
+        )}
+
+        <motion.button
+          whileTap={requiredSelectionsMade ? { scale: 0.98 } : {}}
+          className="add-order-btn"
+          disabled={stage < 2 || !requiredSelectionsMade || isAdding}
+          onClick={addToOrder}
+        >
+          {isAdding ? 'ADDING...' : stage < 2 ? 'FINISH STEPS' : 'ADD TO ORDER'}
+        </motion.button>
       </section>
     </div>
   );

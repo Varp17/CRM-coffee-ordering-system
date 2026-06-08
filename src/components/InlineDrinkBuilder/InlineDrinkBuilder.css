@@ -617,6 +617,20 @@
   cursor: not-allowed;
 }
 
+.tactile-card-chip:disabled,
+.small-tactile-chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.tactile-card-chip.disabled,
+.small-tactile-chip.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Animations */
 @keyframes shineSweep {
   from { left: -50%; }

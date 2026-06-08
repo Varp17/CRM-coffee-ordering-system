@@ -1,100 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import './Home.css';
 
 const Home = ({ onStart, onQrScan }) => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setVideoLoaded(true);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
   const wordEasing = [0.16, 1, 0.3, 1];
 
-  const wordContainerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      }
-    }
-  };
-
-  const wordItemVariants = {
-    hidden: { opacity: 0, y: 40 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 1.2,
-        ease: wordEasing
-      }
-    }
-  };
+  // Safe unicode encoding for: /images/hero/A_rotating_°_showcase  _ _o.mp4
+  const videoSrc = "/images/hero/A_rotating_°_showcase\u00a0\u00a0_\u00a0_o.mp4";
 
   return (
     <div className="kiosk-home">
       {/* Background Media System */}
       <div className="kiosk-bg-video-container">
         <video 
-          className={`kiosk-bg-video ${videoLoaded ? 'loaded' : ''}`}
-          autoPlay 
+          className="kiosk-bg-video active"
+          src={videoSrc}
+          autoPlay
           muted 
           loop 
           playsInline
-          onCanPlayThrough={() => setVideoLoaded(true)}
-        >
-          <source 
-            src="https://assets.mixkit.co/videos/preview/mixkit-slow-motion-of-a-cup-of-freshly-brewed-coffee-34139-large.mp4" 
-            type="video/mp4" 
-          />
-        </video>
+        />
         <div className="kiosk-grain-overlay"></div>
       </div>
 
-      {/* Layered Statistics / Telemetry */}
-      <motion.div 
-        className="kiosk-telemetry-panel"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.8, duration: 1, ease: wordEasing }}
-      >
+      {/* Floating Atmospheric Redesign Elements */}
+      <div className="kiosk-floating-elements">
+        <div className="kiosk-floating-particle gold-particle-1">✦</div>
+        <div className="kiosk-floating-particle gold-particle-2">✦</div>
+        <div className="kiosk-floating-particle gold-particle-3">✦</div>
+        <div className="kiosk-floating-particle gold-leaf-1">🍂</div>
+        <div className="kiosk-floating-particle gold-leaf-2">🍃</div>
+        <div className="kiosk-glow-orb target-teal"></div>
+        <div className="kiosk-glow-orb target-brown"></div>
+      </div>
+
+      {/* Luxury Telemetry Panel */}
+      <div className="kiosk-telemetry-panel">
         <div className="telemetry-item">
-          <span>EXTRACTION CONSISTENCY</span>
-          <span className="telemetry-val">99.4% // 9.2 BAR</span>
+          <span className="telemetry-label">EXTRACTION</span>
+          <span className="telemetry-val">COLD BREW 18H</span>
         </div>
         <div className="telemetry-item">
-          <span>WATER COMPOSITION</span>
-          <span className="telemetry-val">0.02 PPM // DEIONIZED</span>
+          <span className="telemetry-label">BEAN VARIETY</span>
+          <span className="telemetry-val">100% ARABICA</span>
         </div>
         <div className="telemetry-item">
-          <span>ESTIMATED QUEUE DELAY</span>
-          <span className="telemetry-val">~4 MIN WAIT TIME</span>
+          <span className="telemetry-label">SERVE TEMP</span>
+          <span className="telemetry-val">2°C CHILLED</span>
         </div>
-      </motion.div>
+        <div className="telemetry-item">
+          <span className="telemetry-label">SYSTEM STATE</span>
+          <span className="telemetry-val">SECURE / ACTIVE</span>
+        </div>
+      </div>
+
+      {/* Subtle Bottom Right Watermark */}
+      <div className="kiosk-watermark">
+        <span className="kiosk-watermark-dot"></span>
+        <span>ESPRESSO RESERVE • SYSTEM STABLE</span>
+      </div>
 
       <div className="kiosk-content">
         {/* Editorial Composition */}
         <motion.div 
-          className="editorial-text-wrapper"
-          variants={wordContainerVariants}
-          initial="hidden"
-          animate="show"
+          className="kiosk-editorial-header"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: wordEasing }}
         >
-          <motion.span className="editorial-word" variants={wordItemVariants}>
-            brew
-          </motion.span>
-          <motion.span className="editorial-word" variants={wordItemVariants}>
-            beyond
-          </motion.span>
-          <motion.span className="editorial-word" variants={wordItemVariants}>
-            ordinary.
-          </motion.span>
+          <span className="kiosk-eyebrow">Vasify Specialty Coffee</span>
+          <h1 className="kiosk-main-title">
+            Chilled Concentrate.<br />
+            <span className="kiosk-title-highlight">Perfected Daily.</span>
+          </h1>
+          <p className="kiosk-main-subtitle">
+            Experience premium cold brews crafted with 100% single-origin Arabica beans. Custom-tailor your blend or order instantly.
+          </p>
         </motion.div>
 
         {/* Dynamic CTA */}
@@ -105,7 +86,7 @@ const Home = ({ onStart, onQrScan }) => {
             whileTap={{ scale: 0.98 }}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.8, ease: wordEasing }}
+            transition={{ delay: 0.8, duration: 0.8, ease: wordEasing }}
           >
             <span>TAP TO START</span>
           </motion.button>
@@ -116,13 +97,13 @@ const Home = ({ onStart, onQrScan }) => {
             whileTap={{ scale: 0.98 }}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.15, duration: 0.8, ease: wordEasing }}
+            transition={{ delay: 0.95, duration: 0.8, ease: wordEasing }}
           >
-            <span>[ORDER VIA SMARTPHONE]</span>
+            <span>Scan QR to Order</span>
           </motion.button>
 
           <span className="brand-footer-kiosk">
-            SECURE TOUCH TERMINAL OPERATIONAL SYSTEM
+            TOOF Kiosk
           </span>
         </div>
       </div>

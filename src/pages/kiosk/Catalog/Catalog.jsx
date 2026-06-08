@@ -6,6 +6,8 @@ import { unwrapList } from '../../../utils/apiResponse';
 import { formatCurrency } from '../../../utils/formatters';
 import OrderCardSkeleton from '../../../components/skeletons/OrderCardSkeleton';
 import ProductMedia from '../../../components/ProductMedia/ProductMedia';
+import { getProductVideo } from '../../../constants/videoMap';
+
 
 const Catalog = ({ onBack, onLogin, onCreateCustom, onCheckout, cart, setCart }) => {
   const [products, setProducts] = useState([]);
@@ -45,7 +47,12 @@ const Catalog = ({ onBack, onLogin, onCreateCustom, onCheckout, cart, setCart })
       });
 
   const addToCart = (product) => {
-    setCart([...cart, { ...product, name: product.title || product.name }]);
+    const itemPrice = parseFloat(product.price || product.base_price || 0);
+    setCart([...cart, { 
+      ...product, 
+      name: product.title || product.name,
+      price: itemPrice
+    }]);
     setRecentlyAdded(product.id);
     setTimeout(() => setRecentlyAdded(null), 600);
   };
@@ -129,9 +136,12 @@ const Catalog = ({ onBack, onLogin, onCreateCustom, onCheckout, cart, setCart })
               >
                 <ProductMedia 
                   imageUrl={product.image_url || product.image || product.imageUrl}
+                  videoUrl={getProductVideo(product)}
                   productName={product.title || product.name}
-                  category={typeof product.category === 'object' ? product.category.name : product.category}
                   className="product-image"
+                  autoPlay={true}
+                  showPlayIcon={false}
+                  aspectRatio="16/10"
                 />
                 <div className="product-details">
                   <h3>{product.title || product.name}</h3>

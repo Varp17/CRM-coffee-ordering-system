@@ -46,9 +46,11 @@ export const useAuthStore = create((set) => ({
   sendOtp: async (mobile) => {
     set({ isLoading: true, error: null });
     try {
-      await authService.sendOtp(mobile);
+      const res = await authService.sendOtp(mobile);
       set({ isLoading: false });
-      return { success: true };
+      const payload = unwrapObject(res, {});
+      const otp = payload.otp || res.otp || null;
+      return { success: true, otp };
     } catch (err) {
       set({ error: err.message, isLoading: false });
       return { success: false, error: err.message };

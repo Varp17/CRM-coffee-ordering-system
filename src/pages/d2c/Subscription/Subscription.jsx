@@ -77,10 +77,10 @@ const Subscription = () => {
     <div className="subscription-page animate-fade-in container">
       {/* Hero Header */}
       <header className="subscription-hero">
-        <span className="badge-promo text-gradient">{t('subscription.heroBadge', '🌟 Fresh Coffee Automated')}</span>
-        <h1 className="hero-title">{t('subscription.heroTitle', 'Specialty Coffee Subscriptions')}</h1>
+        <span className="badge-promo text-gradient">{t('subscription.heroBadge', 'Subscribe & Save')}</span>
+        <h1 className="hero-title">{t('subscription.heroTitle', 'Coffee, Delivered Weekly')}</h1>
         <p className="hero-desc">
-          {t('subscription.heroDesc', 'Never run out of caffeine. Get our micro-batch concentrates, cold brew bottles, or single-origin beans roasted and shipped automatically to your doorstep.')}
+          {t('subscription.heroDesc', 'Choose a plan or build your own. Pause anytime. Up to 15% off.')}
         </p>
 
         {/* Tab Toggle */}
@@ -89,13 +89,13 @@ const Subscription = () => {
             className={`sub-tab-btn ${activeTab === 'plans' ? 'active' : ''}`}
             onClick={() => { setActiveTab('plans'); setSuccessPlan(null); }}
           >
-            {t('subscription.tabCurated', 'Curated Plans 📅')}
+            {t('subscription.tabCurated', 'Plans')}
           </button>
           <button
             className={`sub-tab-btn ${activeTab === 'builder' ? 'active' : ''}`}
             onClick={() => { setActiveTab('builder'); setSuccessPlan(null); }}
           >
-            {t('subscription.tabBuilder', 'Custom Plan Builder 🛠️')}
+            {t('subscription.tabBuilder', 'Custom Plan')}
           </button>
         </div>
       </header>

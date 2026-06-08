@@ -39,6 +39,13 @@
   border-color: var(--color-primary);
 }
 
+.custom-btn.disabled,
+.custom-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .custom-modal-footer-flex {
   display: flex;
   justify-content: space-between;

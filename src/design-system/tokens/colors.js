@@ -1,44 +1,100 @@
+// ============================================
+// DIGITAL COFFEE — Brand Color Design Tokens
+// Espresso × Cream × Caramel × Gold Palette
+// ============================================
+
 export const colors = {
-  primary: {
-    DEFAULT: 'hsl(215, 52%, 24%)', // Deep Coffee Slate Blue
-    light: 'hsl(215, 48%, 34%)',
-    dark: 'hsl(215, 60%, 14%)',
-    foreground: 'hsl(0, 0%, 100%)',
+  // ── Primary Brand: Espresso ──
+  espresso: {
+    DEFAULT: '#2C1A0E',   // Deep espresso — primary brand color
+    mid:     '#4A2E1A',   // CTA buttons, hover
+    light:   '#6B4226',   // Lighter espresso for text
+    faint:   'rgba(44, 26, 14, 0.06)',
+    glow:    'rgba(44, 26, 14, 0.12)',
+    foreground: '#FFFFFF',
   },
-  accent: {
-    DEFAULT: 'hsl(20, 82%, 58%)', // Warm Caramel Honey Accent
-    light: 'hsl(20, 85%, 68%)',
-    dark: 'hsl(20, 90%, 48%)',
-    foreground: 'hsl(0, 0%, 100%)',
+
+  // ── Accent: Caramel ──
+  caramel: {
+    DEFAULT: '#C8853E',   // Warm caramel accent
+    light:   '#E8A86A',   // Light caramel hover
+    dark:    '#A0692A',   // Dark caramel
+    faint:   'rgba(200, 133, 62, 0.10)',
+    glow:    'rgba(200, 133, 62, 0.20)',
+    foreground: '#FFFFFF',
   },
+
+  // ── Gold: Premium highlights ──
+  gold: {
+    DEFAULT: '#B8933A',
+    light:   '#D4AE5C',
+  },
+
+  // ── Background: Cream ──
+  cream: {
+    DEFAULT: '#FAF6F0',   // Page background
+    dark:    '#F0E8DB',   // Section alternate
+    deeper:  '#E5D9CA',   // Hover states
+    border:  '#E2D4C4',   // Borders, dividers
+  },
+
+  // ── Dark: Footer & dark sections ──
+  dark: {
+    DEFAULT: '#1A0E08',
+    mid:     '#231711',
+    surface: '#2D1E16',
+  },
+
+  // ── Neutrals ──
+  neutral: {
+    50:  '#FAF6F0',
+    100: '#F0E8DB',
+    200: '#E5D9CA',
+    300: '#D4C4B0',
+    400: '#B8A090',
+    500: '#9B8070',
+    600: '#7A6050',
+    700: '#6B4C35',
+    800: '#4A2E1A',
+    900: '#2C1A0E',
+  },
+
+  // ── Status ──
   success: {
-    DEFAULT: 'hsl(146, 64%, 36%)', // Soft Emerald Green
-    light: 'hsl(146, 60%, 46%)',
-    dark: 'hsl(146, 70%, 26%)',
-    foreground: 'hsl(0, 0%, 100%)',
-  },
-  danger: {
-    DEFAULT: 'hsl(354, 76%, 59%)', // Muted Coral Red
-    light: 'hsl(354, 80%, 69%)',
-    dark: 'hsl(354, 80%, 49%)',
-    foreground: 'hsl(0, 0%, 100%)',
+    DEFAULT: '#16A34A',
+    light:   '#dcfce7',
+    foreground: '#FFFFFF',
   },
   warning: {
-    DEFAULT: 'hsl(41, 88%, 51%)', // Warm Mustard Amber
-    light: 'hsl(41, 90%, 61%)',
-    dark: 'hsl(41, 90%, 41%)',
-    foreground: 'hsl(215, 52%, 24%)',
+    DEFAULT: '#D97706',
+    light:   '#fef3c7',
+    foreground: '#FFFFFF',
   },
-  neutral: {
-    50: 'hsl(210, 20%, 98%)',
-    100: 'hsl(210, 20%, 96%)',
-    200: 'hsl(210, 20%, 90%)',
-    300: 'hsl(210, 20%, 80%)',
-    400: 'hsl(210, 20%, 65%)',
-    500: 'hsl(210, 20%, 50%)',
-    600: 'hsl(210, 20%, 40%)',
-    700: 'hsl(210, 20%, 30%)',
-    800: 'hsl(210, 20%, 15%)',
-    900: 'hsl(210, 20%, 10%)',
-  }
+  danger: {
+    DEFAULT: '#DC2626',
+    light:   '#fee2e2',
+    foreground: '#FFFFFF',
+  },
+  info: {
+    DEFAULT: '#2563EB',
+    light:   '#dbeafe',
+    foreground: '#FFFFFF',
+  },
+
+  // ── Legacy aliases (backward compat with existing components) ──
+  primary: {
+    DEFAULT: '#2C1A0E',
+    hover:   '#4A2E1A',
+    light:   'rgba(44, 26, 14, 0.06)',
+    glow:    'rgba(44, 26, 14, 0.12)',
+    foreground: '#FFFFFF',
+  },
+  accent: {
+    DEFAULT: '#C8853E',
+    light:   '#E8A86A',
+    dark:    '#A0692A',
+    foreground: '#FFFFFF',
+  },
 };
+
+export default colors;

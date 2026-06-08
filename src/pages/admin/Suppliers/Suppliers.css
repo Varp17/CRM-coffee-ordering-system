@@ -1,0 +1,209 @@
+.suppliers-page {
+  padding: 24px;
+}
+
+.suppliers-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.suppliers-page .page-header-left h2 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  color: var(--color-secondary);
+}
+
+.suppliers-page .page-subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.suppliers-page .page-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.suppliers-page .filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.suppliers-page .search-wrapper {
+  flex: 1;
+  max-width: 400px;
+}
+
+.suppliers-page .search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.suppliers-page .search-input:focus {
+  border-color: var(--color-primary);
+}
+
+.suppliers-page .filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  outline: none;
+  min-width: 180px;
+}
+
+.suppliers-page .data-table-container {
+  background: var(--color-surface);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.suppliers-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.suppliers-page .modal-content {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+.suppliers-page .modal-content.modal-wide {
+  max-width: 800px;
+}
+
+.suppliers-page .modal-content h3 {
+  margin: 0 0 20px;
+  font-size: 1.15rem;
+  color: var(--color-secondary);
+}
+
+.suppliers-page .modal-hint {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: -12px 0 16px;
+}
+
+.suppliers-page .modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.suppliers-page .modal-header-row h3 {
+  margin: 0;
+}
+
+.suppliers-page .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.suppliers-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.suppliers-page .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.suppliers-page .form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+}
+
+.suppliers-page .form-group input,
+.suppliers-page .form-group select,
+.suppliers-page .form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-bg);
+  color: var(--color-secondary);
+  outline: none;
+  font-family: inherit;
+}
+
+.suppliers-page .form-group input:focus,
+.suppliers-page .form-group select:focus,
+.suppliers-page .form-group textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.suppliers-page .checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.suppliers-page .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.suppliers-page .status-badge {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.suppliers-page .status-badge.active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.suppliers-page .status-badge.suspended {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.suppliers-page .status-badge.inactive {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.suppliers-page .empty-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-muted);
+}

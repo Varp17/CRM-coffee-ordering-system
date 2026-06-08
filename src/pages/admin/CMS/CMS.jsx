@@ -6,8 +6,10 @@ import { productService } from '../../../services/products';
 import { formatCurrency } from '../../../utils/formatters';
 import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
+import Notifications from '../Notifications/Notifications';
 
 const CMS = () => {
+  const [activeTab, setActiveTab] = useState('campaigns');
   const [bannersList, setBannersList] = useState([]);
   const [productsList, setProductsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,163 +135,187 @@ const CMS = () => {
 
   return (
     <div className="cms-page animate-fade-in">
-      <div className="cms-header">
-        <div>
-          <h1 className="cms-title">Storefront <span className="text-gradient">CMS</span></h1>
-          <p className="cms-subtitle">Manage hero banners, SEO metadata, and featured content</p>
-        </div>
-        <Button variant="primary" onClick={() => toast.success('Publishing changes to edge network...')}>
-          🚀 Publish Live
-        </Button>
+      {/* Tab Navigation */}
+      <div className="settings-tabs" style={{ marginBottom: '16px' }}>
+        <button
+          className={`settings-tab ${activeTab === 'campaigns' ? 'active' : ''}`}
+          onClick={() => setActiveTab('campaigns')}
+          id="marketing-tab-campaigns"
+        >
+          Campaigns & SEO
+        </button>
+        <button
+          className={`settings-tab ${activeTab === 'notifications' ? 'active' : ''}`}
+          onClick={() => setActiveTab('notifications')}
+          id="marketing-tab-notifications"
+        >
+          Notifications
+        </button>
       </div>
 
-      <div className="cms-grid">
-        {/* Banner Management */}
-        <section className="cms-section span-2">
-          <div className="section-header">
-            <h2 className="section-title">Hero & Promo Banners</h2>
-            <Button variant="outline" size="small" onClick={openAddBanner}>+ Create Banner</Button>
+      {activeTab === 'campaigns' && (
+        <>
+          <div className="cms-header">
+            <div>
+              <h1 className="cms-title">Storefront <span className="text-gradient">CMS</span></h1>
+              <p className="cms-subtitle">Manage hero banners, SEO metadata, and featured content</p>
+            </div>
+            <Button variant="primary" onClick={() => toast.success('Publishing changes to edge network...')}>
+              🚀 Publish Live
+            </Button>
           </div>
-          <div className="cms-table-container ">
-            <table className="cms-table">
-              <thead>
-                <tr>
-                  <th>Content</th>
-                  <th>Position</th>
-                  <th>Call to Action</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bannersList.length === 0 ? (
-                  <tr><td colSpan="5" className="empty-row">No banners configured.</td></tr>
-                ) : (
-                  bannersList.map(banner => {
-                    const isActive = banner.is_active === 1 || banner.is_active === true;
-                    return (
-                      <tr key={banner.uuid || banner.id}>
-                        <td>
-                          <div className="banner-content-cell">
-                            <strong>{banner.title}</strong>
-                            <span>{banner.subtitle}</span>
-                          </div>
-                        </td>
-                        <td><span className="cms-tag">{banner.position}</span></td>
-                        <td>
-                          {banner.cta_text ? (
-                            <div className="cta-preview">
-                              <span className="cta-btn">{banner.cta_text}</span>
-                              <span className="cta-link">{banner.cta_link}</span>
-                            </div>
-                          ) : (
-                            <span className="cms-tag-muted">None</span>
-                          )}
-                        </td>
-                        <td>
-                          <span className={`status-chip ${isActive ? 'active' : 'inactive'}`}>
-                            {isActive ? 'Active' : 'Draft'}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="actions-cell">
-                            <button className="action-btn-sm outline" onClick={() => toggleBanner(banner)}>
-                              {isActive ? 'Deactivate' : 'Activate'}
-                            </button>
-                            <button className="action-btn-sm outline" onClick={() => openEditBanner(banner)}>✏️</button>
-                            <button className="action-btn-sm outline danger" onClick={() => handleBannerDelete(banner.uuid || banner.id)}>🗑️</button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
 
-        {/* Global SEO Editor */}
-        <section className="cms-section">
-          <div className="section-header">
-            <h2 className="section-title">Global SEO</h2>
-          </div>
-          <form className="seo-form " onSubmit={handleSeoSave}>
-            <div className="form-group">
-              <label>Meta Title</label>
-              <input 
-                type="text" 
-                value={seoForm.title} 
-                onChange={e => setSeoForm({...seoForm, title: e.target.value})} 
-                required 
-              />
-              <span className="char-count">{seoForm.title.length} / 60</span>
-            </div>
-            <div className="form-group">
-              <label>Meta Description</label>
-              <textarea 
-                rows="4" 
-                value={seoForm.description} 
-                onChange={e => setSeoForm({...seoForm, description: e.target.value})}
-                required
-              ></textarea>
-              <span className="char-count">{seoForm.description.length} / 160</span>
-            </div>
-            <div className="form-group">
-              <label>Keywords (comma separated)</label>
-              <input 
-                type="text" 
-                value={seoForm.keywords} 
-                onChange={e => setSeoForm({...seoForm, keywords: e.target.value})} 
-              />
-            </div>
-            <Button variant="primary" type="submit" style={{ width: '100%' }}>Update SEO Data</Button>
-          </form>
-        </section>
+          <div className="cms-grid">
+            {/* Banner Management */}
+            <section className="cms-section span-2">
+              <div className="section-header">
+                <h2 className="section-title">Hero & Promo Banners</h2>
+                <Button variant="outline" size="small" onClick={openAddBanner}>+ Create Banner</Button>
+              </div>
+              <div className="cms-table-container ">
+                <table className="cms-table">
+                  <thead>
+                    <tr>
+                      <th>Content</th>
+                      <th>Position</th>
+                      <th>Call to Action</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bannersList.length === 0 ? (
+                      <tr><td colSpan="5" className="empty-row">No banners configured.</td></tr>
+                    ) : (
+                      bannersList.map(banner => {
+                        const isActive = banner.is_active === 1 || banner.is_active === true;
+                        return (
+                          <tr key={banner.uuid || banner.id}>
+                            <td>
+                              <div className="banner-content-cell">
+                                <strong>{banner.title}</strong>
+                                <span>{banner.subtitle}</span>
+                              </div>
+                            </td>
+                            <td><span className="cms-tag">{banner.position}</span></td>
+                            <td>
+                              {banner.cta_text ? (
+                                <div className="cta-preview">
+                                  <span className="cta-btn">{banner.cta_text}</span>
+                                  <span className="cta-link">{banner.cta_link}</span>
+                                </div>
+                              ) : (
+                                <span className="cms-tag-muted">None</span>
+                              )}
+                            </td>
+                            <td>
+                              <span className={`status-chip ${isActive ? 'active' : 'inactive'}`}>
+                                {isActive ? 'Active' : 'Draft'}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="actions-cell">
+                                <button className="action-btn-sm outline" onClick={() => toggleBanner(banner)}>
+                                  {isActive ? 'Deactivate' : 'Activate'}
+                                </button>
+                                <button className="action-btn-sm outline" onClick={() => openEditBanner(banner)}>✏️</button>
+                                <button className="action-btn-sm outline danger" onClick={() => handleBannerDelete(banner.uuid || banner.id)}>🗑️</button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-        {/* Featured Products (Read-Only Preview) */}
-        <section className="cms-section span-3">
-          <div className="section-header">
-            <h2 className="section-title">Catalog Preview (Manage in Menu Module)</h2>
+            {/* Global SEO Editor */}
+            <section className="cms-section">
+              <div className="section-header">
+                <h2 className="section-title">Global SEO</h2>
+              </div>
+              <form className="seo-form " onSubmit={handleSeoSave}>
+                <div className="form-group">
+                  <label>Meta Title</label>
+                  <input 
+                    type="text" 
+                    value={seoForm.title} 
+                    onChange={e => setSeoForm({...seoForm, title: e.target.value})} 
+                    required 
+                  />
+                  <span className="char-count">{seoForm.title.length} / 60</span>
+                </div>
+                <div className="form-group">
+                  <label>Meta Description</label>
+                  <textarea 
+                    rows="4" 
+                    value={seoForm.description} 
+                    onChange={e => setSeoForm({...seoForm, description: e.target.value})}
+                    required
+                  ></textarea>
+                  <span className="char-count">{seoForm.description.length} / 160</span>
+                </div>
+                <div className="form-group">
+                  <label>Keywords (comma separated)</label>
+                  <input 
+                    type="text" 
+                    value={seoForm.keywords} 
+                    onChange={e => setSeoForm({...seoForm, keywords: e.target.value})} 
+                  />
+                </div>
+                <Button variant="primary" type="submit" style={{ width: '100%' }}>Update SEO Data</Button>
+              </form>
+            </section>
+
+            {/* Featured Products (Read-Only Preview) */}
+            <section className="cms-section span-3">
+              <div className="section-header">
+                <h2 className="section-title">Catalog Preview (Manage in Menu Module)</h2>
+              </div>
+              <div className="cms-table-container ">
+                <table className="cms-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Base Price</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productsList.length === 0 ? (
+                      <tr><td colSpan="4" className="empty-row">No products found.</td></tr>
+                    ) : (
+                      productsList.slice(0, 5).map(product => {
+                        const isActive = product.is_active === 1 || product.is_active === true;
+                        return (
+                          <tr key={product.id}>
+                            <td><strong>{product.name}</strong></td>
+                            <td><span className="cms-tag">{product.category_name || 'Coffee'}</span></td>
+                            <td>{formatCurrency(product.base_price || product.basePrice)}</td>
+                            <td>
+                              <span className={`status-chip ${isActive ? 'active' : 'inactive'}`}>
+                                {isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           </div>
-          <div className="cms-table-container ">
-            <table className="cms-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Category</th>
-                  <th>Base Price</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productsList.length === 0 ? (
-                  <tr><td colSpan="4" className="empty-row">No products found.</td></tr>
-                ) : (
-                  productsList.slice(0, 5).map(product => {
-                    const isActive = product.is_active === 1 || product.is_active === true;
-                    return (
-                      <tr key={product.id}>
-                        <td><strong>{product.name}</strong></td>
-                        <td><span className="cms-tag">{product.category_name || 'Coffee'}</span></td>
-                        <td>{formatCurrency(product.base_price || product.basePrice)}</td>
-                        <td>
-                          <span className={`status-chip ${isActive ? 'active' : 'inactive'}`}>
-                            {isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
+        </>
+      )}
+
+      {activeTab === 'notifications' && <Notifications />}
 
       {/* Banner Modal */}
-      {showBannerModal && (
+      {showBannerModal && activeTab === 'campaigns' && (
         <div className="modal-overlay" onClick={() => setShowBannerModal(false)}>
           <div className="modal-content cms-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">

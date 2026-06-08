@@ -12,34 +12,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   background: #ffffff;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 1px solid #EAEAEA;
+  box-shadow: none;
 }
 
 .ingredients-search-input {
   background: transparent;
   border: none;
-  color: #1a1a1a;
+  color: #111827;
   outline: none;
   width: 100%;
-  font-size: 0.82rem;
+  font-size: 14px;
 }
 
 .ingredients-search-input::placeholder {
-  color: #bbb;
+  color: #9CA3AF;
 }
 
 .ingredients-table th {
-  font-family: 'SF Mono', monospace;
-  text-transform: uppercase;
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  color: #999;
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 14px;
   font-weight: 500;
+  color: #6B7280;
+  border-bottom: 1px solid #EAEAEA;
+  background: #FAFAFA;
+  white-space: nowrap;
 }
 
 .ingredient-name-cell {
@@ -124,4 +126,30 @@
 
 .action-btn-sm.danger:hover {
   background: rgba(196, 64, 64, 0.06);
+}
+
+/* ── Raw Material Mapping Modal ── */
+.wide-modal {
+  max-width: 800px;
+}
+
+.rm-mappings-section {
+  padding: 20px 24px;
+}
+
+.rm-table select,
+.rm-table input[type="number"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  background: #fafafa;
+}
+
+.rm-table select:focus,
+.rm-table input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: #fff;
 }

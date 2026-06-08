@@ -1,0 +1,422 @@
+.recipe-builder-page {
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-builder-layout {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+  margin-top: 20px;
+}
+
+/* Left Pane */
+.rb-left-pane {
+  width: 280px;
+  min-width: 280px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rb-search-wrapper {
+  position: relative;
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.rb-search-icon {
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary, #94a3b8);
+}
+
+.rb-search-input {
+  width: 100%;
+  padding: 8px 8px 8px 32px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--color-bg, #f8fafc);
+  color: var(--color-text, #1e293b);
+  outline: none;
+}
+
+.rb-search-input:focus {
+  border-color: var(--color-primary, #6b46c1);
+}
+
+.rb-recipes-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.rb-recipe-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text, #1e293b);
+  transition: background 0.15s;
+}
+
+.rb-recipe-item:hover {
+  background: var(--color-bg-hover, #f1f5f9);
+}
+
+.rb-recipe-item.active {
+  background: var(--color-primary-bg, #ede9fe);
+  border-left: 3px solid var(--color-primary, #6b46c1);
+}
+
+.rb-item-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.rb-item-code {
+  font-size: 11px;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-family: monospace;
+}
+
+.rb-item-cost {
+  font-size: 12px;
+  color: var(--color-text-secondary, #64748b);
+  margin-top: 2px;
+}
+
+/* Main Pane */
+.rb-main-pane {
+  flex: 1;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-size: 14px;
+}
+
+/* Detail Header */
+.rb-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rb-detail-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.rb-recipe-code {
+  font-size: 12px;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-family: monospace;
+  margin-left: 8px;
+}
+
+.rb-linked-product {
+  font-size: 12px;
+  color: var(--color-primary, #6b46c1);
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+/* Tabs */
+.rb-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--color-bg, #f8fafc);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.rb-tab {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #64748b);
+  transition: all 0.15s;
+}
+
+.rb-tab.active {
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1e293b);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Detail Body */
+.rb-detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* Ingredients Detail */
+.rb-detail-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.rb-ing-count {
+  font-size: 13px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.rb-detail-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.rb-btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  background: var(--color-surface, #fff);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text, #1e293b);
+  transition: all 0.15s;
+}
+
+.rb-btn-sm:hover {
+  background: var(--color-bg-hover, #f1f5f9);
+}
+
+.rb-btn-sm.primary {
+  background: var(--color-primary, #6b46c1);
+  color: #fff;
+  border-color: var(--color-primary, #6b46c1);
+}
+
+.rb-btn-sm.primary:hover {
+  background: var(--color-primary-dark, #553c9a);
+}
+
+.rb-btn-sm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Add ingredient form */
+.rb-add-ing-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: var(--color-bg, #f8fafc);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.rb-input-sm {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1e293b);
+  outline: none;
+  flex: 1;
+  min-width: 80px;
+}
+
+.rb-input-sm:focus {
+  border-color: var(--color-primary, #6b46c1);
+}
+
+.rb-input-narrow {
+  max-width: 80px;
+  flex: 0 0 auto;
+}
+
+/* Ingredients Table */
+.rb-ing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rb-ing-table th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--color-border, #e2e8f0);
+  font-weight: 600;
+  color: var(--color-text-secondary, #64748b);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rb-ing-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-light, #f1f5f9);
+}
+
+.rb-ing-table tbody tr:hover {
+  background: var(--color-bg-hover, #f8fafc);
+}
+
+.rb-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-danger, #ef4444);
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.rb-remove-btn:hover {
+  opacity: 1;
+  background: var(--color-danger-bg, #fef2f2);
+}
+
+/* Costing Summary */
+.rb-costing-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.rb-cost-card {
+  padding: 16px;
+  background: var(--color-bg, #f8fafc);
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.rb-cost-card.profit {
+  border-color: var(--color-success, #22c55e);
+}
+
+.rb-cost-card.margin {
+  border-color: var(--color-primary, #6b46c1);
+}
+
+.rb-cost-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-tertiary, #94a3b8);
+  margin-bottom: 4px;
+}
+
+.rb-cost-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text, #1e293b);
+}
+
+.rb-cost-card.profit .rb-cost-value {
+  color: var(--color-success, #22c55e);
+}
+
+.rb-cost-card.margin .rb-cost-value {
+  color: var(--color-primary, #6b46c1);
+}
+
+.rb-costing-detail,
+.rb-costing-raw {
+  margin-top: 20px;
+}
+
+.rb-costing-detail h4,
+.rb-costing-raw h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.rb-costing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rb-costing-table th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--color-border, #e2e8f0);
+  font-weight: 600;
+  color: var(--color-text-secondary, #64748b);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rb-costing-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-light, #f1f5f9);
+}
+
+.rb-costing-table tfoot td {
+  border-top: 2px solid var(--color-border, #e2e8f0);
+  border-bottom: none;
+  padding-top: 10px;
+}
+
+/* Shared */
+.rb-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  justify-content: center;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-size: 13px;
+}
+
+.rb-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-size: 13px;
+}

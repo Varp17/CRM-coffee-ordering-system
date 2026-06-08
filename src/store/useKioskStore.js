@@ -18,12 +18,12 @@ export const useKioskStore = create((set, get) => ({
     set({
       activeCustomization: {
         menuItem,
-        base: 'Espresso',
-        milk: 'Whole Milk',
+        base: '50:50 Concentrate',
+        milk: 'Dairy Milk',
         syrup: 'None',
         topping: 'None',
         size: 'Medium',
-        temperature: 'Hot',
+        temperature: 'Iced',
         sweetness: 'Regular',
         ice: 'Regular',
         quantity: 1,
@@ -47,7 +47,7 @@ export const useKioskStore = create((set, get) => ({
       if (updated.size === 'Medium') added += 30;
       if (updated.size === 'Large') added += 60;
 
-      if (updated.milk && updated.milk !== 'Whole Milk') added += 50; // Oat, Almond cost extra
+      if (updated.milk && updated.milk !== 'Dairy Milk') added += 50; // Non-dairy options cost extra
       if (updated.syrup && updated.syrup !== 'None') added += 30;
       if (updated.topping && updated.topping !== 'None') added += 15;
 

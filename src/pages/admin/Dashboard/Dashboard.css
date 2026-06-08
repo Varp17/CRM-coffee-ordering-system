@@ -1,243 +1,413 @@
-/* ═══════════════════════════════════════════════════════════════
-   White-Cube Gallery — Dashboard View
-   ═══════════════════════════════════════════════════════════════ */
+/* ============================================================
+   DASHBOARD — Zenith Style Redesign
+   ============================================================ */
 
 .dashboard-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100%;
+  padding: 8px 0;
+}
+
+/* ── Page Header ── */
+.db-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.db-page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.db-page-sub {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 4px 0 0;
+}
+
+.db-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.db-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  white-space: nowrap;
+}
+
+.db-action-btn.ghost {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  color: #374151;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.db-action-btn.primary {
+  background: #111827;
+  color: #FFFFFF;
+}
+
+/* ── KPI Cards: 4 Metrics ── */
+.db-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.zenith-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #F3F4F6;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.zenith-kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 12px;
+}
+
+.zenith-kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zenith-kpi-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6B7280;
+}
+
+.zenith-kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.zenith-kpi-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.zenith-kpi-trend.positive { color: #10B981; }
+.zenith-kpi-trend.negative { color: #EF4444; }
+.zenith-kpi-trend.neutral  { color: #6B7280; }
+
+.zenith-kpi-trend-text {
+  color: #9CA3AF;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+.zenith-kpi-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.zenith-kpi-sparkline {
+  height: 48px;
+  width: 100%;
+  margin-top: auto;
+}
+
+/* ── Main Layout Grids ── */
+.db-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.zenith-card {
+  background: #FFFFFF;
+  border: 1px solid #F3F4F6;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.zenith-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.zenith-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.zenith-card-sub {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 4px 0 0;
+}
+
+.zenith-card-action {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Overview Tabs ── */
+.zenith-tabs {
+  display: flex;
+  background: #F3F4F6;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.zenith-tab {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #6B7280;
+  border: none;
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.zenith-tab.active {
+  background: #FFFFFF;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* ── Charts ── */
+.zenith-chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+.zenith-donut-container {
+  height: 200px;
+  width: 100%;
+}
+
+/* ── Progress Bars ── */
+.zenith-progress-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* ── View Header ── */
-.dashboard-view .view-header {
+.zenith-progress-item {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.dashboard-view .section-title {
-  font-size: 1.8rem;
-  font-weight: 200;
-  letter-spacing: -0.03em;
-  color: #1a1a1a;
-}
-
-.dashboard-view .section-subtitle {
-  font-size: 0.82rem;
-  color: #999;
-  margin-top: 4px;
-  font-weight: 350;
-}
-
-.dashboard-view .header-actions {
-  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-/* ── Stats Grid ── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+.zenith-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.zenith-progress-track {
+  height: 6px;
+  background: #F3F4F6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.zenith-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.zenith-progress-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6B7280;
+}
+
+/* ── Recent Orders Table ── */
+.zenith-table-container {
+  overflow-x: auto;
+}
+
+.zenith-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.zenith-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6B7280;
+  padding: 12px 16px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.zenith-table td {
+  padding: 16px;
+  border-bottom: 1px solid #F3F4F6;
+  font-size: 14px;
+  color: #111827;
+  vertical-align: middle;
+}
+
+.zenith-table tr:last-child td {
+  border-bottom: none;
+}
+
+.zenith-customer-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zenith-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.zenith-customer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.zenith-customer-name {
+  font-weight: 500;
+}
+
+.zenith-customer-email {
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.zenith-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Recent Activity Timeline ── */
+.zenith-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.zenith-activity-item {
+  display: flex;
   gap: 16px;
 }
 
-/* ── Dashboard Grid ── */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-/* ── Cards ── */
-.chart-card, .feed-card, .table-card {
-  padding: 20px;
+.zenith-activity-icon {
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
-}
-
-.span-2 {
-  grid-column: span 2;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #F9FAFB;
 }
 
-.card-header h3 {
-  margin: 0;
-  font-family: 'SF Mono', monospace;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #999;
+.zenith-activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zenith-activity-title {
+  font-size: 14px;
   font-weight: 500;
+  color: #111827;
 }
 
-.simple-select {
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: #555;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  outline: none;
-  cursor: pointer;
+.zenith-activity-desc {
+  font-size: 13px;
+  color: #6B7280;
 }
 
-/* ── Chart Viewport ── */
-.chart-viewport {
-  position: relative;
-  width: 100%;
-  height: 300px;
+.zenith-activity-time {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 2px;
 }
 
-.chart-viewport.flex-center {
+/* Loading & Error States */
+.db-loading,
+.db-error {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 250px;
-}
-
-/* ── Live Pulse ── */
-.live-pulse {
-  color: #2d9d5c;
-  font-family: 'SF Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 500;
-  animation: pulse-gallery 2.4s ease-in-out infinite;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-@keyframes pulse-gallery {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* ── Feed List ── */
-.feed-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow-y: auto;
-  max-height: 300px;
-  padding-right: 4px;
-}
-
-.feed-item {
-  background-color: rgba(0, 0, 0, 0.01);
-  padding: 12px 16px;
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: background-color 0.3s ease;
-}
-
-.feed-item:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.feed-item-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.feed-id {
-  font-family: 'SF Mono', monospace;
-  font-weight: 500;
-  color: #1a1a1a;
-  font-size: 0.8rem;
-}
-
-.feed-time {
-  font-family: 'SF Mono', monospace;
-  font-size: 0.65rem;
-  color: #bbb;
-  letter-spacing: 0.04em;
-}
-
-.feed-item-body {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.feed-customer {
-  font-size: 0.82rem;
-  font-weight: 450;
-  color: #444;
-}
-
-.feed-item-total {
-  font-family: 'SF Mono', monospace;
-  font-weight: 500;
-  font-size: 0.82rem;
-  color: #c78d5a;
-}
-
-.empty-feed {
-  color: #bbb;
-  text-align: center;
-  padding: 32px 0;
-  font-family: 'SF Mono', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* ── Pie Legend ── */
-.pie-legend {
-  display: flex;
-  flex-wrap: wrap;
   gap: 12px;
-  justify-content: center;
-  margin-top: 12px;
+  height: 60vh;
+  color: #777;
+  font-size: 13px;
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-color {
-  width: 8px;
-  height: 8px;
+.db-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid rgba(0,0,0,0.1);
+  border-top-color: #111827;
   border-radius: 50%;
-}
-
-.legend-label {
-  font-size: 0.75rem;
-  color: #888;
-}
-
-/* ── Profit Column ── */
-.profit-col {
-  color: #c78d5a;
-  font-weight: 500;
-  font-family: 'SF Mono', monospace;
-}
-
-/* ── Responsive ── */
-@media (max-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .span-2 {
-    grid-column: span 1;
-  }
+  animation: spin 0.8s linear infinite;
 }

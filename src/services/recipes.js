@@ -6,7 +6,7 @@ export const recipeService = {
   },
 
   getIngredientGroups: async () => {
-    return api.get('/ingredients/groups');
+    return api.get('/ingredient-groups');
   },
 
   getIngredientMappings: async (productId) => {
@@ -27,5 +27,37 @@ export const recipeService = {
 
   deleteIngredient: async (id) => {
     return api.delete(`/ingredients/${id}`);
+  },
+
+  getAvailability: async (productId, currentSelections = []) => {
+    return api.post('/recipes/availability', { productId, currentSelections });
+  },
+
+  validateCompatibility: async (productId, selectedIngredients, context = {}) => {
+    return api.post('/recipes/validate', { productId, selectedIngredients, context });
+  },
+
+  getCompatibilityRules: async (productId) => {
+    return api.get(`/recipes/rules/${productId}`);
+  },
+
+  createCompatibilityRule: async (productId, ruleData) => {
+    return api.post(`/recipes/rules/${productId}`, ruleData);
+  },
+
+  updateCompatibilityRule: async (ruleId, ruleData) => {
+    return api.put(`/recipes/rules/${ruleId}`, ruleData);
+  },
+
+  deleteCompatibilityRule: async (ruleId) => {
+    return api.delete(`/recipes/rules/${ruleId}`);
+  },
+
+  getRawMaterialMappings: async (ingredientId) => {
+    return api.get(`/ingredients/${ingredientId}/raw-materials`);
+  },
+
+  setRawMaterialMappings: async (ingredientId, mappings) => {
+    return api.put(`/ingredients/${ingredientId}/raw-materials`, { mappings });
   },
 };

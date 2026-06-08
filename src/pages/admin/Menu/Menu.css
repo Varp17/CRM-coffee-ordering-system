@@ -1,47 +1,210 @@
-/* ═══════════════════════════════════════════════════════════════
-   White-Cube Gallery — Menu View
-   ═══════════════════════════════════════════════════════════════ */
-
-.menu-view {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.menu-toolbar {
+/* ── Zenith Header ── */
+.zenith-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  background: #ffffff;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  margin-bottom: 24px;
 }
 
-.menu-search-input {
+.zenith-breadcrumb {
+  font-size: 0.8rem;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+.zenith-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.zenith-subtitle {
+  font-size: 0.85rem;
+  color: #6B7280;
+  margin: 0;
+}
+
+.zenith-btn-dark {
+  display: flex;
+  align-items: center;
+  background-color: #111827;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.zenith-btn-dark:hover {
+  opacity: 0.9;
+}
+
+/* ── Zenith Filters ── */
+.zenith-filters-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background-color: #F9FAFB;
+  padding: 4px;
+  border-radius: 12px;
+  width: fit-content;
+  border: 1px solid #EAEAEA;
+}
+
+.zenith-filter-pill {
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6B7280;
   background: transparent;
   border: none;
-  color: #1a1a1a;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zenith-filter-pill:hover {
+  color: #111827;
+}
+
+.zenith-filter-pill.active {
+  background-color: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ── Zenith Search & Toolbar ── */
+.zenith-search-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.zenith-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 8px;
+  padding: 8px 16px;
+  min-width: 300px;
+}
+
+.zenith-search-box input {
+  border: none;
   outline: none;
   width: 100%;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  color: #111827;
 }
 
-.menu-search-input::placeholder {
-  color: #bbb;
+.zenith-search-box input::placeholder {
+  color: #9CA3AF;
 }
 
-.menu-table th {
-  font-family: 'SF Mono', monospace;
-  text-transform: uppercase;
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  color: #999;
+.zenith-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zenith-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-icon-left {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+}
+
+.zenith-select {
+  padding: 8px 16px 8px 36px;
+  font-size: 0.85rem;
   font-weight: 500;
+  color: #374151;
+  background-color: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
 }
 
+.zenith-btn-outline {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid #EAEAEA;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.zenith-btn-outline:hover {
+  background-color: #F9FAFB;
+}
+
+/* ── Zenith Table Card & Table ── */
+.zenith-table-card {
+  background-color: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.zenith-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.zenith-table th {
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6B7280;
+  border-bottom: 1px solid #EAEAEA;
+  background-color: #F9FAFB;
+}
+
+.zenith-table td {
+  padding: 16px;
+  border-bottom: 1px solid #EAEAEA;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.zenith-table tr:last-child td {
+  border-bottom: none;
+}
+
+.zenith-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ── Product Info Cell ── */
 .product-info-cell {
   display: flex;
   align-items: center;
@@ -49,79 +212,152 @@
 }
 
 .product-thumb {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
   object-fit: cover;
-  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid #E5E7EB;
+  background-color: #F3F4F6;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.product-text-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .product-name {
-  display: block;
-  font-weight: 450;
-  color: #1a1a1a;
-  font-size: 0.84rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
 }
 
-.product-id {
-  display: block;
-  font-family: 'SF Mono', monospace;
-  font-size: 0.62rem;
-  color: #bbb;
-  margin-top: 2px;
+.product-desc {
+  font-size: 0.75rem;
+  color: #6B7280;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.category-tag {
-  background: rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 0.72rem;
-  color: #555;
-  font-family: 'SF Mono', monospace;
-}
-
-.variant-tag {
-  color: #1a1a1a;
-  font-size: 0.82rem;
-  font-weight: 450;
-  font-family: 'SF Mono', monospace;
-}
-
-.status-toggle {
-  background: transparent;
-  border: 1px solid currentColor;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 0.68rem;
+/* ── Badges & Details ── */
+.zenith-category-badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 500;
+  color: #374151;
+  background-color: #F3F4F6;
+  border: 1px solid #E5E7EB;
+}
+
+.zenith-status-pill {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.zenith-status-pill.active {
+  background-color: #DEF7EC;
+  color: #03543F;
+}
+
+.zenith-status-pill.draft {
+  background-color: #FEF08A;
+  color: #713F12;
+}
+
+.product-stock-count {
+  font-size: 0.875rem;
+  color: #4B5563;
+}
+
+.product-price-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-date {
+  font-size: 0.85rem;
+  color: #4B5563;
+}
+
+/* Action Trigger & Dropdown */
+.zenith-action-trigger {
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  font-family: 'SF Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #9CA3AF;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.status-toggle.active {
-  color: #2d9d5c;
-  background: rgba(45, 157, 92, 0.06);
-  border-color: rgba(45, 157, 92, 0.2);
+.zenith-action-trigger:hover {
+  background-color: #F3F4F6;
+  color: #111827;
 }
 
-.status-toggle.inactive {
-  color: #c44040;
-  background: rgba(196, 64, 64, 0.06);
-  border-color: rgba(196, 64, 64, 0.2);
+.zenith-dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: transparent;
 }
 
-.status-toggle:hover {
-  opacity: 0.85;
+.zenith-dropdown-menu {
+  position: absolute;
+  right: 16px;
+  top: 100%;
+  margin-top: 4px;
+  background-color: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  min-width: 120px;
 }
+
+.zenith-dropdown-menu button {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: #374151;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.zenith-dropdown-menu button:hover {
+  background-color: #F3F4F6;
+}
+
+.zenith-dropdown-menu button.danger {
+  color: #EF4444;
+}
+
+.zenith-dropdown-menu button.danger:hover {
+  background-color: #FEE2E2;
+}
+
 
 /* Modal Form Styles */
 .menu-modal {
@@ -208,4 +444,38 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+/* Tabs */
+.settings-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+
+.settings-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: #777;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.settings-tab:hover { color: #111; }
+
+.settings-tab.active {
+  color: #111827;
+  font-weight: 600;
+  border-bottom-color: #111827;
 }

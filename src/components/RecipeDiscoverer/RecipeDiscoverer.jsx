@@ -7,60 +7,62 @@ import './RecipeDiscoverer.css';
 
 const RECIPES = {
   light: {
-    id: 'french-vanilla-latte',
-    name: 'French Vanilla Latte',
-    price: 249,
-    originalPrice: 320,
+    id: 'prod-002',
+    name: 'Cold Brew Tonic',
+    price: 160,
+    originalPrice: 200,
     rating: 4.8,
-    reviews: 154,
-    beanType: 'Arabica',
-    roast: 'Light Roast',
-    prepTime: '15 Min',
-    sweetness: 'Soft & Velvety',
-    description: 'A smooth blend of premium single-origin Arabica beans, sweet velvety French vanilla syrup, and perfectly steamed microfoam.',
-    image: '/images/products/cappuccino.png',
+    reviews: 22,
+    beanType: 'Arabica & Robusta',
+    roast: 'Light & Crispy',
+    prepTime: '2 Min',
+    sweetness: 'Clean & Bitter-Sweet',
+    description: 'Classic layered cold brew with premium tonic water. Crisp and clean.',
+    image: '/images/products/iced-coffee.png',
     ingredients: [
-      { name: 'Espresso', amount: '30 ml', type: 'Bold shot' },
-      { name: 'Steamed Milk', amount: '240 ml', type: 'Microfoam' },
-      { name: 'Vanilla Syrup', amount: '15 ml', type: 'Artisanal' }
+      { name: 'Cold Brew', amount: '90 ml', type: 'Slow drip' },
+      { name: 'Tonic Water', amount: '130 ml', type: 'Premium mixer' },
+      { name: 'Ice Cubes', amount: '5 pcs', type: 'Slow melt' }
     ]
   },
   medium: {
-    id: 'iced-caramel-macchiato',
-    name: 'Iced Caramel Macchiato',
-    price: 289,
-    originalPrice: 360,
+    id: 'prod-001',
+    name: 'Cold Brew Orange',
+    price: 180,
+    originalPrice: 220,
     rating: 4.9,
-    reviews: 218,
-    beanType: 'Arabica & Robusta',
+    reviews: 15,
+    beanType: 'Arabica',
     roast: 'Medium Roast',
-    prepTime: '12 Min',
-    sweetness: 'Balanced Caramel',
-    description: 'Fresh espresso poured over cold milk and rich caramel drizzle, capturing dense buttery notes with a sweet vanilla undertone.',
-    image: '/images/products/iced-coffee.png',
+    prepTime: '3 Min',
+    sweetness: 'Honey & Orange',
+    description: 'Refreshing cold brew with fresh orange juice and honey. Perfect for a sunny Saturday.',
+    image: '/images/products/cold-brew.png',
     ingredients: [
-      { name: 'Espresso', amount: '45 ml', type: 'Double shot' },
-      { name: 'Cold Milk', amount: '200 ml', type: 'Fresh dairy' },
-      { name: 'Caramel Drizzle', amount: '20 ml', type: 'Buttery smooth' }
+      { name: 'Cold Brew Concentrate', amount: '100 ml', type: 'Signature' },
+      { name: 'Fresh Orange Juice', amount: '30 ml', type: 'Citrus' },
+      { name: 'Lemon Juice', amount: '5 ml', type: 'Zesty' },
+      { name: 'Honey', amount: '20 ml', type: 'Organic Sweetener' },
+      { name: 'Plain Soda Water', amount: '95 ml', type: 'Sparkling' }
     ]
   },
   strong: {
-    id: 'south-indian-filter-special',
-    name: 'South Indian Filter Special',
-    price: 199,
-    originalPrice: 260,
+    id: 'prod-005',
+    name: 'SIF on the Rocks',
+    price: 170,
+    originalPrice: 210,
     rating: 4.9,
-    reviews: 342,
+    reviews: 30,
     beanType: 'Peaberry (70:30 chicory)',
-    roast: 'Dark Roast',
-    prepTime: '10 Min',
-    sweetness: 'Intense & Strong',
-    description: 'Authentic chicory-infused peaberry concentrate brewed slowly in a traditional filter, frothed up high with boiling milk.',
+    roast: 'Dark & Intense',
+    prepTime: '2 Min',
+    sweetness: 'Condensed Milk',
+    description: 'South Indian Filter coffee concentrate with condensed milk on ice. Strong and creamy.',
     image: '/images/products/filter-coffee.png',
     ingredients: [
-      { name: 'Filter Decoction', amount: '60 ml', type: 'Chicory blend' },
-      { name: 'Boiling Milk', amount: '180 ml', type: 'Highly aerated' },
-      { name: 'Jaggery Sugar', amount: '10 g', type: 'Traditional' }
+      { name: 'Chicory Concentrate', amount: '135 ml', type: 'Traditional extract' },
+      { name: 'Condensed Milk', amount: '30 ml', type: 'Sweetened milk' },
+      { name: 'Nandini Milk', amount: '40 ml', type: 'Dairy base' }
     ]
   }
 };

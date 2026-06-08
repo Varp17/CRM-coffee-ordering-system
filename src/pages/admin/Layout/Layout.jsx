@@ -20,7 +20,7 @@ const Layout = () => {
     { key: 'ingredients', label: 'Ingredients' },
     { key: 'customers', label: 'Customers' },
     { key: 'roles', label: 'Roles' },
-    { key: 'cms', label: 'Website CMS' },
+    { key: 'cms', label: 'Marketing' },
     { key: 'settings', label: 'Settings' },
   ];
 

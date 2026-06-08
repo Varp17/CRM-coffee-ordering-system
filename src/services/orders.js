@@ -25,8 +25,12 @@ export const orderService = {
     return api.post(`/orders/${id}/cancel`, { reason });
   },
 
-  refund: async (id) => {
+  cancelWithRefund: async (id) => {
     return api.post(`/orders/${id}/cancel`, { reason: 'Customer requested refund' });
+  },
+
+  refund: async (id) => {
+    return orderService.cancelWithRefund(id);
   },
 
   initiatePayment: async (id, data) => {

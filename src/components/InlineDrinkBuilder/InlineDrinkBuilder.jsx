@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Droplets, Milk, Sparkles, Check, ShoppingBag, Eye, HelpCircle, Thermometer, Wind, Zap } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import toast from 'react-hot-toast';
+import { useCompatibility, getCompatibleMilksStatic, isSweetenerCompatibleStatic, isToppingCompatibleStatic } from '../../utils/compatibility';
 import './InlineDrinkBuilder.css';
 
 // Rolling price counter
@@ -41,50 +42,69 @@ const RollingPrice = ({ value }) => {
 
 const OPTIONS = {
   bases: [
-    { id: 'espresso', name: 'ESPRESSO', price: 150, color: '#3b1f13', label: '60ml double extraction', temp: '92°C', texture: 'VELVETY', extraction: '25 SEC', aroma: '96 BOLD' },
-    { id: 'cold-brew', name: 'COLD BREW', price: 180, color: '#1f0d04', label: '18h slow drop', temp: '04°C', texture: 'SMOOTH', extraction: '18 HOURS', aroma: '92 CRISP' },
-    { id: 'matcha', name: 'MATCHA', price: 200, color: '#5f7b44', label: 'stone ground uji', temp: '80°C', texture: 'CREAMY', extraction: '3 MINS', aroma: '95 EARTHY' },
+    { id: '50-50', name: '50:50 BLEND', price: 180, color: '#1f0d04', label: 'arabica + robusta', temp: '04°C', texture: 'SMOOTH', extraction: '18 HOURS', aroma: '92 CRISP', ingredientId: 1 },
+    { id: '70-30', name: '70:30 BLEND', price: 190, color: '#2a1509', label: 'bold arabica lead', temp: '04°C', texture: 'FULL', extraction: '18 HOURS', aroma: '94 BALANCED', ingredientId: 2 },
+    { id: 'arabica', name: '100% ARABICA', price: 200, color: '#221007', label: 'bright & fruity', temp: '04°C', texture: 'SMOOTH', extraction: '18 HOURS', aroma: '95 CLEAN', ingredientId: 3 },
+    { id: 'sif', name: 'SIF CONCENTRATE', price: 170, color: '#3b1f13', label: 'south indian filter', temp: '04°C', texture: 'STRONG', extraction: 'SLOW DRIP', aroma: '96 BOLD', ingredientId: 4 },
+    { id: 'cascara', name: 'CASCARA', price: 150, color: '#5c3d2e', label: 'coffee cherry tea', temp: '04°C', texture: 'LIGHT', extraction: '18 HOURS', aroma: '90 FRUITY', ingredientId: 46 },
   ],
   milks: [
-    { id: 'whole', name: 'WHOLE MILK', price: 0, color: '#fff5e6', label: 'dairy frothed' },
-    { id: 'oat', name: 'OAT MILK', price: 60, color: '#f0e0c1', label: 'barista oat' },
-    { id: 'almond', name: 'ALMOND MILK', price: 50, color: '#f5e6d3', label: 'roasted almond' },
+    { id: 'dairy', name: 'DAIRY MILK', price: 0, color: '#fff5e6', label: 'creamy frothed', ingredientId: 8 },
+    { id: 'oat', name: 'OAT MILK', price: 25, color: '#f5e6d0', label: 'smooth plant', ingredientId: 9 },
+    { id: 'almond', name: 'ALMOND MILK', price: 30, color: '#ede0d0', label: 'nutty & light', ingredientId: 10 },
+    { id: 'coconut', name: 'COCONUT MILK', price: 20, color: '#f0e8d8', label: 'tropical touch', ingredientId: 11 },
     { id: 'none', name: 'NO MILK', price: 0, color: 'transparent', label: 'neat extraction' },
   ],
-  syrups: [
-    { id: 'vanilla', name: 'VANILLA SYRUP', price: 30, desc: 'artisanal vanilla bean extract' },
-    { id: 'caramel', name: 'CARAMEL SYRUP', price: 30, desc: 'house cooked caramel cook' },
+  sweeteners: [
+    { id: 'sugar', name: 'SUGAR SYRUP', price: 0, desc: 'classic sweetener', ingredientId: 12 },
+    { id: 'jaggery', name: 'JAGGERY SYRUP', price: 5, desc: 'unrefined cane sugar', ingredientId: 13 },
+    { id: 'honey', name: 'HONEY', price: 10, desc: 'wild forest honey', ingredientId: 14 },
+    { id: 'condensed', name: 'CONDENSED MILK', price: 15, desc: 'sweetened dairy', ingredientId: 15 },
+    { id: 'vanilla', name: 'VANILLA SYRUP', price: 8, desc: 'madagascar vanilla', ingredientId: 17 },
   ],
   toppings: [
-    { id: 'whipped-cream', name: 'WHIPPED CREAM', price: 25, label: 'volumetric dairy peak' },
-    { id: 'cold-foam', name: 'COLD FOAM', price: 35, label: 'microfoam float' },
-    { id: 'ice', name: 'ADD ICE', price: 0, label: 'dense slow melt' }
+    { id: 'cinnamon', name: 'CINNAMON', price: 5, label: 'warm spice dust', ingredientId: 31 },
+    { id: 'cacao', name: 'CACAO POWDER', price: 5, label: 'premium cacao', ingredientId: 30 },
+    { id: 'nutmeg', name: 'NUTMEG', price: 5, label: 'aromatic sprinkle', ingredientId: 32 },
+    { id: 'golden-cream', name: 'GOLDEN CREAM', price: 15, label: 'rich cream top', ingredientId: 26 },
+    { id: 'whipped-cream', name: 'WHIPPED CREAM', price: 10, label: 'light dollop', ingredientId: 27 },
+    { id: 'chocolate-drizzle', name: 'CHOC DRIZZLE', price: 10, label: 'rich chocolate', ingredientId: 21 },
+    { id: 'hazelnut', name: 'HAZELNUT SYRUP', price: 10, label: 'nutty infusion', ingredientId: 18 },
+    { id: 'honey-drizzle', name: 'HONEY DRIZZLE', price: 10, label: 'golden honey', ingredientId: 14 },
+    { id: 'salted-caramel', name: 'SALTED CARAMEL', price: 8, label: 'sweet & salty', ingredientId: 16 },
+    { id: 'coconut-flakes', name: 'COCONUT FLAKES', price: 8, label: 'toasted coconut', ingredientId: 36 },
+    { id: 'almond-flakes', name: 'ALMOND FLAKES', price: 10, label: 'crunchy almond', ingredientId: 35 },
+    { id: 'rainbow-sprinkles', name: 'SPRINKLES', price: 5, label: 'colorful crunch', ingredientId: 38 },
+    { id: 'brown-sugar-dust', name: 'BROWN SUGAR', price: 3, label: 'sweet dust', ingredientId: 40 },
+    { id: 'lemon-slice', name: 'LEMON', price: 5, label: 'citrus kick', ingredientId: 43 },
+    { id: 'orange-slice', name: 'ORANGE', price: 5, label: 'zesty finish', ingredientId: 44 },
   ]
 };
 
 const getLiquidColor = (baseId, milkId) => {
-  if (baseId === 'espresso') {
+  if (baseId === 'sif') {
     if (milkId === 'none') return '#3b1f13';
-    if (milkId === 'whole') return '#79503b';
-    if (milkId === 'oat') return '#865e49';
-    return '#8c6754';
-  } else if (baseId === 'cold-brew') {
-    if (milkId === 'none') return '#1d0b03';
-    if (milkId === 'whole') return '#624131';
-    if (milkId === 'oat') return '#6f4f3e';
-    return '#755545';
+    return '#79503b';
+  } else if (baseId === 'cascara') {
+    if (milkId === 'none') return '#5c3d2e';
+    return '#8ca973';
+  } else if (baseId === '70-30') {
+    if (milkId === 'none') return '#2a1509';
+    return '#79503b';
+  } else if (baseId === 'arabica') {
+    if (milkId === 'none') return '#221007';
+    return '#624131';
   } else {
-    if (milkId === 'none') return '#5f7b44';
-    if (milkId === 'whole') return '#8ca973';
-    if (milkId === 'oat') return '#97b37e';
-    return '#9dbc85';
+    // 50-50
+    if (milkId === 'none') return '#1d0b03';
+    return '#624131';
   }
 };
 
 const InlineDrinkBuilder = () => {
-  const [base, setBase] = useState('espresso');
-  const [milk, setMilk] = useState('whole');
-  const [selectedSyrups, setSelectedSyrups] = useState([]);
+  const [base, setBase] = useState('50-50');
+  const [milk, setMilk] = useState('dairy');
+  const [selectedSweetener, setSelectedSweetener] = useState('sugar');
   const [selectedToppings, setSelectedToppings] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   
@@ -96,6 +116,8 @@ const InlineDrinkBuilder = () => {
   const activeMilk = useMemo(() => OPTIONS.milks.find(m => m.id === milk), [milk]);
   const addItemToCart = useCartStore((state) => state.addItem);
 
+  const { isMilkCompatible, isSweetenerCompatible, isToppingCompatible, getCompatibleMilks } = useCompatibility(base, { milk, sweetener: selectedSweetener, toppings: selectedToppings });
+
   const canvasRef = useRef(null);
   const colorLerpRef = useRef({ r: 59, g: 31, b: 19 });
   const mousePosRef = useRef({ x: 0, y: 0 });
@@ -106,7 +128,7 @@ const InlineDrinkBuilder = () => {
   const brewStageRef = useRef('stable');
   const baseRef = useRef(base);
   const milkRef = useRef(milk);
-  const selectedSyrupsRef = useRef(selectedSyrups);
+  const selectedSweetenerRef = useRef(selectedSweetener);
   const selectedToppingsRef = useRef(selectedToppings);
 
   // Keep refs in sync to avoid canvas closure stale states
@@ -115,26 +137,24 @@ const InlineDrinkBuilder = () => {
     brewStageRef.current = brewStage;
     baseRef.current = base;
     milkRef.current = milk;
-    selectedSyrupsRef.current = selectedSyrups;
+    selectedSweetenerRef.current = selectedSweetener;
     selectedToppingsRef.current = selectedToppings;
-  }, [isBrewing, brewStage, base, milk, selectedSyrups, selectedToppings]);
+  }, [isBrewing, brewStage, base, milk, selectedSweetener, selectedToppings]);
 
   const priceTotal = useMemo(() => {
     let sum = activeBase.price + activeMilk.price;
-    selectedSyrups.forEach(id => {
-      const s = OPTIONS.syrups.find(item => item.id === id);
-      if (s) sum += s.price;
-    });
+    const sweetener = OPTIONS.sweeteners.find(item => item.id === selectedSweetener);
+    if (sweetener) sum += sweetener.price;
     selectedToppings.forEach(id => {
       const t = OPTIONS.toppings.find(item => item.id === id);
       if (t) sum += t.price;
     });
     return sum;
-  }, [activeBase, activeMilk, selectedSyrups, selectedToppings]);
+  }, [activeBase, activeMilk, selectedSweetener, selectedToppings]);
 
-  const toggleSyrup = (id) => {
+  const handleSweetenerChange = (id) => {
+    setSelectedSweetener(id);
     triggerBrewCycle();
-    setSelectedSyrups(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
   const toggleTopping = (id) => {
@@ -158,12 +178,19 @@ const InlineDrinkBuilder = () => {
   };
 
   const handleBaseChange = (newBase) => {
+    const compatibleMilks = getCompatibleMilksStatic(newBase);
+    const newMilk = compatibleMilks.includes(milk) ? milk : compatibleMilks[0];
+    const newSweetener = isSweetenerCompatibleStatic(newBase, selectedSweetener) ? selectedSweetener : 'sugar';
     setBase(newBase);
+    setMilk(newMilk);
+    setSelectedSweetener(newSweetener);
+    setSelectedToppings((prev) => prev.filter((t) => isToppingCompatibleStatic(newBase, newMilk, newSweetener, t)));
     triggerBrewCycle();
   };
 
   const handleMilkChange = (newMilk) => {
     setMilk(newMilk);
+    setSelectedToppings((prev) => prev.filter((t) => isToppingCompatibleStatic(base, newMilk, selectedSweetener, t)));
     triggerBrewCycle();
   };
 
@@ -205,8 +232,8 @@ const InlineDrinkBuilder = () => {
 
   const hasMilk = milk !== 'none';
   const hasIce = selectedToppings.includes('ice');
-  const hasFoam = selectedToppings.some(id => id === 'whipped-cream' || id === 'cold-foam');
-  const activeFoamType = selectedToppings.find(id => id === 'whipped-cream' || id === 'cold-foam');
+  const hasFoam = selectedToppings.some(id => id === 'whipped-cream');
+  const activeFoamType = selectedToppings.find(id => id === 'whipped-cream');
 
   // Fluid Dynamics, Glass refraction & Particle physics loop
   useEffect(() => {
@@ -264,7 +291,7 @@ const InlineDrinkBuilder = () => {
       let fillHeightPercent = 0.55;
       if (activeMilkColor !== 'none') fillHeightPercent += 0.18;
       if (selectedToppingsRef.current.includes('ice')) fillHeightPercent += 0.1;
-      if (selectedToppingsRef.current.some(t => t === 'whipped-cream' || t === 'cold-foam')) fillHeightPercent += 0.08;
+      if (selectedToppingsRef.current.some(t => t === 'whipped-cream')) fillHeightPercent += 0.08;
 
       // Restrict height during transition
       let targetHeight = H * fillHeightPercent;
@@ -293,11 +320,11 @@ const InlineDrinkBuilder = () => {
       // Viscosity wave configuration
       let waveAmplitude = 5;
       let waveFrequency = 0.02;
-      if (activeBaseColor === 'cold-brew') {
+      if (activeBaseColor === '50-50' || activeBaseColor === 'arabica') {
         waveAmplitude = 3; // cold brew is thinner
-      } else if (activeBaseColor === 'matcha') {
-        waveAmplitude = 7; // matcha is frothy
-        waveFrequency = 0.03;
+      } else if (activeBaseColor === 'sif') {
+        waveAmplitude = 6; // SIF concentrate is denser
+        waveFrequency = 0.025;
       }
       if (brewStageRef.current === 'pouring' || brewStageRef.current === 'stabilizing') {
         waveAmplitude = 12; // high turbulence during pouring
@@ -331,21 +358,19 @@ const InlineDrinkBuilder = () => {
       ctx.fill();
       ctx.restore();
 
-      // Draw Syrup ribbons / diffusion swirl inside the glass
-      if (selectedSyrupsRef.current.length > 0) {
+      // Draw Sweetener infusion ribbon inside the glass
+      if (selectedSweetenerRef.current && selectedSweetenerRef.current !== 'none') {
         ctx.save();
-        selectedSyrupsRef.current.forEach((syrupId, sIdx) => {
-          ctx.strokeStyle = syrupId === 'caramel' ? 'rgba(180, 110, 50, 0.35)' : 'rgba(220, 180, 120, 0.3)';
-          ctx.lineWidth = 4;
-          ctx.beginPath();
-          const startX = W * 0.3 + sIdx * 30;
-          ctx.moveTo(startX, H - targetHeight + 5);
-          for (let y = H - targetHeight + 5; y < H - 20; y += 10) {
-            const driftX = Math.sin(y * 0.05 + waveTime * 2) * 8;
-            ctx.lineTo(startX + driftX, y);
-          }
-          ctx.stroke();
-        });
+        ctx.strokeStyle = 'rgba(220, 180, 120, 0.3)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        const startX = W * 0.35;
+        ctx.moveTo(startX, H - targetHeight + 5);
+        for (let y = H - targetHeight + 5; y < H - 20; y += 10) {
+          const driftX = Math.sin(y * 0.05 + waveTime * 2) * 8;
+          ctx.lineTo(startX + driftX, y);
+        }
+        ctx.stroke();
         ctx.restore();
       }
 
@@ -396,8 +421,8 @@ const InlineDrinkBuilder = () => {
       }
       ctx.restore();
 
-      // Dynamic Steam (Adapting to temperature - hot has steam, cold does not)
-      const isHot = activeBaseColor !== 'cold-brew';
+      // Dynamic Steam (cold brew bases are served cold, SIF/Cascara can be hot)
+      const isHot = activeBaseColor === 'sif';
       if (isHot) {
         if (Math.random() > 0.7) {
           particles.push({
@@ -419,7 +444,7 @@ const InlineDrinkBuilder = () => {
     return () => {
       cancelAnimationFrame(frameId);
     };
-  }, [base, milk, selectedSyrups, selectedToppings, brewStage]);
+  }, [base, milk, selectedSweetener, selectedToppings, brewStage]);
 
   const handleBrewNow = () => {
     if (isAdding) return;
@@ -458,7 +483,6 @@ const InlineDrinkBuilder = () => {
 
   const computedTexture = useMemo(() => {
     if (activeFoamType === 'whipped-cream') return 'VOLUMETRIC PEAK';
-    if (activeFoamType === 'cold-foam') return 'SILKY MICROFOAM';
     return activeBase.texture;
   }, [activeFoamType, activeBase]);
 
@@ -510,7 +534,7 @@ const InlineDrinkBuilder = () => {
               {hasFoam && (
                 <motion.div
                   key={activeFoamType}
-                  className={`foam-sculpture ${activeFoamType === 'whipped-cream' ? 'whipped-cream-mesh' : 'cold-foam-mesh'}`}
+                  className="foam-sculpture whipped-cream-mesh"
                   initial={{ opacity: 0, scale: 0.8, y: 15 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -601,13 +625,16 @@ const InlineDrinkBuilder = () => {
         <div className="category-composition-section">
           <span className="mono-step-label">02 SELECT LIQUID BASE</span>
           <div className="asymmetric-chips-row">
-            {OPTIONS.milks.map(m => (
+            {OPTIONS.milks.map(m => {
+              const disabled = !isMilkCompatible(base, m.id);
+              return (
               <button
                 key={m.id}
                 onClick={() => handleMilkChange(m.id)}
+                disabled={disabled}
                 onMouseMove={handleCardMouseMove}
                 onMouseLeave={handleCardMouseLeave}
-                className={`tactile-card-chip ${milk === m.id ? 'active' : ''}`}
+                className={`tactile-card-chip ${milk === m.id ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
                 style={{
                   transform: 'perspective(600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px))'
                 }}
@@ -620,43 +647,49 @@ const InlineDrinkBuilder = () => {
                 </div>
                 {m.price > 0 ? <span className="tactile-chip-price">+₹{m.price}</span> : <span className="tactile-chip-free">Free</span>}
               </button>
-            ))}
+            );})}
           </div>
         </div>
 
-        {/* STEP 3: SYRUPS & TOPPINGS */}
+        {/* STEP 3: SWEETENER & TOPPINGS */}
         <div className="dual-configuration-grid">
           <div className="category-composition-section">
-            <span className="mono-step-label">03 SYRUP INFUSION</span>
+            <span className="mono-step-label">03 SWEETENER</span>
             <div className="small-tactile-row">
-              {OPTIONS.syrups.map(s => (
+              {OPTIONS.sweeteners.map(s => {
+                const disabled = !isSweetenerCompatible(base, s.id);
+                return (
                 <button
                   key={s.id}
-                  onClick={() => toggleSyrup(s.id)}
-                  className={`small-tactile-chip ${selectedSyrups.includes(s.id) ? 'active' : ''}`}
+                  onClick={() => handleSweetenerChange(s.id)}
+                  disabled={disabled}
+                  className={`small-tactile-chip ${selectedSweetener === s.id ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
                 >
                   <Sparkles size={12} className="lucide" />
                   <span>{s.name}</span>
-                  <span className="chip-price-badge">+₹{s.price}</span>
+                  <span className="chip-price-badge">{s.price > 0 ? `+₹${s.price}` : 'FREE'}</span>
                 </button>
-              ))}
+              );})}
             </div>
           </div>
 
           <div className="category-composition-section">
             <span className="mono-step-label">04 CRAFT TOPPING</span>
             <div className="small-tactile-row">
-              {OPTIONS.toppings.map(t => (
+              {OPTIONS.toppings.map(t => {
+                const disabled = !isToppingCompatible(base, milk, selectedSweetener, t.id);
+                return (
                 <button
                   key={t.id}
                   onClick={() => toggleTopping(t.id)}
-                  className={`small-tactile-chip ${selectedToppings.includes(t.id) ? 'active' : ''}`}
+                  disabled={disabled}
+                  className={`small-tactile-chip ${selectedToppings.includes(t.id) ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
                 >
                   <Sparkles size={12} className="lucide" />
                   <span>{t.name}</span>
                   {t.price > 0 && <span className="chip-price-badge">+₹{t.price}</span>}
                 </button>
-              ))}
+              );})}
             </div>
           </div>
         </div>

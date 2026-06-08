@@ -52,7 +52,6 @@ const Card = ({
         <ProductMedia
           imageUrl={imageUrl}
           productName={title}
-          category={category}
           className="card-image-media"
         />
         <div className="card-image-overlay">

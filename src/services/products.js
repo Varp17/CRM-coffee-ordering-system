@@ -2,7 +2,7 @@ import { api } from './api';
 
 export const productService = {
   getMenu: async (params = {}) => {
-    return api.get('/menu', params);
+    return api.get('/products', { ...params, channel: 'kiosk', is_active: true });
   },
 
   getAll: async (params = {}) => {

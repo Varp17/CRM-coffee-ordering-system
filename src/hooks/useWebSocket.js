@@ -20,6 +20,7 @@ export const useWebSocket = (roleParam) => {
     }, 30000);
 
     // 2. Real WebSocket connection for staff roles
+    let isMounted = true;
     const ALLOWED_ROLES = ['barista', 'store_manager', 'admin', 'super_admin'];
     const token = localStorage.getItem('dc_token');
 
@@ -28,19 +29,24 @@ export const useWebSocket = (roleParam) => {
       const storeId = localStorage.getItem('dc_store_id') || '1';
       const wsHost = window.location.hostname.includes('vercel.app')
         ? 'coffee-ordering-system-backend.onrender.com'
-        : window.location.host;
+        : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          ? 'localhost:3000'
+          : window.location.host;
       const wsUrl = `${wsProtocol}//${wsHost}/ws?token=${token}&storeId=${storeId}`;
 
       const connect = () => {
+        if (!isMounted) return;
         console.log('[WS] Connecting to:', wsUrl);
         const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
 
         ws.onopen = () => {
+          if (!isMounted) return;
           console.log('[WS] Connected successfully');
         };
 
         ws.onmessage = (event) => {
+          if (!isMounted) return;
           try {
             const data = JSON.parse(event.data);
             const { type, payload } = data;
@@ -94,16 +100,18 @@ export const useWebSocket = (roleParam) => {
         };
 
         ws.onclose = (e) => {
+          if (!isMounted) return;
           console.warn('[WS] Closed:', e.reason);
           // Auto-reconnect with backoff
           setTimeout(() => {
-            if (localStorage.getItem('dc_token')) {
+            if (isMounted && localStorage.getItem('dc_token')) {
               connect();
             }
           }, 5000);
         };
 
         ws.onerror = (err) => {
+          if (!isMounted) return;
           console.error('[WS] Error:', err);
           ws.close();
         };
@@ -113,9 +121,15 @@ export const useWebSocket = (roleParam) => {
     }
 
     return () => {
+      isMounted = false;
       clearInterval(timerInterval);
       if (wsRef.current) {
-        wsRef.current.close();
+        const ws = wsRef.current;
+        ws.onclose = null;
+        ws.onerror = null;
+        if (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
       }
     };
   }, [role, fetchOrders, fetchBaristaQueue, addNotification, tickTimers]);

@@ -8,119 +8,114 @@
   gap: 16px;
 }
 
-/* ── Stats Row ── */
-.orders-stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.order-stat-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.order-stat-card:hover {
-  border-color: rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.stat-icon {
-  font-size: 1.4rem;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-}
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-num {
-  font-family: 'SF Mono', monospace;
-  font-size: 1.4rem;
-  font-weight: 300;
-  color: #1a1a1a;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-family: 'SF Mono', monospace;
-}
-
-/* ── Toolbar ── */
-.orders-toolbar {
+/* ── Zenith Header ── */
+.zenith-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
 }
 
-.search-box {
+.zenith-breadcrumb {
+  font-size: 0.8rem;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+.zenith-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.zenith-subtitle {
+  font-size: 0.85rem;
+  color: #6B7280;
+  margin: 0;
+}
+
+.zenith-btn-dark {
   display: flex;
   align-items: center;
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  padding: 8px 14px;
-  flex: 1;
-  max-width: 360px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  transition: border-color 0.3s ease;
-}
-
-.search-box:focus-within {
-  border-color: rgba(0, 0, 0, 0.18);
-}
-
-.search-icon {
-  color: #bbb;
-  margin-right: 8px;
-}
-
-.orders-search-input {
-  background: transparent;
+  background-color: #111827;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
   border: none;
-  color: #1a1a1a;
-  outline: none;
-  width: 100%;
-  font-size: 0.82rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-.orders-search-input::placeholder {
-  color: #bbb;
+.zenith-btn-dark:hover {
+  opacity: 0.9;
 }
 
-.filter-group {
+/* ── Zenith Filters ── */
+.zenith-filters-row {
   display: flex;
   gap: 8px;
+  margin-bottom: 24px;
+  background-color: #F9FAFB;
+  padding: 4px;
+  border-radius: 12px;
+  width: fit-content;
+  border: 1px solid #EAEAEA;
 }
 
-.filter-select {
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: #555;
-  padding: 8px 14px;
-  border-radius: 6px;
-  outline: none;
+.zenith-filter-pill {
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6B7280;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.78rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s;
+}
+
+.zenith-filter-pill:hover {
+  color: #111827;
+}
+
+.zenith-filter-pill.active {
+  background-color: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ── Zenith Search ── */
+.zenith-search-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.zenith-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 8px;
+  padding: 8px 16px;
+  min-width: 300px;
+}
+
+.zenith-search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.85rem;
+  color: #111827;
+}
+
+.zenith-search-box input::placeholder {
+  color: #9CA3AF;
 }
 
 /* ── Table Overrides ── */
@@ -273,36 +268,55 @@
   font-size: 2rem;
 }
 
-/* ── Modal Overlay ── */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(247, 247, 245, 0.72);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+/* ── Panel Close Button ── */
+.panel-close-btn {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  color: #888;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.panel-close-btn:hover {
+  color: #111;
+  border-color: rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.03);
+}
+
+/* ── Refund Confirmation Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.30);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
 }
 
 .modal-content {
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 16px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.06);
-  animation: modalIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  animation: modalIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .order-detail-modal { max-width: 780px; }

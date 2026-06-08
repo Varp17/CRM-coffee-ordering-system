@@ -7,6 +7,7 @@ import { orderService } from '../../../services/orders';
 import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
+import { X, ChevronRight, RefreshCw, AlertCircle, Search, Plus, MoreHorizontal } from 'lucide-react';
 
 const Orders = () => {
   const { orders: ordersList, fetchOrders, updateOrderStatus, refundOrder, isLoading } = useOrderStore();
@@ -102,10 +103,10 @@ const Orders = () => {
   // Define columns structure for the new virtualized DataTable component
   const columns = useMemo(() => [
     {
-      header: 'Order ID',
+      header: 'Order',
       accessor: 'order_number',
       sortable: true,
-      render: (row) => <strong style={{ color: 'var(--color-primary)' }}>{row.order_number || row.id}</strong>
+      render: (row) => <strong style={{ color: '#111827', fontSize: '0.85rem' }}>{row.order_number || row.id}</strong>
     },
     {
       header: 'Customer',
@@ -121,32 +122,66 @@ const Orders = () => {
             {(row.customer_name || 'G').charAt(0)}
           </span>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="customer-name" style={{ fontWeight: '600' }}>{row.customer_name || 'Guest'}</span>
+            <span className="customer-name" style={{ fontWeight: '600', fontSize: '0.85rem' }}>{row.customer_name || 'Guest'}</span>
             <span className="customer-email" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{row.customer_email || ''}</span>
           </div>
         </div>
       )
     },
     {
-      header: 'Items',
+      header: 'Product',
       accessor: 'items_summary',
-      sortable: false,
+      sortable: true,
       render: (row) => (
-        <div className="items-cell" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-          {(row.items_summary || '').split(', ').filter(Boolean).map((item, i) => (
-            <span key={i} className="item-tag" style={{
-              backgroundColor: 'var(--color-surface-hover)', padding: '2px 6px',
-              borderRadius: '4px', fontSize: '0.75rem', fontWeight: '500'
-            }}>{item}</span>
-          ))}
-        </div>
+        <span style={{ fontSize: '0.85rem', color: '#374151' }}>
+          {(row.items_summary || '').split(', ')[0] || 'Unknown Product'}
+        </span>
       )
     },
     {
-      header: 'Total',
+      header: 'Status',
+      accessor: 'status',
+      sortable: true,
+      render: (row) => {
+        let badgeStyle = { padding: '4px 10px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '500', color: 'white' };
+        if (row.status === 'completed') badgeStyle.backgroundColor = '#10B981'; // Green
+        else if (row.status === 'in_progress') badgeStyle.backgroundColor = '#111827'; // Black
+        else if (row.status === 'pending') badgeStyle.backgroundColor = '#F59E0B'; // Yellow
+        else if (row.status === 'cancelled') badgeStyle.backgroundColor = '#EF4444'; // Red
+        else badgeStyle.backgroundColor = '#6B7280'; // Gray
+        
+        return (
+          <span style={badgeStyle}>
+            {row.status ? row.status.charAt(0).toUpperCase() + row.status.slice(1).replace('_', ' ') : 'Unknown'}
+          </span>
+        );
+      }
+    },
+    {
+      header: 'Date',
+      accessor: 'created_at',
+      sortable: true,
+      render: (row) => <span style={{ fontSize: '0.85rem', color: '#374151' }}>{row.created_at ? new Date(row.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
+    },
+    {
+      header: 'Trend',
+      accessor: 'trend',
+      sortable: false,
+      render: (row) => {
+        // Mock SVG sparklines for the Zenith look
+        const color = row.status === 'cancelled' ? '#EF4444' : '#10B981';
+        return (
+          <svg width="40" height="15" viewBox="0 0 40 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d={row.status === 'cancelled' ? "M0 2L10 4L20 6L30 8L40 10" : "M0 12L10 10L20 12L30 8L40 6"} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        );
+      }
+    },
+    {
+      header: 'Amount',
       accessor: (row) => parseFloat(row.total_amount || row.total || 0),
       sortable: true,
-      render: (row) => <strong>{formatCurrency(row.total_amount || row.total)}</strong>
+      render: (row) => <strong style={{ fontSize: '0.85rem', color: '#111827' }}>{formatCurrency(row.total_amount || row.total)}</strong>
     },
     {
       header: 'Source',
@@ -155,16 +190,6 @@ const Orders = () => {
       render: (row) => (
         <span className={`source-badge source-${(row.channel || 'kiosk').toLowerCase()}`}>
           {row.channel || 'kiosk'}
-        </span>
-      )
-    },
-    {
-      header: 'Status',
-      accessor: 'status',
-      sortable: true,
-      render: (row) => (
-        <span className={`status-badge ${getStatusColor(row.status)}`}>
-          {row.status}
         </span>
       )
     },
@@ -216,69 +241,44 @@ const Orders = () => {
   }
 
   return (
-    <div className="orders-view animate-fade-in">
-      {/* Stats Summary Row */}
-      <div className="orders-stats-row">
-        <div className="order-stat-card">
-          <span className="stat-icon">📋</span>
-          <div className="stat-info">
-            <span className="stat-num">{orderStats.total}</span>
-            <span className="stat-label">Total Orders</span>
-          </div>
+    <div className="orders-view animate-fade-in" style={{ position: 'relative' }}>
+      {/* Zenith Page Header */}
+      <div className="zenith-page-header">
+        <div className="zenith-header-left">
+          <div className="zenith-breadcrumb">Dashboard &gt; Orders</div>
+          <h1 className="zenith-title">Orders</h1>
+          <p className="zenith-subtitle">Manage and track all customer orders.</p>
         </div>
-        <div className="order-stat-card">
-          <span className="stat-icon">⏳</span>
-          <div className="stat-info">
-            <span className="stat-num">{orderStats.pending}</span>
-            <span className="stat-label">Pending</span>
-          </div>
-        </div>
-        <div className="order-stat-card">
-          <span className="stat-icon">🔧</span>
-          <div className="stat-info">
-            <span className="stat-num">{orderStats.inProgress}</span>
-            <span className="stat-label">In Progress</span>
-          </div>
-        </div>
-        <div className="order-stat-card">
-          <span className="stat-icon">✅</span>
-          <div className="stat-info">
-            <span className="stat-num">{orderStats.completed}</span>
-            <span className="stat-label">Completed</span>
-          </div>
-        </div>
-        <div className="order-stat-card">
-          <span className="stat-icon">💰</span>
-          <div className="stat-info">
-            <span className="stat-num">{formatCurrency(orderStats.totalRevenue)}</span>
-            <span className="stat-label">Total Revenue</span>
-          </div>
+        <div className="zenith-header-right">
+          <button className="zenith-btn-dark">
+            <Plus className="w-4 h-4" style={{ marginRight: '6px' }} /> New Order
+          </button>
         </div>
       </div>
 
-      {/* Filters & Search Bar */}
-      <div className="orders-toolbar">
-        <div className="search-box">
-          <span className="search-icon">🔍</span>
+      {/* Zenith Filter Pills */}
+      <div className="zenith-filters-row">
+        {['all', 'completed', 'in_progress', 'pending', 'cancelled'].map(tab => (
+          <button 
+            key={tab} 
+            className={`zenith-filter-pill ${statusFilter === tab ? 'active' : ''}`}
+            onClick={() => setStatusFilter(tab)}
+          >
+            {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1).replace('_', ' ')}
+          </button>
+        ))}
+      </div>
+
+      {/* Search Bar - styled to match Zenith, DataTable toolbar is hidden if we pass searchKey="" */}
+      <div className="zenith-search-toolbar">
+        <div className="zenith-search-box">
+          <Search className="w-4 h-4 text-muted" />
           <input
             type="text"
-            placeholder="Search by Order ID, Customer..."
+            placeholder="Search orders..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="orders-search-input"
           />
-        </div>
-        <div className="filter-group">
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="filter-select">
-            {statusOptions.map(s => (
-              <option key={s} value={s}>{s === 'all' ? 'All Statuses' : s.replace('_', ' ')}</option>
-            ))}
-          </select>
-          <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} className="filter-select">
-            {sourceOptions.map(s => (
-              <option key={s} value={s}>{s === 'all' ? 'All Sources' : s.replace('_', ' ')}</option>
-            ))}
-          </select>
         </div>
       </div>
 
@@ -291,16 +291,30 @@ const Orders = () => {
         />
       </div>
 
-      {/* Order Detail Modal */}
+      {/* Order Detail — Side Panel */}
       {showDetailModal && selectedOrder && (
-        <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
-          <div className="modal-content order-detail-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Order {selectedOrder.order_number || selectedOrder.id}</h2>
-              <button className="modal-close" onClick={() => setShowDetailModal(false)}>✕</button>
+        <>
+          <div className="side-panel-overlay" onClick={() => setShowDetailModal(false)} />
+          <div className="side-panel" role="dialog" aria-label="Order Details">
+            <div className="side-panel-header">
+              <div>
+                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#111' }}>
+                  Order #{selectedOrder.order_number || selectedOrder.id}
+                </h3>
+                <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#888' }}>
+                  {selectedOrder.customer_name || 'Guest'} · {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : ''}
+                </p>
+              </div>
+              <button
+                className="panel-close-btn"
+                onClick={() => setShowDetailModal(false)}
+                aria-label="Close panel"
+              >
+                <X size={16} />
+              </button>
             </div>
 
-            <div className="order-detail-body">
+            <div className="side-panel-body">
               <div className="detail-grid">
                 <div className="detail-section">
                   <h4>Customer Information</h4>
@@ -478,23 +492,23 @@ const Orders = () => {
               )}
             </div>
 
-            <div className="modal-footer">
+            <div className="side-panel-footer">
               {getNextStatus(selectedOrder.status) && (
                 <Button variant="primary" onClick={() => handleStatusChange(selectedOrder.id, getNextStatus(selectedOrder.status))}>
-                  Advance to {getNextStatus(selectedOrder.status).replace('_', ' ')}
+                  → {getNextStatus(selectedOrder.status).replace('_', ' ')}
                 </Button>
               )}
               {selectedOrder.status !== 'refunded' && selectedOrder.status !== 'cancelled' && (
                 <Button variant="danger" onClick={() => setShowRefundModal(true)}>
-                  Initiate Refund
+                  Refund
                 </Button>
               )}
               <Button variant="outline" onClick={() => toast.success('Invoice generated')}>
-                Generate Invoice
+                Invoice
               </Button>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Refund Confirmation Modal */}
@@ -502,8 +516,13 @@ const Orders = () => {
         <div className="modal-overlay" onClick={() => setShowRefundModal(false)}>
           <div className="modal-content refund-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>⚠️ Confirm Refund</h2>
-              <button className="modal-close" onClick={() => setShowRefundModal(false)}>✕</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertCircle size={16} color="#DC2626" />
+                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700 }}>Confirm Refund</h3>
+              </div>
+              <button className="panel-close-btn" onClick={() => setShowRefundModal(false)} aria-label="Close">
+                <X size={16} />
+              </button>
             </div>
             <div className="refund-body">
               <p>Are you sure you want to refund order <strong>{selectedOrder.order_number || selectedOrder.id}</strong>?</p>

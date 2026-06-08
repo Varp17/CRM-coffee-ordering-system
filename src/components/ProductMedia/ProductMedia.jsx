@@ -1,104 +1,83 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './ProductMedia.css';
 
-// Dynamic helper mapping categories and names to high-quality coffee preparation loop videos
-export const getProductVideo = (name = '', category = '') => {
-  const lowerName = name.toLowerCase();
-  const lowerCat = category.toLowerCase();
-
-  // Matcha
-  if (lowerName.includes('matcha') || lowerCat.includes('matcha')) {
-    return 'https://assets.mixkit.co/videos/preview/mixkit-preparing-matcha-tea-close-up-43036-large.mp4';
-  }
-  // Cold brew / Iced coffee / Concentrates / South Indian Filter
-  if (
-    lowerName.includes('cold brew') ||
-    lowerName.includes('iced') ||
-    lowerName.includes('chilled') ||
-    lowerName.includes('filter') ||
-    lowerCat.includes('concentrate') ||
-    lowerCat.includes('chilled')
-  ) {
-    return 'https://assets.mixkit.co/videos/preview/mixkit-pouring-cold-brew-iced-coffee-in-a-glass-42490-large.mp4';
-  }
-  // Lattes / Cappuccino / Macchiato / Flat White
-  if (
-    lowerName.includes('latte') ||
-    lowerName.includes('cappuccino') ||
-    lowerName.includes('mocha') ||
-    lowerName.includes('macchiato') ||
-    lowerName.includes('flat white')
-  ) {
-    return 'https://assets.mixkit.co/videos/preview/mixkit-barista-pouring-milk-into-a-cup-of-coffee-34289-large.mp4';
-  }
-  // Espresso / Americana
-  if (lowerName.includes('espresso') || lowerName.includes('americano')) {
-    return 'https://assets.mixkit.co/videos/preview/mixkit-pouring-hot-espresso-coffee-into-a-cup-42488-large.mp4';
-  }
-  // Accessories / Pourers / Shakers
-  if (lowerCat.includes('accessories') || lowerName.includes('pourer') || lowerName.includes('shaker')) {
-    return 'https://assets.mixkit.co/videos/preview/mixkit-pouring-coffee-into-a-cup-42489-large.mp4';
-  }
-  // Default / Merchandise / General Coffee Beans Falling Loop
-  return 'https://assets.mixkit.co/videos/preview/mixkit-coffee-beans-falling-on-a-pile-39970-large.mp4';
-};
-
-const ProductMedia = ({ imageUrl, productName, category, className = '' }) => {
+/**
+ * ProductMedia — Shows product image with optional video overlay.
+ * - Desktop: video plays on hover
+ * - Kiosk/autoplay mode: video autoplays muted
+ * - Handles fallback gracefully
+ */
+const ProductMedia = ({
+  imageUrl,
+  videoUrl,
+  productName,
+  className = '',
+  autoPlay = false,       // For kiosk: always play
+  showPlayIcon = true,    // Show ▶ indicator when video available
+  aspectRatio = '4/3',
+}) => {
+  const fallbackImg = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&q=80';
+  const src = imageUrl || fallbackImg;
+  const videoRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const hoverTimer = useRef(null);
-
-  const videoUrl = getProductVideo(productName, category);
-  const fallbackImage = imageUrl || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&q=80';
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
-    if (isHovered) {
-      // 150ms delay to prevent aggressive video mounting/loading during rapid scroll/swipe
-      hoverTimer.current = setTimeout(() => {
-        setShouldPlayVideo(true);
-      }, 150);
-    } else {
-      if (hoverTimer.current) {
-        clearTimeout(hoverTimer.current);
-      }
-      setShouldPlayVideo(false);
-      setIsVideoLoaded(false);
-      setVideoError(false);
+    if (autoPlay && videoRef.current && videoUrl) {
+      videoRef.current.play().catch(() => {});
     }
+  }, [autoPlay, videoUrl]);
 
-    return () => {
-      if (hoverTimer.current) {
-        clearTimeout(hoverTimer.current);
+  const handleMouseEnter = () => {
+    if (!autoPlay && videoUrl) {
+      setIsHovered(true);
+      videoRef.current?.play().catch(() => {});
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!autoPlay && videoUrl) {
+      setIsHovered(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
       }
-    };
-  }, [isHovered]);
+    }
+  };
 
   return (
     <div
-      className={`product-media-container ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`product-media-container ${className} ${videoUrl ? 'has-video' : ''}`}
+      style={{ aspectRatio }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Static Thumbnail Image */}
-      <div
-        className={`product-media-image ${shouldPlayVideo && isVideoLoaded ? 'fade-out' : ''}`}
-        style={{ backgroundImage: `url(${fallbackImage})` }}
+      <img
+        src={src}
+        alt={productName || 'Product'}
+        className={`product-media-image ${(isHovered || autoPlay) && videoReady ? 'media-hidden' : ''}`}
+        loading="lazy"
+        onError={(e) => { e.target.src = fallbackImg; }}
       />
 
-      {/* Lazy Loaded Loop Video */}
-      {shouldPlayVideo && !videoError && (
-        <video
-          src={videoUrl}
-          className={`product-media-video ${isVideoLoaded ? 'fade-in' : ''}`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          onCanPlay={() => setIsVideoLoaded(true)}
-          onError={() => setVideoError(true)}
-        />
+      {videoUrl && (
+        <>
+          <video
+            ref={videoRef}
+            className={`product-media-video ${(isHovered || autoPlay) && videoReady ? 'media-visible' : ''}`}
+            src={videoUrl}
+            muted
+            loop
+            playsInline
+            preload={autoPlay ? 'auto' : 'metadata'}
+            onCanPlay={() => setVideoReady(true)}
+          />
+          {showPlayIcon && !isHovered && !autoPlay && videoReady && (
+            <div className="product-media-play-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21" /></svg>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

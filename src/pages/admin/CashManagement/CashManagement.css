@@ -1,0 +1,278 @@
+.cash-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cash-refresh-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  background: #fff;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cash-refresh-btn:hover {
+  color: #111;
+  border-color: rgba(0,0,0,0.18);
+}
+
+.cash-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.cash-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cash-stat-card:hover {
+  border-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.stat-icon-cash {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  color: #555;
+}
+
+.cash-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0;
+}
+
+.cash-tab {
+  padding: 10px 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #888;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cash-tab:hover {
+  color: #555;
+}
+
+.cash-tab.active {
+  color: #1a1a1a;
+  border-bottom-color: #1a1a1a;
+}
+
+.cash-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cash-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cash-action-btn.primary {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: none;
+}
+
+.cash-action-btn.primary:hover {
+  background-color: #333;
+}
+
+.cash-action-btn.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cash-action-btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.08);
+  color: #555;
+}
+
+.cash-action-btn.ghost:hover {
+  border-color: rgba(0,0,0,0.18);
+}
+
+.cash-session-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cash-session-picker label {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.cash-select {
+  padding: 8px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  min-width: 220px;
+}
+
+.cash-select:focus {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.cash-status-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  font-family: 'SF Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-open {
+  background-color: rgba(45, 157, 92, 0.06);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.12);
+}
+
+.status-closed {
+  background-color: rgba(74, 143, 212, 0.06);
+  color: #4a8fd4;
+  border: 1px solid rgba(74, 143, 212, 0.12);
+}
+
+.status-reconciled {
+  background-color: rgba(45, 157, 92, 0.04);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.08);
+}
+
+.status-discrepancy {
+  background-color: rgba(196, 64, 64, 0.06);
+  color: #c44040;
+  border: 1px solid rgba(196, 64, 64, 0.12);
+}
+
+.tx-type-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.tx-type-badge.sale {
+  background-color: rgba(45, 157, 92, 0.06);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.12);
+}
+
+.tx-type-badge.payout {
+  background-color: rgba(196, 64, 64, 0.06);
+  color: #c44040;
+  border: 1px solid rgba(196, 64, 64, 0.12);
+}
+
+.tx-type-badge.refund {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: #999;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.close-session-modal {
+  max-width: 480px;
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.cash-input {
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  font-size: 0.84rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.cash-input:focus {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.cash-textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 6px;
+}

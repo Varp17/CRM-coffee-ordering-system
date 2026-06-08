@@ -1,0 +1,253 @@
+.subs-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.subs-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.subs-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text, #111);
+  margin: 0;
+}
+
+.subs-sub {
+  font-size: 12px;
+  color: var(--color-text-muted, #888);
+  margin: 3px 0 0;
+}
+
+.subs-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.subs-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.subs-action-btn.ghost {
+  background: transparent;
+  border: 1px solid var(--color-border, rgba(0,0,0,0.10));
+  color: var(--color-text-secondary, #555);
+}
+
+.subs-action-btn.ghost:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.subs-action-btn.primary {
+  background: var(--color-primary, #C8853E);
+  color: #fff;
+}
+
+.subs-action-btn.primary:hover {
+  opacity: 0.9;
+}
+
+.subs-action-btn.danger {
+  background: #DC2626;
+  color: #fff;
+}
+
+.subs-action-btn.danger:hover {
+  opacity: 0.9;
+}
+
+.subs-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border, rgba(0,0,0,0.08));
+  padding-bottom: 0;
+}
+
+.subs-tab {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted, #888);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.subs-tab.active {
+  color: var(--color-primary, #C8853E);
+  border-bottom-color: var(--color-primary, #C8853E);
+}
+
+.subs-tab:hover {
+  color: var(--color-text, #111);
+}
+
+.subs-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: var(--color-text-muted, #888);
+  font-size: 13px;
+}
+
+.subs-modal {
+  max-width: 520px;
+}
+
+.subs-modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.form-group input,
+.form-group select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border, rgba(0,0,0,0.10));
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--color-text, #111);
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--color-primary, #C8853E);
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px !important;
+  text-transform: none !important;
+  color: var(--color-text, #111) !important;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(22, 163, 74, 0.10);
+  color: #16A34A;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+.badge-warning {
+  background: rgba(217, 119, 6, 0.10);
+  color: #D97706;
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.badge-danger {
+  background: rgba(220, 38, 38, 0.10);
+  color: #DC2626;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.badge-info {
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563EB;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+.badge-muted {
+  background: rgba(0, 0, 0, 0.04);
+  color: #999;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.action-btn-sm {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  transition: all 0.12s ease;
+}
+
+.action-btn-sm.outline {
+  background: transparent;
+  border: 1px solid var(--color-border, rgba(0,0,0,0.10));
+  color: var(--color-text-secondary, #555);
+}
+
+.action-btn-sm.outline:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.action-btn-sm.primary {
+  background: var(--color-primary, #C8853E);
+  color: #fff;
+}
+
+.action-btn-sm.primary:hover {
+  opacity: 0.9;
+}
+
+.action-btn-sm.danger {
+  background: #DC2626;
+  color: #fff;
+}
+
+.action-btn-sm.danger:hover {
+  opacity: 0.85;
+}

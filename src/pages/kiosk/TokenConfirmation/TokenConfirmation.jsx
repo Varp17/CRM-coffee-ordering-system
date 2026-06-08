@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKioskStore } from '../../../store/useKioskStore';
+import { reorderService } from '../../../services/reorderService';
+import { useAuthStore } from '../../../store/useAuthStore';
+import { useNotificationStore } from '../../../store/useNotificationStore';
+import toast from 'react-hot-toast';
 import './TokenConfirmation.css';
 
 const STATES = [
@@ -13,10 +17,17 @@ const STATES = [
 
 const TokenConfirmation = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const currentToken = useKioskStore((state) => state.currentToken);
   const clearKioskCart = useKioskStore((state) => state.clearKioskCart);
+  const { isAuthenticated } = useAuthStore();
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   const [activeStateIndex, setActiveStateIndex] = useState(0);
+  const [isReordering, setIsReordering] = useState(false);
+
+  // Get order from location state (passed from handleKioskComplete)
+  const orderFromState = location.state?.order || null;
 
   // Fallback redirect if no active token
   useEffect(() => {
@@ -46,10 +57,37 @@ const TokenConfirmation = () => {
     runNextStep();
   }, []);
 
+  const handleReorder = async () => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to reorder');
+      return;
+    }
+
+    setIsReordering(true);
+    try {
+      const res = await reorderService.reorderFromPastOrder(
+        orderFromState?.id,
+        orderFromState?.store?.id || 1,
+        'kiosk'
+      );
+
+      toast.success('Order placed successfully!');
+      navigate(`/kiosk/token`, { state: { order: res.order || res.data } });
+    } catch (err) {
+      console.error('Reorder failed:', err);
+      toast.error(err.message || 'Failed to place order');
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
   const handleFinish = () => {
     clearKioskCart();
     navigate('/kiosk');
   };
+
+
+
 
   const activeToken = currentToken || 'T-204';
 
@@ -88,16 +126,27 @@ const TokenConfirmation = () => {
           })}
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          className="btn btn-primary btn-large"
-          onClick={handleFinish}
-        >
-          COMPLETE SYSTEM VISIT
-        </motion.button>
-      </motion.div>
-    </div>
-  );
-};
+         <div className="token-actions">
+           {orderFromState && !isReordering && (
+             <motion.button
+               whileTap={{ scale: 0.98 }}
+               className="btn btn-outline btn-large"
+               onClick={handleReorder}
+             >
+               REORDER THIS DRINK
+             </motion.button>
+           )}
+           <motion.button
+             whileTap={{ scale: 0.98 }}
+             className="btn btn-primary btn-large"
+             onClick={handleFinish}
+           >
+             COMPLETE SYSTEM VISIT
+           </motion.button>
+         </div>
+       </motion.div>
+     </div>
+   );
+ };
 
-export default TokenConfirmation;
+ export default TokenConfirmation;

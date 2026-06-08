@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp, Download, Eye, Trash2 } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Download, Eye, Trash2, ArrowUpDown } from 'lucide-react';
 import './DataTable.css';
 
 export const DataTable = ({
@@ -126,10 +126,16 @@ export const DataTable = ({
                   key={col.header}
                   onClick={() => col.sortable && handleSort(col.accessor)}
                 >
-                  <div className="data-table-header-cell">
+                  <div className="data-table-header-cell" style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: col.sortable ? 'pointer' : 'default', color: 'var(--color-text-muted)' }}>
                     <span>{col.header}</span>
-                    {col.sortable && sortConfig.key === col.accessor && (
-                      sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                    {col.sortable && (
+                      <span style={{ display: 'flex', alignItems: 'center', color: sortConfig.key === col.accessor ? 'var(--color-text-primary)' : 'var(--color-text-muted)', opacity: sortConfig.key === col.accessor ? 1 : 0.5 }}>
+                        {sortConfig.key === col.accessor ? (
+                          sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                        ) : (
+                          <ArrowUpDown className="w-3 h-3" />
+                        )}
+                      </span>
                     )}
                   </div>
                 </th>

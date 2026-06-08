@@ -19,6 +19,8 @@ import OrderSuccess from './pages/d2c/OrderSuccess/OrderSuccess';
 import Subscription from './pages/d2c/Subscription/Subscription';
 import Collections from './pages/d2c/Collections/Collections';
 import CustomerLogin from './pages/d2c/Auth/Login';
+import About from './pages/d2c/About/About';
+import Contact from './pages/d2c/Contact/Contact';
 
 // Existing Admin Pages
 import Login from './pages/admin/Login/Login';
@@ -27,6 +29,10 @@ import Orders from './pages/admin/Orders/Orders';
 import Menu from './pages/admin/Menu/Menu';
 import Inventory from './pages/admin/Inventory/Inventory';
 import Ingredients from './pages/admin/Ingredients/Ingredients';
+import CentralInventory from './pages/admin/CentralInventory/CentralInventory';
+import RawMaterials from './pages/admin/RawMaterials/RawMaterials';
+import Production from './pages/admin/Production/Production';
+import BrewRecipes from './pages/admin/BrewRecipes/BrewRecipes';
 import Customers from './pages/admin/Customers/Customers';
 import Roles from './pages/admin/Roles/Roles';
 import CMS from './pages/admin/CMS/CMS';
@@ -36,6 +42,31 @@ import Notifications from './pages/admin/Notifications/Notifications';
 import Stores from './pages/admin/Stores/Stores';
 import Financials from './pages/admin/Financials/Financials';
 import ActivityLog from './pages/admin/ActivityLog/ActivityLog';
+import Settings from './pages/admin/Settings/Settings';
+
+// New Admin Pages
+import Suppliers from './pages/admin/Suppliers/Suppliers';
+import PurchaseOrders from './pages/admin/PurchaseOrders/PurchaseOrders';
+import WasteLogs from './pages/admin/WasteLogs/WasteLogs';
+import StoreTransfers from './pages/admin/StoreTransfers/StoreTransfers';
+import Packaging from './pages/admin/Packaging/Packaging';
+import CashManagement from './pages/admin/CashManagement/CashManagement';
+import B2B from './pages/admin/B2B/B2B';
+import GST from './pages/admin/GST/GST';
+import Loyalty from './pages/admin/Loyalty/Loyalty';
+import Promotions from './pages/admin/Promotions/Promotions';
+import Subscriptions from './pages/admin/Subscriptions/Subscriptions';
+import Support from './pages/admin/Support/Support';
+import Quality from './pages/admin/Quality/Quality';
+import Equipment from './pages/admin/Equipment/Equipment';
+import FoodSafety from './pages/admin/FoodSafety/FoodSafety';
+import Staff from './pages/admin/Staff/Staff';
+import Shipping from './pages/admin/Shipping/Shipping';
+import DailyOps from './pages/admin/DailyOps/DailyOps';
+import DailyNotes from './pages/admin/DailyNotes/DailyNotes';
+import CustomerQueries from './pages/admin/CustomerQueries/CustomerQueries';
+import RecipeBuilder from './pages/admin/RecipeBuilder/RecipeBuilder';
+import CompatibilityRules from './pages/admin/CompatibilityRules/CompatibilityRules';
 
 // Existing Barista Pages
 import OrderQueue from './pages/barista/OrderQueue/OrderQueue';
@@ -46,6 +77,7 @@ import KioskCatalog from './pages/kiosk/Catalog/Catalog';
 import KioskLogin from './pages/kiosk/Login/Login';
 import KioskQrOrder from './pages/kiosk/QrOrder/QrOrder';
 import KioskCustomDrink from './pages/kiosk/CustomDrink/CustomDrink';
+import DrinkBuilder from './features/customizer/components/DrinkBuilder';
 import KioskCheckout from './pages/kiosk/Checkout/Checkout';
 
 // Simulated Real-Time WebSocket Hook
@@ -96,27 +128,11 @@ function App() {
 
   const kioskSubtotal = kioskCart.reduce((sum, item) => sum + (item.price || item.totalPrice || 0), 0);
 
-  const handleKioskComplete = async () => {
-    // Generate pickup token and estimates via kiosk store
-    const { tokenNum } = await completeKioskOrder();
-
-    // Route order live to KDS (Barista display queue)
-    const newOrder = {
-      id: tokenNum,
-      customer: 'Kiosk Guest',
-      items: kioskCart.map((item) => ({
-        name: item.name,
-        price: item.price || item.totalPrice || 0,
-        qty: item.qty || item.quantity || 1
-      })),
-      source: 'Kiosk',
-      status: 'Pending',
-      notes: 'Self-Service Kiosk Order'
-    };
-
-    placeOrder(newOrder);
-    navigate('/kiosk/token');
-  };
+   const handleKioskComplete = async () => {
+     // Generate pickup token and estimates via kiosk store
+     const { tokenNum, order } = await completeKioskOrder();
+     navigate('/kiosk/token', { state: { order } });
+   };
 
   return (
     <ConfirmationProvider>
@@ -129,33 +145,37 @@ function App() {
           <Route index element={<Home />} />
           <Route path="catalog" element={<Catalog />} />
           <Route path="catalog/:id" element={<ProductDetail />} />
+          <Route path="shop" element={<Catalog />} />
+          <Route path="shop/:id" element={<ProductDetail />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
           <Route path="cart" element={<Cart onProceedToCheckout={() => {}} />} />
           <Route path="checkout" element={<Checkout onBackToCart={() => {}} />} />
           <Route path="profile" element={<Profile />} />
           <Route path="subscription" element={<Subscription />} />
+          <Route path="subscriptions" element={<Subscription />} />
           <Route path="collections" element={<Collections />} />
           <Route path="success" element={<OrderSuccess />} />
           <Route path="login" element={<CustomerLogin />} />
           <Route path="custom" element={
-            <KioskCustomDrink
+            <DrinkBuilder
+              onClose={() => navigate('/store/catalog')}
               onBack={() => navigate('/store/catalog')}
               onAddToCart={(customDrink) => {
                 const cartStore = useCartStore.getState();
-                const customProduct = {
-                  id: customDrink.id,
-                  name: customDrink.name,
-                  image_url: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=900&auto=format&fit=crop&q=88',
-                  description: `Customized base: ${customDrink.customization.base}, milk: ${customDrink.customization.milk}`,
-                  base_price: customDrink.price,
-                  is_custom: true,
-                  customization: customDrink.customization
-                };
-                const customVariant = {
-                  id: 'custom-variant',
-                  name: customDrink.customization.size,
-                  price: customDrink.price
-                };
-                cartStore.addItem(customProduct, customVariant, 1);
+                cartStore.addItem(
+                  {
+                    id: customDrink.id,
+                    name: customDrink.name,
+                    image_url: customDrink.image_url,
+                    description: `Customized ${customDrink.customization.base} with ${customDrink.customization.milk}`,
+                    base_price: customDrink.price,
+                    is_custom: true,
+                    customization: customDrink.customization,
+                  },
+                  { id: 'custom-variant', name: 'Custom', price: customDrink.price },
+                  1
+                );
                 navigate('/store/cart');
               }}
             />
@@ -169,9 +189,40 @@ function App() {
           <Route path="orders" element={<Orders />} />
           <Route path="menu" element={<Menu />} />
           <Route path="recipe-engine" element={<RecipeEngine />} />
+          <Route path="recipe-builder" element={<RecipeBuilder />} />
+          <Route path="compatibility-rules" element={<CompatibilityRules />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="ingredients" element={<Ingredients />} />
+          <Route path="central-inventory" element={<CentralInventory />} />
+          <Route path="raw-materials" element={<RawMaterials />} />
+          <Route path="production" element={<Production />} />
+          <Route path="brew-recipes" element={<BrewRecipes />} />
           <Route path="customers" element={<Customers />} />
+          <Route path="suppliers" element={<Suppliers />} />
+          <Route path="purchase-orders" element={<PurchaseOrders />} />
+          <Route path="waste-logs" element={<WasteLogs />} />
+          <Route path="store-transfers" element={<StoreTransfers />} />
+          <Route path="packaging" element={<Packaging />} />
+          <Route path="cash" element={<CashManagement />} />
+          <Route path="b2b" element={<B2B />} />
+          <Route path="gst" element={<GST />} />
+          <Route path="loyalty" element={<Loyalty />} />
+          <Route path="promotions" element={<Promotions />} />
+          <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="support" element={<Support />} />
+          <Route path="quality" element={<Quality />} />
+          <Route path="equipment" element={<Equipment />} />
+          <Route path="food-safety" element={<FoodSafety />} />
+          <Route path="staff" element={<Staff />} />
+          <Route path="shifts" element={<Staff />} />
+          <Route path="shipping" element={<Shipping />} />
+          <Route path="daily-ops" element={<DailyOps />} />
+          <Route path="daily-notes" element={<DailyNotes />} />
+          <Route path="customer-queries" element={<CustomerQueries />} />
+          {/* Legacy routes */}
+          <Route path="settings" element={<Settings />} />
+          <Route path="reports" element={<Analytics />} />
+          <Route path="marketing" element={<CMS />} />
           <Route path="roles" element={<Roles />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="notifications" element={<Notifications />} />
@@ -213,7 +264,8 @@ function App() {
             />
           } />
           <Route path="custom" element={
-            <KioskCustomDrink
+            <DrinkBuilder
+              onClose={() => navigate('/kiosk/catalog')}
               onBack={() => navigate('/kiosk/catalog')}
               onAddToCart={(customDrink) => {
                 setKioskCart([...kioskCart, customDrink]);

@@ -4,7 +4,6 @@ import './Cart.css';
 import Button from '../../../components/Button/Button';
 import { useCartStore } from '../../../store/useCartStore';
 import { formatCurrency } from '../../../utils/formatters';
-import { productService } from '../../../services/products';
 import { coupons } from '../../../data/mockData';
 import toast from 'react-hot-toast';
 
@@ -25,24 +24,6 @@ const Cart = () => {
   } = useCartStore();
 
   const [couponCode, setCouponCode] = useState('');
-  const [crossSells, setCrossSells] = useState([]);
-
-  // Fetch cross sell candidates (beans, kit, or merch) not already in cart
-  React.useEffect(() => {
-    const loadCrossSells = async () => {
-      try {
-        const prods = await productService.getAll();
-        const cartIds = items.map((i) => i.product.id);
-        const filtered = prods
-          .filter((p) => !cartIds.includes(p.id) && (p.category === 'DIY Kits' || p.category === 'Merchandise' || p.category === 'Flavored'))
-          .slice(0, 2);
-        setCrossSells(filtered);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    loadCrossSells();
-  }, [items]);
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
@@ -57,14 +38,6 @@ const Cart = () => {
     }
   };
 
-  const handleQuickAddCrossSell = (prod) => {
-    const defaultVariant = prod.variants && prod.variants.length > 0
-      ? prod.variants[0]
-      : { id: 'default', name: 'Standard', price: prod.price };
-    useCartStore.getState().addItem(prod, defaultVariant, 1);
-    toast.success(`Quick added ${prod.title}!`);
-  };
-
   const subtotal = getSubtotal();
   const discount = getDiscount();
   const tax = getTax();
@@ -72,7 +45,7 @@ const Cart = () => {
 
   return (
     <div className="cart-page animate-fade-in">
-      <h1 className="cart-title">Your Shopping <span className="text-gradient">Cart</span></h1>
+      <h1 className="cart-title">Cart</h1>
 
       {items.length === 0 ? (
         <div className="empty-cart-state">
@@ -128,37 +101,12 @@ const Cart = () => {
               ))}
             </div>
 
-            {/* Cross sell module */}
-            {crossSells.length > 0 && (
-              <div className="cross-sell-section">
-                <h3>Brew Like a Professional Barista ☕</h3>
-                <p>Complete your experience with these popular craft additions:</p>
-                <div className="cross-sell-grid">
-                  {crossSells.map((prod) => (
-                    <div key={prod.id} className="cross-sell-card">
-                      <img src={prod.imageUrl} alt={prod.title} />
-                      <div className="cross-info">
-                        <h4>{prod.title}</h4>
-                        <span className="cross-price">{formatCurrency(prod.price)}</span>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="small" 
-                        onClick={() => handleQuickAddCrossSell(prod)}
-                      >
-                        + Add
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Checkout calculations summary */}
           <div className="cart-right-col">
             <div className="cart-summary">
-              <h2 className="summary-title">Order Summary</h2>
+                <h2 className="summary-title">Summary</h2>
               
               <div className="summary-calculations">
                 <div className="summary-row">
@@ -186,7 +134,7 @@ const Cart = () => {
                 <div className="summary-divider"></div>
                 
                 <div className="summary-row total-row">
-                  <span>Grand Total</span>
+                  <span>Total</span>
                   <span className="total-val">{formatCurrency(total)}</span>
                 </div>
               </div>
@@ -216,13 +164,13 @@ const Cart = () => {
                 </div>
               )}
 
-              {/* Available Coupons Hint Box */}
+              {/* Available Coupons */}
               <div className="coupons-hint-box">
-                <span className="hint-title">💡 Standard Coupon Codes:</span>
+                <span className="hint-title">Coupon Codes:</span>
                 <ul>
                   {coupons.map((c) => (
                     <li key={c.code} onClick={() => setCouponCode(c.code)}>
-                      <strong>{c.code}</strong>: Get {c.type === 'percentage' ? `${c.discount}%` : `₹${c.discount}`} off (Min ₹{c.minOrder})
+                      <strong>{c.code}</strong>: {c.type === 'percentage' ? `${c.discount}%` : `₹${c.discount}`} off (Min ₹{c.minOrder})
                     </li>
                   ))}
                 </ul>
@@ -234,11 +182,11 @@ const Cart = () => {
                 fullWidth={true}
                 onClick={() => navigate('/store/checkout')}
               >
-                Proceed to Checkout →
+                  Checkout →
               </Button>
               
               <Link to="/store/catalog" className="continue-shopping-link">
-                ← Continue Shopping
+                ← Back to Menu
               </Link>
             </div>
           </div>

@@ -1,0 +1,210 @@
+.packaging-page {
+  padding: 24px;
+}
+
+.packaging-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.packaging-page .page-header-left h2 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  color: var(--color-secondary);
+}
+
+.packaging-page .page-subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.packaging-page .page-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.packaging-page .tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.packaging-page .tab {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.packaging-page .tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.packaging-page .tab:hover {
+  color: var(--color-secondary);
+}
+
+.packaging-page .filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.packaging-page .search-wrapper {
+  flex: 1;
+  max-width: 400px;
+}
+
+.packaging-page .search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.packaging-page .search-input:focus {
+  border-color: var(--color-primary);
+}
+
+.packaging-page .filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  outline: none;
+  min-width: 180px;
+}
+
+.packaging-page .data-table-container {
+  background: var(--color-surface);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.packaging-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.packaging-page .modal-content {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+.packaging-page .modal-content.modal-wide {
+  max-width: 800px;
+}
+
+.packaging-page .modal-content h3 {
+  margin: 0 0 20px;
+  font-size: 1.15rem;
+  color: var(--color-secondary);
+}
+
+.packaging-page .modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.packaging-page .modal-header-row h3 {
+  margin: 0;
+}
+
+.packaging-page .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.packaging-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.packaging-page .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.packaging-page .form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+}
+
+.packaging-page .form-group input,
+.packaging-page .form-group select,
+.packaging-page .form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-bg);
+  color: var(--color-secondary);
+  outline: none;
+  font-family: inherit;
+}
+
+.packaging-page .form-group input:focus,
+.packaging-page .form-group select:focus,
+.packaging-page .form-group textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.packaging-page .checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.packaging-page .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.packaging-page .empty-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-muted);
+}

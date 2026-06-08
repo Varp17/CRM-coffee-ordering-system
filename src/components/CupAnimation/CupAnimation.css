@@ -2,8 +2,82 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+}
+
+.cup-animation-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .cup-animation-wrap canvas {
-  border-radius: var(--radius-md);
+  border-radius: 16px;
+  background: transparent;
+  display: block;
+}
+
+.cup-animation-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #888;
+  text-align: center;
+  min-height: 20px;
+  transition: opacity 0.3s;
+  letter-spacing: 0.3px;
+}
+
+.cup-record-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #d0c0a8;
+  background: #faf6f1;
+  color: #5a4030;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cup-record-btn:hover {
+  background: #f0e6d8;
+  border-color: #c8955c;
+}
+
+.cup-record-btn.recording {
+  background: #e85050;
+  color: white;
+  border-color: #d03030;
+  animation: pulse-record 1s ease-in-out infinite;
+}
+
+.cup-record-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes pulse-record {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.cup-video-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #c8955c, #a07040);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  pointer-events: none;
 }

@@ -1,0 +1,210 @@
+.customer-queries-page {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.customer-queries-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.customer-queries-page .page-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e293b);
+  margin-bottom: 0.25rem;
+}
+
+.customer-queries-page .page-header .page-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.customer-queries-page .page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.customer-queries-page .filters-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.customer-queries-page .filter-select,
+.customer-queries-page .filter-search {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-text-primary, #1e293b);
+  font-size: 0.875rem;
+  outline: none;
+  min-width: 150px;
+}
+
+.customer-queries-page .filter-search {
+  flex: 1;
+  max-width: 400px;
+}
+
+.customer-queries-page .filter-select:focus,
+.customer-queries-page .filter-search:focus {
+  border-color: var(--color-primary, #059669);
+}
+
+.customer-queries-page .data-table-container {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+
+/* Status Badges */
+.customer-queries-page .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.customer-queries-page .status-badge.open {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.customer-queries-page .status-badge.in_progress {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.customer-queries-page .status-badge.resolved {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+/* Modal Styling */
+.customer-queries-page .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.customer-queries-page .modal-content {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: modalEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.customer-queries-page .modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  padding-bottom: 0.75rem;
+}
+
+.customer-queries-page .modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e293b);
+}
+
+.customer-queries-page .modal-header-icon {
+  color: var(--color-primary, #059669);
+}
+
+.customer-queries-page .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.customer-queries-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.customer-queries-page .form-group.full-width {
+  grid-column: span 2;
+}
+
+.customer-queries-page .form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #475569);
+}
+
+.customer-queries-page .form-group select,
+.customer-queries-page .form-group input,
+.customer-queries-page .form-group textarea {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-input, #f8fafc);
+  color: var(--color-text-primary, #1e293b);
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.customer-queries-page .form-group select:focus,
+.customer-queries-page .form-group input:focus,
+.customer-queries-page .form-group textarea:focus {
+  border-color: var(--color-primary, #059669);
+  background-color: var(--color-bg-card, #ffffff);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.customer-queries-page .form-group textarea {
+  resize: vertical;
+}
+
+.customer-queries-page .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+  padding-top: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.customer-queries-page .action-btn-update {
+  font-size: 0.875rem;
+  color: var(--color-primary, #059669) !important;
+  font-weight: 500;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

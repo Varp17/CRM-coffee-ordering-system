@@ -4,9 +4,11 @@
    and auto-logout on 401.
    ============================================ */
 
-const BASE_URL = window.location.hostname.includes('vercel.app')
+const BASE_URL = import.meta.env.VITE_API_URL || (window.location.hostname.includes('vercel.app')
   ? 'https://coffee-ordering-system-backend.onrender.com/api/v1'
-  : '/api/v1';
+  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000/api/v1'
+    : '/api/v1');
 
 class ApiClient {
   constructor() {
@@ -109,7 +111,8 @@ class ApiClient {
       return { success: true };
     } catch (err) {
       if (err instanceof ApiError) throw err;
-      // Network error
+      if (err.name === 'AbortError') throw err;
+      if (err.code === 20 && err.message?.includes('abort')) throw err;
       throw new ApiError('Network error. Please check your connection.', 0, { originalError: err.message });
     }
   }
@@ -126,8 +129,8 @@ class ApiClient {
     return this.request(`${endpoint}${qs ? '?' + qs : ''}`, { method: 'GET' });
   }
 
-  post(endpoint, data) {
-    return this.request(endpoint, { method: 'POST', body: data });
+  post(endpoint, data, opts = {}) {
+    return this.request(endpoint, { method: 'POST', body: data, ...opts });
   }
 
   put(endpoint, data) {

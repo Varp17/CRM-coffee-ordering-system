@@ -1,0 +1,206 @@
+.waste-logs-page {
+  padding: 24px;
+}
+
+.waste-logs-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.waste-logs-page .page-header-left h2 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  color: var(--color-secondary);
+}
+
+.waste-logs-page .page-subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.waste-logs-page .page-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.waste-logs-page .filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.waste-logs-page .search-wrapper {
+  flex: 1;
+  max-width: 400px;
+}
+
+.waste-logs-page .search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.waste-logs-page .search-input:focus {
+  border-color: var(--color-primary);
+}
+
+.waste-logs-page .filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  outline: none;
+  min-width: 180px;
+}
+
+.waste-logs-page .data-table-container {
+  background: var(--color-surface);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.waste-logs-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.waste-logs-page .modal-content {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+.waste-logs-page .modal-content.modal-wide {
+  max-width: 800px;
+}
+
+.waste-logs-page .modal-content h3 {
+  margin: 0 0 20px;
+  font-size: 1.15rem;
+  color: var(--color-secondary);
+}
+
+.waste-logs-page .modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.waste-logs-page .modal-header-row h3 {
+  margin: 0;
+}
+
+.waste-logs-page .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.waste-logs-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.waste-logs-page .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.waste-logs-page .form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+}
+
+.waste-logs-page .form-group input,
+.waste-logs-page .form-group select,
+.waste-logs-page .form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--color-bg);
+  color: var(--color-secondary);
+  outline: none;
+  font-family: inherit;
+}
+
+.waste-logs-page .form-group input:focus,
+.waste-logs-page .form-group select:focus,
+.waste-logs-page .form-group textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.waste-logs-page .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.waste-logs-page .stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.waste-logs-page .stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.waste-logs-page .stat-card .stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.waste-logs-page .stat-card .stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.waste-logs-page .stat-card .stat-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.waste-logs-page .empty-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-muted);
+}

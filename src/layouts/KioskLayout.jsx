@@ -31,7 +31,7 @@ const KioskLayout = () => {
 
   const currentStep = getStepProgress();
   const isHomeScreen = location.pathname === '/kiosk';
-  const showNavbar = currentStep < 4; // Hide on Token Confirmation page for complete focus
+  const showNavbar = currentStep > 0 && currentStep < 4; // Hide on Home start page and Token page for focus
 
   return (
     <div className="kiosk-layout-container">

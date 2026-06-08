@@ -10,7 +10,10 @@ import { t } from '../../../utils/i18n';
 const Login = () => {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const sendOtp = useAuthStore((state) => state.sendOtp);
+  const verifyOtp = useAuthStore((state) => state.verifyOtp);
   const isLoading = useAuthStore((state) => state.isLoading);
+
 
   const [loginMethod, setLoginMethod] = useState('otp'); // 'otp' | 'password'
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -21,21 +24,31 @@ const Login = () => {
   const [otpCode, setOtpCode] = useState('');
   const [simulatedOtp, setSimulatedOtp] = useState('');
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (!phoneNumber || phoneNumber.length < 10) {
       toast.error('Please enter a valid 10-digit mobile number.');
       return;
     }
 
-    // Simulate OTP generation
-    const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
-    setSimulatedOtp(randomOtp);
-    setOtpStep(true);
-
-    // Alert user about simulated OTP in development
-    toast.success(`[SIMULATED SMS] Your Digital Coffee OTP code is: ${randomOtp}`, {
-      duration: 10000,
-    });
+    try {
+      const res = await sendOtp(phoneNumber);
+      if (res.success) {
+        setOtpStep(true);
+        if (res.otp) {
+          setSimulatedOtp(res.otp);
+          // Alert user about simulated OTP in development
+          toast.success(`[SIMULATED SMS] Your Digital Coffee OTP code is: ${res.otp}`, {
+            duration: 10000,
+          });
+        } else {
+          toast.success('OTP sent successfully. Please check your SMS or console logs.');
+        }
+      } else {
+        toast.error(res.error || 'Failed to send OTP.');
+      }
+    } catch (err) {
+      toast.error('Failed to send OTP.');
+    }
   };
 
   const handleOtpKeyPress = (num) => {
@@ -50,13 +63,13 @@ const Login = () => {
 
   const handleVerifyOtp = async (e) => {
     if (e) e.preventDefault();
-    if (otpCode !== simulatedOtp) {
+    if (simulatedOtp && otpCode !== simulatedOtp) {
       toast.error('Invalid OTP. Please check the simulated notification toast.');
       return;
     }
 
     try {
-      const res = await login(phoneNumber, otpCode);
+      const res = await verifyOtp(phoneNumber, otpCode);
       if (res.success) {
         toast.success(`Welcome back, ${useAuthStore.getState().user?.name || 'Customer'}! ☕`);
         navigate('/store/profile');

@@ -1,30 +1,73 @@
-import React, { useEffect, useRef } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { formatCurrency } from '../../utils/formatters';
 
 /**
- * AnimatedCounter
- * Smoothly rolls up/down to a target value using spring physics.
+ * AnimatedCounter — smoothly animates a numeric value change.
+ * Used in the Kiosk CustomDrink live price display.
+ *
+ * Props:
+ *   value       {number}  - The target numeric value to display
+ *   format      {string}  - 'currency' (default) | 'number'
+ *   duration    {number}  - Animation duration in ms (default: 400)
+ *   className   {string}  - Optional CSS class
  */
-const AnimatedCounter = ({ value, prefix = '₹', duration = 0.5, className = '' }) => {
-  const springValue = useSpring(value, { 
-    stiffness: 100, 
-    damping: 20, 
-    mass: 1 
-  });
+const AnimatedCounter = ({
+  value = 0,
+  format = 'currency',
+  duration = 400,
+  className = '',
+}) => {
+  const [displayValue, setDisplayValue] = useState(value);
+  const startRef = useRef(value);
+  const startTimeRef = useRef(null);
+  const rafRef = useRef(null);
 
   useEffect(() => {
-    springValue.set(value);
-  }, [value, springValue]);
+    const from = startRef.current;
+    const to = value;
 
-  // Format the spring value back to a localized string
-  const displayValue = useTransform(springValue, (current) => {
-    return `${prefix}${Math.round(current).toLocaleString('en-IN')}`;
-  });
+    if (from === to) return;
+
+    // Cancel any running animation
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+    startTimeRef.current = null;
+
+    const step = (timestamp) => {
+      if (!startTimeRef.current) startTimeRef.current = timestamp;
+      const elapsed = timestamp - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = from + (to - from) * eased;
+
+      setDisplayValue(current);
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        setDisplayValue(to);
+        startRef.current = to;
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(step);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [value, duration]);
+
+  const formatted =
+    format === 'currency'
+      ? formatCurrency(displayValue)
+      : Math.round(displayValue).toLocaleString('en-IN');
 
   return (
-    <motion.span className={className}>
-      {displayValue}
-    </motion.span>
+    <span className={`animated-counter ${className}`}>
+      {formatted}
+    </span>
   );
 };
 

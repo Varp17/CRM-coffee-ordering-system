@@ -1,45 +1,64 @@
+/* ── ProductMedia — Image + Video Hybrid ── */
+
 .product-media-container {
   position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+  background: #f0e8db;
+}
+
+.product-media-image,
+.product-media-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  background-color: var(--color-espresso, #1a0f0a);
+  object-fit: cover;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .product-media-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   opacity: 1;
   z-index: 1;
 }
 
-.product-media-container:hover .product-media-image {
-  transform: scale(1.05);
+.product-media-image.media-hidden {
+  opacity: 0;
 }
 
 .product-media-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   opacity: 0;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 2;
 }
 
-/* Animations & Transits */
-.product-media-video.fade-in {
+.product-media-video.media-visible {
   opacity: 1;
 }
 
-.product-media-image.fade-out {
-  opacity: 0;
+/* Play badge indicator */
+.product-media-play-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: pmPulse 2s ease-in-out infinite;
+}
+
+@keyframes pmPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Hover cursor for cards with video */
+.product-media-container.has-video {
+  cursor: pointer;
 }

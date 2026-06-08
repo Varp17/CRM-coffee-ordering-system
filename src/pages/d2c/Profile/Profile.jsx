@@ -55,10 +55,13 @@ const Profile = () => {
     try {
       const recipe = typeof drink.ingredients === 'string' ? JSON.parse(drink.ingredients) : drink.ingredients;
       
-      const baseName = recipe.some(i => i.ingredient_id === 1) ? 'Cold Brew' : 'Espresso';
-      const milkName = recipe.some(i => i.ingredient_id === 4) ? 'Whole Milk' :
-                       recipe.some(i => i.ingredient_id === 5) ? 'Oat Milk' :
-                       recipe.some(i => i.ingredient_id === 6) ? 'Almond Milk' : 'No Milk';
+      const baseName = recipe.some(i => i.ingredient_id === 1) ? '50:50 Concentrate' :
+                       recipe.some(i => i.ingredient_id === 3) ? '70:30 Concentrate' :
+                       recipe.some(i => i.ingredient_id === 4) ? 'SIF Concentrate' :
+                       recipe.some(i => i.ingredient_id === 46) ? 'Cascara Concentrate' :
+                       recipe.some(i => i.ingredient_id === 2) ? '100% Arabica' : '50:50 Concentrate';
+      const milkName = recipe.some(i => i.ingredient_id === 8) ? 'Dairy Milk' :
+                       recipe.some(i => i.ingredient_id === 15) ? 'Condensed Milk' : 'No Milk';
       
       const customProduct = {
         id: drink.uuid,
@@ -110,18 +113,20 @@ const Profile = () => {
       if (!Array.isArray(list)) return 'Custom Blend';
       
       const mapping = {
-        1: 'Cold Brew Concentrate',
-        2: 'Espresso Shot',
-        4: 'Whole Milk',
-        5: 'Oat Milk',
-        6: 'Almond Milk',
-        7: 'Soy Milk',
-        9: 'Vanilla Syrup',
-        10: 'Caramel Syrup',
-        11: 'Hazelnut Syrup',
-        14: 'Whipped Cream',
-        20: 'Cold Foam',
-        17: 'Ice'
+        1: '50:50 Concentrate',
+        2: '100% Arabica',
+        3: '70:30 Concentrate',
+        4: 'SIF Concentrate',
+        8: 'Dairy Milk',
+        11: 'Honey',
+        12: 'Sugar Syrup',
+        13: 'Jaggery Syrup',
+        15: 'Condensed Milk',
+        28: 'Whipped Cream',
+        29: 'Chocolate Drizzle',
+        45: 'Ice Cubes',
+        46: 'Cascara Concentrate',
+        47: 'Mint Tonic Water'
       };
 
       return list.map(i => mapping[i.ingredient_id] || `Ingredient #${i.ingredient_id}`).join(', ');
@@ -148,10 +153,10 @@ const Profile = () => {
       <div className="profile-page anonymous-profile animate-fade-in">
         <div className="login-prompt-card">
           <span className="prompt-emoji">👤</span>
-          <h2>Access Your Digital Coffee Profile</h2>
-          <p>Login to track active kitchen orders, manage recurring weekly subscriptions, save custom beverage modifications, and earn loyalty points.</p>
+          <h2>Your Profile</h2>
+          <p>Log in to view orders, saved drinks, and subscriptions.</p>
           <Button variant="primary" size="large" onClick={() => navigate('/store/login')}>
-            Log In / Sign Up 🔑
+            Log In / Sign Up
           </Button>
         </div>
       </div>
@@ -184,8 +189,8 @@ const Profile = () => {
 
   const tabsList = [
     { id: 'overview', label: 'Overview', icon: '🏠' },
-    { id: 'history', label: 'Order History', icon: '📜', count: customerOrders.length },
-    { id: 'favorites', label: 'Saved Drinks', icon: '⭐' },
+    { id: 'history', label: 'Orders', icon: '📜', count: customerOrders.length },
+    { id: 'favorites', label: 'Saved', icon: '⭐' },
     { id: 'addresses', label: 'Addresses', icon: '📍' }
   ];
 
@@ -204,8 +209,8 @@ const Profile = () => {
         <div className="user-hero-info">
           <Avatar name={user.name} size="large" status="online" color="primary" />
           <div className="user-text-details">
-            <h1 className="profile-title">Welcome back, {user.name.split(' ')[0]} 👋</h1>
-            <p className="profile-subtitle">Loyalty Level: <strong>Gold Bean Member</strong> | 🏆 450 pts</p>
+            <h1 className="profile-title">Welcome, {user.name.split(' ')[0]}</h1>
+            <p className="profile-subtitle">Gold Member · 450 pts</p>
           </div>
         </div>
         <button className="profile-logout-btn" onClick={handleLogout}>

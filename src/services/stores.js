@@ -5,4 +5,5 @@ export const storeService = {
   getById: async (id) => api.get(`/stores/${id}`),
   create: async (data) => api.post('/stores', data),
   update: async (id, data) => api.patch(`/stores/${id}`, data),
+  delete: async (id) => api.delete(`/stores/${id}`),
 };

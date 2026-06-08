@@ -1,0 +1,201 @@
+.gst-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gst-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.gst-refresh-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  background: #fff;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gst-refresh-btn:hover {
+  color: #111;
+  border-color: rgba(0,0,0,0.18);
+}
+
+.gst-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0;
+}
+
+.gst-tab {
+  padding: 10px 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #888;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gst-tab:hover {
+  color: #555;
+}
+
+.gst-tab.active {
+  color: #1a1a1a;
+  border-bottom-color: #1a1a1a;
+}
+
+.gst-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gst-generate-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 480px;
+}
+
+.gst-input {
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  font-size: 0.84rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  flex: 1;
+  transition: border-color 0.2s ease;
+}
+
+.gst-input:focus {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.gst-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gst-action-btn.primary {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: none;
+}
+
+.gst-action-btn.primary:hover {
+  background-color: #333;
+}
+
+.gst-action-btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.08);
+  color: #555;
+}
+
+.gst-action-btn.ghost:hover {
+  border-color: rgba(0,0,0,0.18);
+}
+
+.gst-code {
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.78rem;
+}
+
+.gst-status-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  font-family: 'SF Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gst-status-badge.generated {
+  background-color: rgba(45, 157, 92, 0.06);
+  color: #2d9d5c;
+  border: 1px solid rgba(45, 157, 92, 0.12);
+}
+
+.gst-status-badge.cancelled {
+  background-color: rgba(196, 64, 64, 0.06);
+  color: #c44040;
+  border: 1px solid rgba(196, 64, 64, 0.12);
+}
+
+.gst-modal {
+  max-width: 560px;
+}
+
+.gst-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 6px;
+}
+
+@media (max-width: 600px) {
+  .gst-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

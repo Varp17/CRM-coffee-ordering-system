@@ -160,7 +160,7 @@ const Catalog = () => {
             <div 
               key={product.uuid || product.id} 
               className="clickable-card-wrapper"
-              onClick={() => navigate(`/catalog/${product.slug || product.uuid || product.id}`)}
+              onClick={() => navigate(`/store/catalog/${product.slug || product.uuid || product.id}`)}
             >
               <Card 
                 id={product.uuid || product.id}

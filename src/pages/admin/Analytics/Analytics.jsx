@@ -10,8 +10,10 @@ import { formatCurrency } from '../../../utils/formatters';
 import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
+import Financials from '../Financials/Financials';
 
 const Analytics = () => {
+  const [activeTab, setActiveTab] = useState('analytics');
   const [timeRange, setTimeRange] = useState('weekly'); // 'weekly' | 'monthly'
   const [dashboardData, setDashboardData] = useState(null);
   const [hourlyData, setHourlyData] = useState([]);
@@ -213,179 +215,202 @@ const Analytics = () => {
   const topProducts = dashboardData?.topProducts || [];
 
   return (
-    <motion.div 
-      className="analytics-view"
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-    >
-      {/* Header section */}
-      <motion.div className="view-header" variants={itemVariants}>
-        <div>
-          <h2 className="section-title">📊 Business Intelligence & Forecasting</h2>
-          <p className="section-subtitle">Real-time point-of-sale data mapping & F&B margins audit logs</p>
-        </div>
-        <div className="header-actions" style={{ display: 'flex', gap: 'var(--space-12)' }}>
-          <Button variant="outline" onClick={() => handleExportReport('Excel')}>Export CSV 🧾</Button>
-          <Button variant="primary" onClick={() => handleExportReport('PDF')}>Export PDF Report 📄</Button>
-        </div>
-      </motion.div>
+    <div className="analytics-view animate-fade-in">
+      {/* Tab Navigation */}
+      <div className="settings-tabs" style={{ marginBottom: '16px' }}>
+        <button
+          className={`settings-tab ${activeTab === 'analytics' ? 'active' : ''}`}
+          onClick={() => setActiveTab('analytics')}
+          id="reports-tab-analytics"
+        >
+          Analytics
+        </button>
+        <button
+          className={`settings-tab ${activeTab === 'financials' ? 'active' : ''}`}
+          onClick={() => setActiveTab('financials')}
+          id="reports-tab-financials"
+        >
+          Financials
+        </button>
+      </div>
 
-      {/* Time Toggle row */}
-      <motion.div className="tab-toggle-row" variants={itemVariants}>
-        <div className="analytics-time-tabs">
-          <button
-            className={`time-tab-btn ${timeRange === 'weekly' ? 'active' : ''}`}
-            onClick={() => setTimeRange('weekly')}
-          >
-            Weekly Telemetry
-          </button>
-          <button
-            className={`time-tab-btn ${timeRange === 'monthly' ? 'active' : ''}`}
-            onClick={() => setTimeRange('monthly')}
-          >
-            Monthly Projections
-          </button>
-        </div>
-        <span className="last-sync-tag">⚡ Live synced 2 mins ago</span>
-      </motion.div>
+      {activeTab === 'analytics' && (
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {/* Header section */}
+          <motion.div className="view-header" variants={itemVariants}>
+            <div>
+              <h2 className="section-title">📊 Business Intelligence & Forecasting</h2>
+              <p className="section-subtitle">Real-time point-of-sale data mapping & F&B margins audit logs</p>
+            </div>
+            <div className="header-actions" style={{ display: 'flex', gap: 'var(--space-12)' }}>
+              <Button variant="outline" onClick={() => handleExportReport('Excel')}>Export CSV 🧾</Button>
+              <Button variant="primary" onClick={() => handleExportReport('PDF')}>Export PDF Report 📄</Button>
+            </div>
+          </motion.div>
 
-      {/* Multi-grid KPI summaries */}
-      <motion.div className="stats-grid" variants={containerVariants}>
-        <motion.div variants={itemVariants}>
-          <KPICard
-            title="Gross F&B Revenue"
-            value={formatCurrency(revStats.thisMonth)}
-            trend={{ label: `${revStats.growth >= 0 ? '+' : ''}${revStats.growth}% vs yesterday`, isPositive: revStats.growth >= 0 }}
-            sparklineData={[12000, 15000, 18000, 24000, 21000, 28000, revStats.today]}
-            icon="📊"
-            color="success"
-          />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <KPICard
-            title="Fulfillment Count"
-            value={ordStats.thisMonth.toString()}
-            trend={{ label: `${ordStats.today} orders today`, isPositive: true }}
-            sparklineData={[68, 82, 74, 102, 94, 135, ordStats.today]}
-            icon="📦"
-            color="primary"
-          />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <KPICard
-            title="Active CRM Accounts"
-            value={custStats.total.toString()}
-            trend={{ label: `${custStats.retention}% retention rate`, isPositive: true }}
-            sparklineData={[400, 410, 420, 435, 442, 448, custStats.total]}
-            icon="👥"
-            color="warning"
-          />
-        </motion.div>
-      </motion.div>
+          {/* Time Toggle row */}
+          <motion.div className="tab-toggle-row" variants={itemVariants}>
+            <div className="analytics-time-tabs">
+              <button
+                className={`time-tab-btn ${timeRange === 'weekly' ? 'active' : ''}`}
+                onClick={() => setTimeRange('weekly')}
+              >
+                Weekly Telemetry
+              </button>
+              <button
+                className={`time-tab-btn ${timeRange === 'monthly' ? 'active' : ''}`}
+                onClick={() => setTimeRange('monthly')}
+              >
+                Monthly Projections
+              </button>
+            </div>
+            <span className="last-sync-tag">⚡ Live synced 2 mins ago</span>
+          </motion.div>
 
-      <motion.div className="analytics-charts-grid" variants={containerVariants}>
-        {/* Main Revenue Trend Chart */}
-        <motion.div className="chart-container" variants={itemVariants}>
-          <h3>📈 Net Sales Revenue Curve</h3>
-          <div className="chart-viewport">
-            <ResponsiveContainer width="99%" height="100%" key={`${timeRange}-${weeklyChartData.length}-${monthlyChartData.length}`}>
-              {timeRange === 'weekly' ? (
-                <AreaChart data={weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
-                  <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
-                  <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                  <Area type="monotone" dataKey="Revenue" stroke="var(--color-primary)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRev)" />
-                </AreaChart>
-              ) : (
-                <AreaChart data={monthlyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorRevM" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
-                  <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
-                  <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                  <Area type="monotone" dataKey="Revenue" stroke="var(--color-primary)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevM)" />
-                </AreaChart>
-              )}
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
+          {/* Multi-grid KPI summaries */}
+          <motion.div className="stats-grid" variants={containerVariants}>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title="Gross F&B Revenue"
+                value={formatCurrency(revStats.thisMonth)}
+                trend={{ label: `${revStats.growth >= 0 ? '+' : ''}${revStats.growth}% vs yesterday`, isPositive: revStats.growth >= 0 }}
+                sparklineData={[12000, 15000, 18000, 24000, 21000, 28000, revStats.today]}
+                icon="📊"
+                color="success"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title="Fulfillment Count"
+                value={ordStats.thisMonth.toString()}
+                trend={{ label: `${ordStats.today} orders today`, isPositive: true }}
+                sparklineData={[68, 82, 74, 102, 94, 135, ordStats.today]}
+                icon="📦"
+                color="primary"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title="Active CRM Accounts"
+                value={custStats.total.toString()}
+                trend={{ label: `${custStats.retention}% retention rate`, isPositive: true }}
+                sparklineData={[400, 410, 420, 435, 442, 448, custStats.total]}
+                icon="👥"
+                color="warning"
+              />
+            </motion.div>
+          </motion.div>
 
-        {/* Hourly Peak loads */}
-        <motion.div className="chart-container" variants={itemVariants}>
-          <h3>⚡ Peak Hours Preparation Heatmap</h3>
-          <div className="chart-viewport">
-            <ResponsiveContainer width="99%" height="100%" key={hourlyChartData.length}>
-              <BarChart data={hourlyChartData}>
-                <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
-                <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
-                <Tooltip formatter={(value) => [`${value} orders`, 'KOT Count']} />
-                <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                <Bar dataKey="Orders" fill="var(--color-primary-light)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-      </motion.div>
+          <motion.div className="analytics-charts-grid" variants={containerVariants}>
+            {/* Main Revenue Trend Chart */}
+            <motion.div className="chart-container" variants={itemVariants}>
+              <h3>📈 Net Sales Revenue Curve</h3>
+              <div className="chart-viewport">
+                <ResponsiveContainer width="99%" height="100%" key={`${timeRange}-${weeklyChartData.length}-${monthlyChartData.length}`}>
+                  {timeRange === 'weekly' ? (
+                    <AreaChart data={weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
+                      <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
+                      <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
+                      <CartesianGrid stroke="var(--color-border)" vertical={false} />
+                      <Area type="monotone" dataKey="Revenue" stroke="var(--color-primary)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRev)" />
+                    </AreaChart>
+                  ) : (
+                    <AreaChart data={monthlyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorRevM" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
+                      <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
+                      <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
+                      <CartesianGrid stroke="var(--color-border)" vertical={false} />
+                      <Area type="monotone" dataKey="Revenue" stroke="var(--color-primary)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevM)" />
+                    </AreaChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
 
-      <motion.div className="analytics-details-grid" variants={containerVariants}>
-        {/* Top items ranking table */}
-        <motion.div className="details-card" variants={itemVariants}>
-          <h3>⭐ Menu Items Contribution Ranking</h3>
-          <div style={{ marginTop: 'var(--space-12)' }}>
-            <DataTable
-              columns={topProductsColumns}
-              data={topProducts}
-              exportFileName="top-menu-contributions"
-              searchKey="name"
-              searchPlaceholder="Search ranking menu items..."
-            />
-          </div>
-        </motion.div>
+            {/* Hourly Peak loads */}
+            <motion.div className="chart-container" variants={itemVariants}>
+              <h3>⚡ Peak Hours Preparation Heatmap</h3>
+              <div className="chart-viewport">
+                <ResponsiveContainer width="99%" height="100%" key={hourlyChartData.length}>
+                  <BarChart data={hourlyChartData}>
+                    <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
+                    <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
+                    <Tooltip formatter={(value) => [`${value} orders`, 'KOT Count']} />
+                    <CartesianGrid stroke="var(--color-border)" vertical={false} />
+                    <Bar dataKey="Orders" fill="var(--color-primary-light)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+          </motion.div>
 
-        {/* Warehouse movements */}
-        <motion.div className="details-card" variants={itemVariants}>
-          <h3>🏢 Central Warehouse Replenishment Alerts</h3>
-          <div style={{ marginTop: 'var(--space-12)' }}>
-            <DataTable
-              columns={inventoryLevelsColumns}
-              data={inventoryLevels}
-              exportFileName="replenishment-safety-alerts"
-              searchKey="name"
-              searchPlaceholder="Search ingredients alerts..."
-            />
-          </div>
-        </motion.div>
-      </motion.div>
+          <motion.div className="analytics-details-grid" variants={containerVariants}>
+            {/* Top items ranking table */}
+            <motion.div className="details-card" variants={itemVariants}>
+              <h3>⭐ Menu Items Contribution Ranking</h3>
+              <div style={{ marginTop: 'var(--space-12)' }}>
+                <DataTable
+                  columns={topProductsColumns}
+                  data={topProducts}
+                  exportFileName="top-menu-contributions"
+                  searchKey="name"
+                  searchPlaceholder="Search ranking menu items..."
+                />
+              </div>
+            </motion.div>
 
-      {/* Preparation Times Telemetry Card */}
-      <motion.div className="analytics-details-grid" variants={containerVariants} style={{ marginTop: '24px' }}>
-        <motion.div className="details-card" variants={itemVariants} style={{ gridColumn: 'span 2' }}>
-          <h3>⏱️ Menu Item Preparation Speed Analytics (Min vs Max vs Avg)</h3>
-          <div style={{ marginTop: 'var(--space-12)' }}>
-            <DataTable
-              columns={prepTimesColumns}
-              data={prepTimes}
-              exportFileName="menu-items-prep-times-report"
-              searchKey="name"
-              searchPlaceholder="Search menu items preparation times..."
-            />
-          </div>
+            {/* Warehouse movements */}
+            <motion.div className="details-card" variants={itemVariants}>
+              <h3>🏢 Central Warehouse Replenishment Alerts</h3>
+              <div style={{ marginTop: 'var(--space-12)' }}>
+                <DataTable
+                  columns={inventoryLevelsColumns}
+                  data={inventoryLevels}
+                  exportFileName="replenishment-safety-alerts"
+                  searchKey="name"
+                  searchPlaceholder="Search ingredients alerts..."
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Preparation Times Telemetry Card */}
+          <motion.div className="analytics-details-grid" variants={containerVariants} style={{ marginTop: '24px' }}>
+            <motion.div className="details-card" variants={itemVariants} style={{ gridColumn: 'span 2' }}>
+              <h3>⏱️ Menu Item Preparation Speed Analytics (Min vs Max vs Avg)</h3>
+              <div style={{ marginTop: 'var(--space-12)' }}>
+                <DataTable
+                  columns={prepTimesColumns}
+                  data={prepTimes}
+                  exportFileName="menu-items-prep-times-report"
+                  searchKey="name"
+                  searchPlaceholder="Search menu items preparation times..."
+                />
+              </div>
+            </motion.div>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </motion.div>
+      )}
+
+      {activeTab === 'financials' && <Financials />}
+    </div>
   );
 };
 

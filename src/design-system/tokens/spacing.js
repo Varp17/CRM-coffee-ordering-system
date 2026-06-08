@@ -24,7 +24,7 @@ export const shadows = {
 
 export const typography = {
   fonts: {
-    sans: 'Outfit, system-ui, -apple-system, sans-serif',
+    sans: 'Inter, system-ui, -apple-system, sans-serif',
     mono: 'monospace',
   },
   sizes: {

@@ -1,57 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import './RecipeEngine.css';
-import Button from '../../../components/Button/Button';
-import Input from '../../../components/Input/Input';
-import { recipeService } from '../../../services/recipes';
 import { productService } from '../../../services/products';
+import { menuRecipeService } from '../../../services/menuRecipes';
 import { formatCurrency } from '../../../utils/formatters';
-import { unwrapList } from '../../../utils/apiResponse';
+import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
-import { t } from '../../../utils/i18n';
 
 const RecipeEngine = () => {
   const [products, setProducts] = useState([]);
-  const [ingredients, setIngredients] = useState([]);
+  const [recipes, setRecipes] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [mappedIngredients, setMappedIngredients] = useState([]);
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedIngredients, setEditedIngredients] = useState([]);
+  const [linkedRecipe, setLinkedRecipe] = useState(null);
+  const [recipeIngredients, setRecipeIngredients] = useState([]);
 
-  // Working States for adding a new ingredient mapping
-  const [selectedIngId, setSelectedIngId] = useState('');
-  const [quantityInput, setQuantityInput] = useState(10);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const pRes = await productService.getAll();
+      const [pRes, rRes] = await Promise.all([
+        productService.getAll(),
+        menuRecipeService.list(),
+      ]);
       const pList = unwrapList(pRes);
+      const rList = unwrapList(rRes);
       setProducts(pList);
-
-      const iRes = await recipeService.getAll();
-      const iList = unwrapList(iRes);
-      setIngredients(iList);
+      setRecipes(rList);
 
       if (pList.length > 0) {
         setSelectedProduct(pList[0]);
-        await loadMappings(pList[0].id);
       }
     } catch (err) {
-      toast.error('Failed to load recipe data: ' + err.message);
+      toast.error('Failed to load data: ' + err.message);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const loadMappings = async (productUuid) => {
-    try {
-      const response = await recipeService.getIngredientMappings(productUuid);
-      const mappings = unwrapList(response);
-      setMappedIngredients(Array.isArray(mappings) ? mappings : []);
-    } catch (err) {
-      toast.error('Failed to load ingredient mappings: ' + err.message);
     }
   };
 
@@ -59,108 +41,67 @@ const RecipeEngine = () => {
     loadData();
   }, []);
 
-  const handleSelectProduct = async (product) => {
-    setSelectedProduct(product);
-    setIsEditing(false);
-    await loadMappings(product.id);
-  };
-
-  const handleStartEdit = () => {
-    setEditedIngredients([...mappedIngredients]);
-    setIsEditing(true);
-  };
-
-  const handleSaveEdit = async () => {
-    try {
-      const payload = editedIngredients.map(item => ({
-        ingredient_id: Number(item.ingredient_id || item.id),
-        quantity: Number(item.quantity),
-        is_default: true,
-        is_optional: false,
-        price_override: null
-      }));
-
-      await recipeService.bulkSetMappings(selectedProduct.id, payload);
-      toast.success(`Recipe for ${selectedProduct.name} saved successfully! 🧬`);
-      setIsEditing(false);
-      await loadMappings(selectedProduct.id);
-    } catch (err) {
-      toast.error('Failed to save recipe: ' + err.message);
-    }
-  };
-
-  const handleAddIngredient = () => {
-    if (!selectedIngId) {
-      toast.error('Please select an ingredient.');
+  useEffect(() => {
+    if (!selectedProduct || recipes.length === 0) {
+      setLinkedRecipe(null);
+      setRecipeIngredients([]);
       return;
     }
 
-    const ingItem = ingredients.find(i => Number(i.id) === Number(selectedIngId) || i.uuid === selectedIngId);
-    if (!ingItem) return;
-
-    const exists = editedIngredients.some(item => Number(item.ingredient_id) === Number(ingItem.id));
-    if (exists) {
-      toast.error('This ingredient is already mapped to the product recipe.');
-      return;
-    }
-
-    const newMapping = {
-      ingredient_id: ingItem.id,
-      name: ingItem.name,
-      quantity: quantityInput,
-      unit: ingItem.unit || 'ml'
-    };
-
-    setEditedIngredients([...editedIngredients, newMapping]);
-    setSelectedIngId('');
-    setQuantityInput(10);
-    toast.success('Ingredient added to map.');
-  };
-
-  const handleRemoveIngredient = (index) => {
-    const filtered = editedIngredients.filter((_, idx) => idx !== index);
-    setEditedIngredients(filtered);
-    toast.success('Ingredient removed.');
-  };
-
-  if (isLoading && products.length === 0) {
-    return (
-      <div className="recipe-engine-view flex-center" style={{ height: '70vh' }}>
-        <p style={{ color: 'var(--color-text-secondary)' }}>{t('recipeEngine.loading', 'Loading Recipe Engine...')}</p>
-      </div>
+    const recipe = recipes.find(
+      r => r.id === selectedProduct.recipe_id || r.uuid === selectedProduct.recipe_id
     );
-  }
 
-  // Calculate gross cost per cup
+    if (recipe) {
+      setLinkedRecipe(recipe);
+      setRecipeIngredients(recipe.ingredients || recipe.recipe_ingredients || []);
+    } else {
+      setLinkedRecipe(null);
+      setRecipeIngredients([]);
+    }
+  }, [selectedProduct, recipes]);
+
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product);
+  };
+
   const calculateCostPerCup = (list) => {
     if (!Array.isArray(list)) return 0;
     return list.reduce((acc, curr) => {
       if (!curr) return acc;
-      const idToFind = curr.ingredient_id || curr.id || curr.ingredient?.id;
-      const ing = ingredients.find(i => i.id === idToFind || Number(i.id) === Number(idToFind) || i.uuid === idToFind);
-      const costPerUnit = ing ? (ing.cost_per_unit || 0) : 0;
-      return acc + (costPerUnit * (curr.quantity || 0));
+      const ing = curr.ingredient || {};
+      const qty = parseFloat(curr.quantity || 0);
+      const cpu = parseFloat(ing.cost_per_unit || curr.cost_per_unit || 0);
+      return acc + (qty * cpu);
     }, 0);
   };
 
-  const currentCost = isEditing ? calculateCostPerCup(editedIngredients) : calculateCostPerCup(mappedIngredients);
+  const currentCost = calculateCostPerCup(recipeIngredients);
   const basePrice = selectedProduct?.base_price || selectedProduct?.basePrice || 0;
   const grossProfit = Math.max(0, basePrice - currentCost);
   const profitMargin = basePrice > 0 ? Math.round((grossProfit / basePrice) * 100) : 0;
+
+  if (isLoading && products.length === 0) {
+    return (
+      <div className="recipe-engine-view flex-center" style={{ height: '70vh' }}>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Loading Recipe Engine...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="recipe-engine-view animate-fade-in">
       <div className="view-header">
         <div>
-          <h2 className="section-title">{t('recipeEngine.title', '🧬 Recipe Specification Engine')}</h2>
-          <p className="section-subtitle">{t('recipeEngine.subtitle', 'Map raw warehouse inventory items to retail customer modifications')}</p>
+          <h2 className="section-title">Recipe Specification Engine</h2>
+          <p className="section-subtitle">View recipes linked to products with ingredient costs and profit analysis.</p>
         </div>
       </div>
 
       <div className="recipe-workspace-layout">
         {/* Left Side: Product Index List */}
-        <div className="recipe-sidebar-nav ">
-          <h3>{t('recipeEngine.sidebarTitle', 'Products Catalog')}</h3>
+        <div className="recipe-sidebar-nav">
+          <h3>Products Catalog</h3>
           <div className="recipe-list-scroll">
             {products.map((p) => (
               <button
@@ -180,128 +121,91 @@ const RecipeEngine = () => {
           </div>
         </div>
 
-        {/* Right Side: Working Composer Workspace */}
-        <div className="recipe-composer-workspace ">
+        {/* Right Side: Recipe Viewer */}
+        <div className="recipe-composer-workspace">
           {selectedProduct && (
-            isEditing ? (
-              /* Editing Mode */
-              <div className="composer-form animate-slide-up">
-                <div className="composer-form-header">
-                  <h3>{t('recipeEngine.editorTitle', 'Formula Editor: ')}{selectedProduct.name}</h3>
-                  <div className="composer-header-actions">
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>{t('recipeEngine.cancel', 'Cancel')}</Button>
-                    <Button variant="primary" onClick={handleSaveEdit}>{t('recipeEngine.saveFormula', 'Save Formula 💾')}</Button>
-                  </div>
+            <div className="recipe-viewer animate-slide-up">
+              <div className="composer-form-header">
+                <div>
+                  <span className="recipe-detail-category">{selectedProduct.category_name || 'Beverage'}</span>
+                  <h2>{selectedProduct.name}</h2>
                 </div>
+                {linkedRecipe && (
+                  <span className="recipe-nav-btn" style={{ padding: '6px 12px', cursor: 'default' }}>
+                    Recipe: {linkedRecipe.recipe_code || linkedRecipe.name}
+                  </span>
+                )}
+              </div>
 
-                <div className="pricing-margin-analyser" style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.retailPrice', 'Retail Base Price')}</span>
-                    <strong>{formatCurrency(basePrice)}</strong>
-                  </div>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.estimatedCost', 'Estimated Cost')}</span>
-                    <strong>{formatCurrency(currentCost)}</strong>
-                  </div>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.grossProfit', 'Est. Gross Profit')}</span>
-                    <strong className="profit-text">{formatCurrency(grossProfit)}</strong>
-                  </div>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.profitMargin', 'Profit Margin')}</span>
-                    <strong className="margin-text">{profitMargin}%</strong>
-                  </div>
+              <div className="pricing-margin-analyser">
+                <div className="analyser-tile">
+                  <span>Retail Base Price</span>
+                  <strong>{formatCurrency(basePrice)}</strong>
                 </div>
-
-                {/* Ingredients Mapping */}
-                <div className="composer-block">
-                  <h4>{t('recipeEngine.mapRawTitle', '1. Map Raw Inventory items')}</h4>
-                  <div className="ingredient-creator-row">
-                    <select
-                      value={selectedIngId}
-                      onChange={(e) => setSelectedIngId(e.target.value)}
-                      className="styled-select"
-                    >
-                      <option value="">-- Choose Stock Item --</option>
-                      {ingredients.map(item => (
-                        <option key={item.id} value={item.id}>{item.name} ({item.unit})</option>
-                      ))}
-                    </select>
-                    <Input
-                      placeholder="Qty"
-                      type="number"
-                      value={quantityInput}
-                      onChange={(e) => setQuantityInput(parseFloat(e.target.value) || 0)}
-                    />
-                    <Button variant="outline" onClick={handleAddIngredient}>{t('recipeEngine.mapItemBtn', 'Map Item ➕')}</Button>
-                  </div>
-
-                  <div className="mapped-ingredients-list">
-                    {editedIngredients.map((ing, idx) => (
-                      <div key={idx} className="mapped-ing-item">
-                        <span>📦 <strong>{ing.name || ingredients.find(i => i.id === ing.ingredient_id)?.name}</strong> - {ing.quantity} {ing.unit}</span>
-                        <button type="button" className="remove-ing-btn" onClick={() => handleRemoveIngredient(idx)}>❌</button>
-                      </div>
-                    ))}
-                    {editedIngredients.length === 0 && <p className="empty-helper-text">{t('recipeEngine.emptyMarginHelper', 'No active inventory items mapped. Coffee will have 100% gross margin!')}</p>}
-                  </div>
+                <div className="analyser-tile">
+                  <span>Estimated Cost</span>
+                  <strong>{formatCurrency(currentCost)}</strong>
+                </div>
+                <div className="analyser-tile">
+                  <span>Est. Gross Profit</span>
+                  <strong className="profit-text">{formatCurrency(grossProfit)}</strong>
+                </div>
+                <div className="analyser-tile">
+                  <span>Profit Margin</span>
+                  <strong className="margin-text">{profitMargin}%</strong>
                 </div>
               </div>
-            ) : (
-              /* View Mode */
-              <div className="recipe-viewer animate-slide-up">
-                <div className="composer-form-header">
-                  <div>
-                    <span className="recipe-detail-category">{selectedProduct.category_name || 'Beverage'}</span>
-                    <h2>{selectedProduct.name}</h2>
-                  </div>
-                  <Button variant="outline" onClick={handleStartEdit}>
-                    {t('recipeEngine.editFormulaBtn', 'Edit Formula 📝')}
-                  </Button>
-                </div>
 
-                <div className="pricing-margin-analyser">
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.retailPrice', 'Retail Base Price')}</span>
-                    <strong>{formatCurrency(basePrice)}</strong>
-                  </div>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.estimatedCost', 'Estimated Cost')}</span>
-                    <strong>{formatCurrency(currentCost)}</strong>
-                  </div>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.grossProfit', 'Est. Gross Profit')}</span>
-                    <strong className="profit-text">{formatCurrency(grossProfit)}</strong>
-                  </div>
-                  <div className="analyser-tile">
-                    <span>{t('recipeEngine.profitMargin', 'Profit Margin')}</span>
-                    <strong className="margin-text">{profitMargin}%</strong>
-                  </div>
-                </div>
-
-                <div className="recipe-sections-grid">
-                  {/* Ingredients section */}
-                  <div className="viewer-block " style={{ gridColumn: 'span 2' }}>
-                    <h3>{t('recipeEngine.mapDetailsTitle', 'Inventory Map Details')}</h3>
-                    <ul className="viewer-ing-list">
-                      {mappedIngredients.map((ing, idx) => {
-                        const originalIng = ingredients.find(i => Number(i.id) === Number(ing.ingredient_id) || i.id === ing.ingredient?.id || i.uuid === ing.ingredient?.id);
-                        return (
-                          <li key={idx}>
-                            <span className="bullet">📦</span>
-                            <div>
-                              <strong>{ing.name || ing.ingredient?.name || originalIng?.name || 'Raw Ingredient'}</strong>
-                              <p>{ing.quantity} {ing.unit || ing.ingredient?.unit || originalIng?.unit || 'g'} (Cost contribution: {formatCurrency(ing.quantity * (originalIng?.cost_per_unit || 0))})</p>
-                            </div>
-                          </li>
-                        );
-                      })}
-                      {mappedIngredients.length === 0 && <p className="empty-helper-text">{t('recipeEngine.emptyIngredientsHelper', 'No active ingredients mapped to this product formula.')}</p>}
-                    </ul>
-                  </div>
+              <div className="recipe-sections-grid">
+                <div className="viewer-block" style={{ gridColumn: 'span 2' }}>
+                  <h3>Recipe Ingredients</h3>
+                  {linkedRecipe ? (
+                    recipeIngredients.length > 0 ? (
+                      <table className="rb-ing-table" style={{ marginTop: '12px' }}>
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Ingredient</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Cost/Unit</th>
+                            <th>Line Cost</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {recipeIngredients.map((item, idx) => {
+                            const ing = item.ingredient || {};
+                            const qty = parseFloat(item.quantity || 0);
+                            const cpu = parseFloat(ing.cost_per_unit || item.cost_per_unit || 0);
+                            const lineCost = qty * cpu;
+                            return (
+                              <tr key={item.id || idx}>
+                                <td>{idx + 1}</td>
+                                <td>{ing.name || item.ingredient_name || '—'}</td>
+                                <td>{qty}</td>
+                                <td>{item.unit || ing.unit || 'ml'}</td>
+                                <td>{formatCurrency(cpu)}</td>
+                                <td>{formatCurrency(lineCost)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <td colSpan={5}><strong>Total Cost</strong></td>
+                            <td><strong>{formatCurrency(currentCost)}</strong></td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    ) : (
+                      <p className="empty-helper-text">Recipe has no ingredients mapped yet.</p>
+                    )
+                  ) : (
+                    <p className="empty-helper-text">No recipe linked to this product. Go to Recipe Builder to create one.</p>
+                  )}
                 </div>
               </div>
-            )
+            </div>
           )}
         </div>
       </div>

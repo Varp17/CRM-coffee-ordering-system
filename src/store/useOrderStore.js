@@ -92,7 +92,7 @@ export const useOrderStore = create((set, get) => ({
   // Admin/Refund Order
   refundOrder: async (orderId) => {
     try {
-      await orderService.refund(orderId);
+      await orderService.cancelWithRefund(orderId);
       set((state) => ({
         orders: state.orders.map((o) =>
           o.id === orderId ? { ...o, status: 'Refunded' } : o

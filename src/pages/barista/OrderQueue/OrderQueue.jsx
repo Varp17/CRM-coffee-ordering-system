@@ -33,8 +33,8 @@ const OrderQueue = () => {
     <div className="order-queue-view animate-fade-in">
       <div className="kds-queue-header">
         <div>
-          <h2>KDS Dispatch</h2>
-          <p>Scannable layout. High-speed operational board.</p>
+          <h2>Order Queue</h2>
+          <p>Live orders from all channels.</p>
         </div>
         <div className="queue-metric-summary">
           <span className="queue-tag">⏳ {pendingCount} Pending</span>

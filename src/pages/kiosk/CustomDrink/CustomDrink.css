@@ -465,6 +465,12 @@
   color: #2e1f16 !important;
 }
 
+.option-chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .option-chip.active {
   background: rgba(179, 146, 104, 0.08) !important;
   color: #a8845c !important;
@@ -657,7 +663,7 @@
   .HUD-top-right { grid-area: hud2; position: static !important; margin: 0 !important; width: 100% !important; max-width: 150px; text-align: center; align-items: center;}
   .HUD-bottom-left { grid-area: hud3; position: static !important; margin: 0 !important; width: 100% !important; max-width: 150px; text-align: center; align-items: center;}
   .HUD-bottom-right { grid-area: hud4; position: static !important; margin: 0 !important; width: 100% !important; max-width: 150px; text-align: center; align-items: center;}
-  
+   
   .preview-step-card {
     grid-area: step;
     position: static !important;
@@ -666,4 +672,29 @@
     width: 100%;
     max-width: 220px;
   }
+}
+
+.discard-btn {
+  height: 46px !important;
+  border: 1px solid rgba(179, 146, 104, 0.25) !important;
+  border-radius: 23px !important;
+  background: #ffffff !important;
+  color: #2e1f16 !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.discard-btn:hover:not(:disabled) {
+  border-color: #a8845c !important;
+  color: #a8845c !important;
+}
+
+.discard-btn:active {
+  transform: scale(0.98);
 }
