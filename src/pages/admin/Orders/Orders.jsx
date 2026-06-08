@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import './Orders.css';
 import Button from '../../../components/Button/Button';
 import { useOrderStore } from '../../../store/useOrderStore';
+import { useNotificationStore } from '../../../store/useNotificationStore';
 import { formatCurrency } from '../../../utils/formatters';
 import { orderService } from '../../../services/orders';
 import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
-import { X, ChevronRight, RefreshCw, AlertCircle, Search, Plus, MoreHorizontal } from 'lucide-react';
+import { X, ChevronRight, RefreshCw, AlertCircle, Search, Plus, MoreHorizontal, Play, CheckCircle, Eye, Printer } from 'lucide-react';
 
 const Orders = () => {
   const { orders: ordersList, fetchOrders, updateOrderStatus, refundOrder, isLoading } = useOrderStore();
@@ -18,9 +19,22 @@ const Orders = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
 
+  // WebSocket-driven real-time refresh
+  const wsNotifications = useNotificationStore((s) => s.notifications);
+  const prevNotifCountRef = useRef(0);
+
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  // Auto-refresh when a new notification arrives via WebSocket
+  useEffect(() => {
+    const currentCount = wsNotifications.length;
+    if (prevNotifCountRef.current > 0 && currentCount > prevNotifCountRef.current) {
+      fetchOrders();
+    }
+    prevNotifCountRef.current = currentCount;
+  }, [wsNotifications.length, fetchOrders]);
 
   const statusOptions = ['all', 'pending', 'in_progress', 'ready', 'completed', 'cancelled', 'refunded'];
   const sourceOptions = ['all', 'd2c_website', 'kiosk'];
@@ -92,6 +106,26 @@ const Orders = () => {
     return flow[current?.toLowerCase()] || null;
   };
 
+  // Named action labels per status
+  const getActionLabel = (status) => {
+    const labels = {
+      'pending': 'Start Order',
+      'in_progress': 'Mark Ready',
+      'ready': 'Complete Order',
+    };
+    return labels[status?.toLowerCase()] || null;
+  };
+
+  // Action button color per status
+  const getActionColor = (status) => {
+    const colors = {
+      'pending': '#D97706',
+      'in_progress': '#1E40AF',
+      'ready': '#7C3AED',
+    };
+    return colors[status?.toLowerCase()] || 'var(--color-primary)';
+  };
+
   const orderStats = useMemo(() => ({
     total: (ordersList || []).length,
     pending: (ordersList || []).filter(o => o.status === 'pending').length,
@@ -143,12 +177,25 @@ const Orders = () => {
       accessor: 'status',
       sortable: true,
       render: (row) => {
-        let badgeStyle = { padding: '4px 10px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '500', color: 'white' };
-        if (row.status === 'completed') badgeStyle.backgroundColor = '#10B981'; // Green
-        else if (row.status === 'in_progress') badgeStyle.backgroundColor = '#111827'; // Black
-        else if (row.status === 'pending') badgeStyle.backgroundColor = '#F59E0B'; // Yellow
-        else if (row.status === 'cancelled') badgeStyle.backgroundColor = '#EF4444'; // Red
-        else badgeStyle.backgroundColor = '#6B7280'; // Gray
+        const STATUS_MAP = {
+          'pending':     { bg: '#FEF3C7', color: '#92400E', border: '#F59E0B' },
+          'in_progress': { bg: '#DBEAFE', color: '#1E40AF', border: '#3B82F6' },
+          'ready':       { bg: '#EDE9FE', color: '#5B21B6', border: '#7C3AED' },
+          'completed':   { bg: '#D1FAE5', color: '#065F46', border: '#10B981' },
+          'cancelled':   { bg: '#FEE2E2', color: '#991B1B', border: '#EF4444' },
+          'refunded':    { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' },
+        };
+        const sm = STATUS_MAP[row.status?.toLowerCase()] || { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' };
+        const badgeStyle = {
+          padding: '4px 12px',
+          borderRadius: '100px',
+          fontSize: '0.72rem',
+          fontWeight: '600',
+          color: sm.color,
+          backgroundColor: sm.bg,
+          border: `1px solid ${sm.border}`,
+          letterSpacing: '0.02em',
+        };
         
         return (
           <span style={badgeStyle}>
@@ -204,28 +251,57 @@ const Orders = () => {
       accessor: 'id',
       sortable: false,
       render: (row) => (
-        <div className="actions-cell" onClick={(e) => e.stopPropagation()} style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+        <div className="actions-cell" onClick={(e) => e.stopPropagation()} style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
+          {/* Status-dependent primary action */}
           {getNextStatus(row.status) && (
             <button
               className="action-btn-sm primary"
               onClick={() => handleStatusChange(row.id, getNextStatus(row.status))}
               style={{
-                height: '28px !important', padding: '0 8px !important', fontSize: '0.8rem !important',
-                backgroundColor: 'var(--color-primary)', color: 'white', borderRadius: '4px', border: 'none'
+                height: '28px', padding: '0 10px', fontSize: '0.75rem', fontWeight: 600,
+                backgroundColor: getActionColor(row.status), color: 'white',
+                borderRadius: '6px', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '4px',
+                transition: 'opacity 0.2s', whiteSpace: 'nowrap',
               }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.85'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
-              → {getNextStatus(row.status).replace('_', ' ')}
+              {row.status === 'pending' && <Play size={12} />}
+              {row.status === 'in_progress' && <CheckCircle size={12} />}
+              {row.status === 'ready' && <CheckCircle size={12} />}
+              {getActionLabel(row.status)}
             </button>
           )}
+
+          {/* Completed: Print button */}
+          {row.status === 'completed' && (
+            <button
+              className="action-btn-sm outline"
+              onClick={() => toast.success('Invoice generated for #' + (row.order_number || row.id))}
+              style={{
+                height: '28px', padding: '0 8px', fontSize: '0.75rem',
+                backgroundColor: 'transparent', border: '1px solid #D1D5DB',
+                borderRadius: '6px', cursor: 'pointer', color: '#374151',
+                display: 'flex', alignItems: 'center', gap: '4px',
+              }}
+            >
+              <Printer size={12} /> Print
+            </button>
+          )}
+
+          {/* View button (always visible) */}
           <button 
             className="action-btn-sm outline" 
             onClick={() => openDetail(row)}
             style={{
-              height: '28px !important', padding: '0 8px !important', fontSize: '0.8rem !important',
-              backgroundColor: 'transparent', border: '1px solid var(--color-border)', borderRadius: '4px'
+              height: '28px', padding: '0 8px', fontSize: '0.75rem',
+              backgroundColor: 'transparent', border: '1px solid #D1D5DB',
+              borderRadius: '6px', cursor: 'pointer', color: '#374151',
+              display: 'flex', alignItems: 'center', gap: '4px',
             }}
           >
-            View
+            <Eye size={12} /> View
           </button>
         </div>
       )
@@ -495,10 +571,15 @@ const Orders = () => {
             <div className="side-panel-footer">
               {getNextStatus(selectedOrder.status) && (
                 <Button variant="primary" onClick={() => handleStatusChange(selectedOrder.id, getNextStatus(selectedOrder.status))}>
-                  → {getNextStatus(selectedOrder.status).replace('_', ' ')}
+                  {getActionLabel(selectedOrder.status)}
                 </Button>
               )}
-              {selectedOrder.status !== 'refunded' && selectedOrder.status !== 'cancelled' && (
+              {selectedOrder.status === 'completed' && (
+                <Button variant="outline" onClick={() => toast.success('Invoice generated for #' + (selectedOrder.order_number || selectedOrder.id))}>
+                  Print Invoice
+                </Button>
+              )}
+              {selectedOrder.status !== 'refunded' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'completed' && (
                 <Button variant="danger" onClick={() => setShowRefundModal(true)}>
                   Refund
                 </Button>

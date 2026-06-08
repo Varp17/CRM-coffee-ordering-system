@@ -96,8 +96,6 @@ const Dashboard = () => {
 
   const revenueSparkline = generateSparkline(safe.revenue?.growth || 1, 100);
   const ordersSparkline = generateSparkline(1, 50);
-  const usersSparkline = generateSparkline(safe.customers?.retention || 1, 20);
-  const viewsSparkline = generateSparkline(1, 80);
 
   // Inventory usage data (from topProducts/seed)
   const inventoryUsageData = (safe.topProducts || []).slice(0, 4).map((p, idx) => ({
