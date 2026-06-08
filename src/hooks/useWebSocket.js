@@ -43,23 +43,38 @@ export const useWebSocket = (roleParam) => {
         ws.onopen = () => {
           if (!isMounted) return;
           console.log('[WS] Connected successfully');
+          // Explicitly subscribe to store-specific events
+          ws.send(JSON.stringify({
+            type: 'subscribe',
+            store_id: storeId,
+            role: role
+          }));
         };
 
         ws.onmessage = (event) => {
           if (!isMounted) return;
           try {
             const data = JSON.parse(event.data);
-            const { type, payload } = data;
+            // Support both { type, payload } and { event, data } formats
+            const type = data.type || data.event;
+            const payload = data.payload || data.data;
             console.log('[WS] Event received:', type, payload);
 
             switch (type) {
+              case 'NEW_NOTIFICATION':
+                useNotificationStore.getState().addNotificationToState(payload);
+                break;
+
               case 'NEW_ORDER':
-                addNotification(
-                  'New Order Received',
-                  `Order #${payload.order_number || payload.id} placed.`,
-                  'info'
-                );
-                // Refresh list
+              case 'order.created':
+              case 'order.confirmed':
+                useNotificationStore.getState().addNotificationToState({
+                  id: `order-create-${Date.now()}`,
+                  type: 'new_order',
+                  title: 'New Order Received',
+                  message: `Order #${payload.order_number || payload.id} placed.`,
+                  created_at: new Date().toISOString()
+                });
                 fetchOrders();
                 if (role === 'barista') {
                   fetchBaristaQueue();
@@ -68,11 +83,14 @@ export const useWebSocket = (roleParam) => {
 
               case 'KOT_UPDATE':
               case 'ORDER_STATUS':
-                addNotification(
-                  'Order Updated',
-                  `Order status changed to ${payload.status}.`,
-                  'success'
-                );
+              case 'order.status_changed':
+                useNotificationStore.getState().addNotificationToState({
+                  id: `order-status-${Date.now()}`,
+                  type: 'order_updated',
+                  title: 'Order Status Changed',
+                  message: `Order #${payload.order_number || payload.id || 'N/A'} is now ${payload.status || payload.toStatus || 'updated'}.`,
+                  created_at: new Date().toISOString()
+                });
                 fetchOrders();
                 if (role === 'barista') {
                   fetchBaristaQueue();
@@ -80,11 +98,15 @@ export const useWebSocket = (roleParam) => {
                 break;
 
               case 'STOCK_ALERT':
-                addNotification(
-                  'Low Stock Warning',
-                  payload.message || `${payload.ingredient_name} is running low.`,
-                  'warning'
-                );
+              case 'inventory.low_stock':
+              case 'inventory.out_of_stock':
+                useNotificationStore.getState().addNotificationToState({
+                  id: `stock-${Date.now()}`,
+                  type: 'low_stock',
+                  title: 'Low Stock Alert',
+                  message: payload.message || `${payload.ingredient_name || 'Ingredient'} is running low.`,
+                  created_at: new Date().toISOString()
+                });
                 break;
 
               case 'ERROR':

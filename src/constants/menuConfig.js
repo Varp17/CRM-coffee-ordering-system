@@ -95,7 +95,7 @@ export const MENU_CONFIG = [
     defaultOpen: false,
     items: [
       { key: 'central-inventory', label: 'Central Inventory', to: '/admin/central-inventory', icon: Warehouse, roles: ['super_admin', 'admin', 'inventory_manager'] },
-      { key: 'inventory', label: 'Store Stock', to: '/admin/inventory', icon: Warehouse, roles: ['super_admin', 'admin', 'store_manager', 'inventory_manager'] },
+      { key: 'inventory', label: 'Store Stock', to: '/admin/inventory', icon: Warehouse, roles: ['super_admin', 'admin', 'store_manager', 'inventory_manager'], badgeKey: 'lowStock' },
       { key: 'store-transfers', label: 'Store Transfers', to: '/admin/store-transfers', icon: ArrowLeftRight, roles: ['super_admin', 'admin', 'store_manager', 'inventory_manager'] },
       { key: 'packaging', label: 'Packaging', to: '/admin/packaging', icon: Package, roles: ['super_admin', 'admin', 'inventory_manager'] },
       { key: 'waste-logs', label: 'Waste Logs', to: '/admin/waste-logs', icon: Trash2, roles: ['*'], badgeKey: 'pendingWaste' },

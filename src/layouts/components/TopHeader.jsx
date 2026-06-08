@@ -42,38 +42,63 @@ const Breadcrumb = () => {
 
 // ── Notification dropdown ────────────────────────────────────
 const NotificationDropdown = ({ onClose }) => {
-  const orders = useOrderStore((s) => s.orders);
-  const pendingOrders = (orders || []).filter((o) => o.status === 'pending').slice(0, 5);
+  const { notifications, markAsRead, markAllAsRead, clearAll } = useNotificationStore();
 
   return (
-    <div className="th-notif-dropdown" role="dialog" aria-label="Notifications">
-      <div className="th-notif-header">
-        <span>Notifications</span>
-        <button className="th-notif-close" onClick={onClose}>Done</button>
+    <div className="th-notif-dropdown" role="dialog" aria-label="Notifications" style={{ width: '320px', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' }}>
+      <div className="th-notif-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>
+        <span style={{ fontWeight: '700', color: '#1f2937', fontSize: '14px' }}>Notifications</span>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {notifications.length > 0 && (
+            <>
+              <button onClick={() => markAllAsRead()} style={{ fontSize: '11px', color: 'var(--color-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Mark all read</button>
+              <span style={{ color: '#d1d5db', fontSize: '11px' }}>|</span>
+              <button onClick={() => clearAll()} style={{ fontSize: '11px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear all</button>
+            </>
+          )}
+        </div>
       </div>
-      {pendingOrders.length === 0 ? (
-        <div className="th-notif-empty">
-          <Bell size={24} opacity={0.2} />
-          <p>No new notifications</p>
+      {notifications.length === 0 ? (
+        <div className="th-notif-empty" style={{ padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#9ca3af' }}>
+          <Bell size={24} opacity={0.4} />
+          <p style={{ margin: 0, fontSize: '12px' }}>No new notifications</p>
         </div>
       ) : (
-        <div className="th-notif-list">
-          {pendingOrders.map((order) => (
-            <Link
-              key={order.id}
-              to="/admin/orders"
-              className="th-notif-item"
-              onClick={onClose}
-            >
-              <ShoppingCart size={13} className="th-notif-item-icon" />
-              <div className="th-notif-item-body">
-                <span className="th-notif-item-label">New order #{order.order_number || order.id}</span>
-                <span className="th-notif-item-time">Pending payment</span>
+        <div className="th-notif-list" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+          {notifications.map((notif) => {
+            const timeStr = notif.created_at ? new Date(notif.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+            return (
+              <div
+                key={notif.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f3f4f6',
+                  cursor: 'pointer',
+                  backgroundColor: notif.is_read ? '#ffffff' : '#fef2f2',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onClick={() => {
+                  if (!notif.is_read) {
+                    markAsRead(notif.id);
+                  }
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: notif.is_read ? '500' : '700', color: '#1f2937', fontSize: '12px', lineHeight: '1.4' }}>{notif.title}</div>
+                  <div style={{ color: '#4b5563', fontSize: '11px', marginTop: '2px', whiteSpace: 'pre-line' }}>{notif.message}</div>
+                  <span style={{ fontSize: '10px', color: '#9ca3af', marginTop: '4px', display: 'block' }}>{timeStr}</span>
+                </div>
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
+      <div style={{ padding: '8px 12px', textAlign: 'center', borderTop: '1px solid #f3f4f6' }}>
+        <button className="th-notif-close" onClick={onClose} style={{ width: '100%', padding: '6px 0', borderRadius: '6px', backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>Close</button>
+      </div>
     </div>
   );
 };
@@ -127,10 +152,17 @@ const TopHeader = () => {
   const navigate = useNavigate();
 
   const orders = useOrderStore((s) => s.orders);
-  const unreadNotif = useNotificationStore((s) => s.getUnreadCount?.() || 0);
+  const fetchNotifications = useNotificationStore((s) => s.fetchNotifications);
+  const fetchUnreadCount = useNotificationStore((s) => s.fetchUnreadCount);
+  const unreadNotif = useNotificationStore((s) => s.unreadCount);
+
+  useEffect(() => {
+    fetchNotifications();
+    fetchUnreadCount();
+  }, [fetchNotifications, fetchUnreadCount]);
 
   const pendingCount = (orders || []).filter((o) => o.status === 'pending').length;
-  const totalAlerts = pendingCount + unreadNotif;
+  const totalAlerts = unreadNotif;
 
   const handleLogout = useCallback(() => {
     logout();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './Dashboard.css';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
@@ -10,11 +10,12 @@ import { orderService } from '../../../services/orders';
 import { formatCurrency } from '../../../utils/formatters';
 import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import { useNavigate } from 'react-router-dom';
+import { useNotificationStore } from '../../../store/useNotificationStore';
 import {
   DollarSign, ShoppingBag, Users, Package,
   AlertTriangle, RefreshCw, Download, Plus,
   ArrowUpRight, ArrowDownRight, Activity, CheckCircle,
-  Clock, ChevronRight, Eye
+  Clock, ChevronRight, Eye, Timer, AlertCircle
 } from 'lucide-react';
 
 const EMPTY = {
@@ -59,11 +60,25 @@ const Dashboard = () => {
     }
   };
 
+  // Subscribe to notification store to trigger refresh on new WS events
+  const wsNotifications = useNotificationStore((s) => s.notifications);
+  const prevNotifCountRef = useRef(0);
+
   useEffect(() => {
     loadData();
     const interval = setInterval(loadData, 30000); // Poll every 30s
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-refresh when a new notification arrives via WebSocket
+  useEffect(() => {
+    const currentCount = wsNotifications.length;
+    if (prevNotifCountRef.current > 0 && currentCount > prevNotifCountRef.current) {
+      // A new notification was appended — refresh dashboard KPIs
+      loadData();
+    }
+    prevNotifCountRef.current = currentCount;
+  }, [wsNotifications.length]);
 
   const safe = { ...EMPTY, ...(data || {}) };
 
@@ -144,13 +159,61 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* ── KPI Cards: 4 Main Metrics ── */}
+      {/* ── KPI Cards: 6 Operational Metrics ── */}
       <div className="db-kpi-row">
-        {/* 1. Total Revenue */}
+        {/* 1. Today's Orders */}
         <div className="zenith-kpi-card">
           <div className="zenith-kpi-header">
             <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Total Revenue</span>
+              <span className="zenith-kpi-label">Today's Orders</span>
+              <span className="zenith-kpi-value">{safe.orders?.today || 0}</span>
+              <div className="zenith-kpi-trend neutral">
+                <ArrowUpRight size={14} />
+                {safe.orders?.thisMonth || 0} <span className="zenith-kpi-trend-text">this month</span>
+              </div>
+            </div>
+            <div className="zenith-kpi-icon" style={{ background: '#EFF6FF', color: '#2563EB' }}>
+              <ShoppingBag size={18} />
+            </div>
+          </div>
+          <div className="zenith-kpi-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={ordersSparkline}>
+                <Line type="monotone" dataKey="val" stroke="#2563EB" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 2. Pending Orders */}
+        <div className="zenith-kpi-card">
+          <div className="zenith-kpi-header">
+            <div className="zenith-kpi-info">
+              <span className="zenith-kpi-label">Pending Orders</span>
+              <span className="zenith-kpi-value">{safe.orders?.pending || 0}</span>
+              <div className={`zenith-kpi-trend ${(safe.orders?.pending || 0) > 0 ? 'negative' : 'positive'}`}>
+                {(safe.orders?.pending || 0) > 0 ? <AlertCircle size={14} /> : <CheckCircle size={14} />}
+                {safe.orders?.inProgress || 0} <span className="zenith-kpi-trend-text">in progress</span>
+              </div>
+            </div>
+            <div className="zenith-kpi-icon" style={{ background: '#FEF3C7', color: '#D97706' }}>
+              <Clock size={18} />
+            </div>
+          </div>
+          <div className="zenith-kpi-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={generateSparkline(-1, safe.orders?.pending || 5)}>
+                <Line type="monotone" dataKey="val" stroke="#D97706" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 3. Revenue */}
+        <div className="zenith-kpi-card">
+          <div className="zenith-kpi-header">
+            <div className="zenith-kpi-info">
+              <span className="zenith-kpi-label">Revenue</span>
               <span className="zenith-kpi-value">{formatCurrency(safe.revenue?.today || 0)}</span>
               <div className={`zenith-kpi-trend ${isGrowthPositive ? 'positive' : 'negative'}`}>
                 {isGrowthPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
@@ -170,73 +233,73 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* 2. Active Customers */}
+        {/* 4. Completed Orders */}
         <div className="zenith-kpi-card">
           <div className="zenith-kpi-header">
             <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Active Customers</span>
-              <span className="zenith-kpi-value">{safe.customers?.active || 0}</span>
+              <span className="zenith-kpi-label">Completed Orders</span>
+              <span className="zenith-kpi-value">{safe.orders?.completedToday || 0}</span>
               <div className="zenith-kpi-trend positive">
-                <ArrowUpRight size={14} />
-                {safe.customers?.retention || 0}% <span className="zenith-kpi-trend-text">retention rate</span>
+                <CheckCircle size={14} />
+                {safe.orders?.cancelledToday || 0} <span className="zenith-kpi-trend-text">cancelled today</span>
               </div>
             </div>
-            <div className="zenith-kpi-icon" style={{ background: '#ECFEFF', color: '#0891B2' }}>
-              <Users size={18} />
+            <div className="zenith-kpi-icon" style={{ background: '#ECFDF5', color: '#059669' }}>
+              <CheckCircle size={18} />
             </div>
           </div>
           <div className="zenith-kpi-sparkline">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={usersSparkline}>
-                <Line type="monotone" dataKey="val" stroke="#0891B2" strokeWidth={2} dot={false} isAnimationActive={false} />
+              <LineChart data={generateSparkline(1, safe.orders?.completedToday || 10)}>
+                <Line type="monotone" dataKey="val" stroke="#059669" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* 3. Total Orders */}
+        {/* 5. Average Order Time */}
         <div className="zenith-kpi-card">
           <div className="zenith-kpi-header">
             <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Total Orders</span>
-              <span className="zenith-kpi-value">{safe.orders?.today || 0}</span>
-              <div className="zenith-kpi-trend neutral">
-                <ArrowUpRight size={14} />
-                {safe.orders?.thisMonth || 0} <span className="zenith-kpi-trend-text">this month</span>
+              <span className="zenith-kpi-label">Avg. Order Time</span>
+              <span className="zenith-kpi-value">{safe.orders?.averageOrderTime || 0}<span style={{ fontSize: '14px', fontWeight: 500, color: '#6B7280', marginLeft: '4px' }}>min</span></span>
+              <div className={`zenith-kpi-trend ${(safe.orders?.averageOrderTime || 0) <= 10 ? 'positive' : 'negative'}`}>
+                <Timer size={14} />
+                <span className="zenith-kpi-trend-text">from order to completion</span>
               </div>
             </div>
-            <div className="zenith-kpi-icon" style={{ background: '#F3F4F6', color: '#4B5563' }}>
-              <ShoppingBag size={18} />
+            <div className="zenith-kpi-icon" style={{ background: '#F5F3FF', color: '#7C3AED' }}>
+              <Timer size={18} />
             </div>
           </div>
           <div className="zenith-kpi-sparkline">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={ordersSparkline}>
-                <Line type="monotone" dataKey="val" stroke="#4B5563" strokeWidth={2} dot={false} isAnimationActive={false} />
+              <LineChart data={generateSparkline(-1, safe.orders?.averageOrderTime || 8)}>
+                <Line type="monotone" dataKey="val" stroke="#7C3AED" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* 4. Page Views / Alerts */}
+        {/* 6. Inventory Alerts */}
         <div className="zenith-kpi-card">
           <div className="zenith-kpi-header">
             <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Store Hits</span>
-              <span className="zenith-kpi-value">{(safe.revenue?.today * 1.5).toFixed(0)}</span>
-              <div className="zenith-kpi-trend positive">
-                <ArrowUpRight size={14} />
-                24.7% <span className="zenith-kpi-trend-text">vs yesterday</span>
+              <span className="zenith-kpi-label">Inventory Alerts</span>
+              <span className="zenith-kpi-value">{safe.inventory?.lowStock || 0}</span>
+              <div className={`zenith-kpi-trend ${(safe.inventory?.lowStock || 0) > 0 ? 'negative' : 'positive'}`}>
+                {(safe.inventory?.lowStock || 0) > 0 ? <AlertTriangle size={14} /> : <CheckCircle size={14} />}
+                <span className="zenith-kpi-trend-text">{(safe.inventory?.lowStock || 0) > 0 ? 'items below threshold' : 'all stocked'}</span>
               </div>
             </div>
-            <div className="zenith-kpi-icon" style={{ background: '#FEF9C3', color: '#CA8A04' }}>
-              <Eye size={18} />
+            <div className="zenith-kpi-icon" style={{ background: '#FEF2F2', color: '#DC2626' }}>
+              <AlertTriangle size={18} />
             </div>
           </div>
           <div className="zenith-kpi-sparkline">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={viewsSparkline}>
-                <Line type="monotone" dataKey="val" stroke="#CA8A04" strokeWidth={2} dot={false} isAnimationActive={false} />
+              <LineChart data={generateSparkline(-1, safe.inventory?.lowStock || 2)}>
+                <Line type="monotone" dataKey="val" stroke="#DC2626" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

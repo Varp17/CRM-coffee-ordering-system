@@ -9,6 +9,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useOrderStore } from '../store/useOrderStore';
+import { useNotificationStore } from '../store/useNotificationStore';
 import useSidebarStore from '../store/useSidebarStore';
 import AdminPageErrorBoundary from '../components/AdminPageErrorBoundary/AdminPageErrorBoundary';
 import Sidebar from './components/Sidebar';
@@ -70,10 +71,16 @@ const AdminLayout = () => {
   }, [location.pathname, closeMobile]);
 
   // ── Update sidebar badges from live store data ──
+  const notifications = useNotificationStore((s) => s.notifications);
+
   useEffect(() => {
     const pendingOrders = (orders || []).filter((o) => o.status === 'pending').length;
-    setBadges({ pendingOrders });
-  }, [orders, setBadges]);
+    const lowStock = (notifications || []).filter((n) => n.type === 'low_stock' && !n.is_read).length;
+    const openTickets = (notifications || []).filter((n) => n.type === 'support_ticket' && !n.is_read).length;
+    const pendingWaste = (notifications || []).filter((n) => n.type === 'waste_alert' && !n.is_read).length;
+
+    setBadges({ pendingOrders, lowStock, openTickets, pendingWaste });
+  }, [orders, notifications, setBadges]);
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 900;
 
