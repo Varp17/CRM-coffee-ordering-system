@@ -6,39 +6,50 @@
 .kiosk-checkout {
   height: 100vh;
   width: 100vw;
-  background: radial-gradient(circle at 50% 50%, #fcfaf7 0%, #f4eee3 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   color: #2e1f16;
-  padding-top: 80px;
-  padding-bottom: 60px;
+  padding-top: 104px;
+  /* Space for the floating top bar */
+  padding-bottom: 90px;
+  /* Space for the floating assistive footer */
+  box-sizing: border-box;
   overflow: hidden;
+  background: transparent;
+  /* Let the KioskLayout handle the main radial gradient */
 }
 
 .checkout-card {
   width: 480px;
-  padding: 2.5rem;
-  border-radius: 16px; /* Soft inviting corners */
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 210px);
+  /* Fit within the workspace height */
+  padding: 2rem;
+  border-radius: 16px;
+  /* Soft inviting corners */
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   position: relative;
   background-color: #ffffff;
-  border: 1px solid rgba(179, 146, 104, 0.18);
-  box-shadow: 
-    0 20px 50px rgba(179, 146, 104, 0.1),
-    0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(179, 146, 104, 0.25);
+  box-shadow:
+    0 16px 40px rgba(179, 146, 104, 0.08),
+    0 4px 15px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  overflow-y: auto;
+  /* Fallback scroll if screen height is extremely small */
 }
 
 .checkout-card h2 {
   font-family: 'Readex Pro', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 300;
+  font-size: 1.6rem;
+  font-weight: 400;
   text-align: center;
   margin: 0;
   color: #2e1f16;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .order-summary-section h3,
@@ -96,18 +107,18 @@
   background-color: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(179, 146, 104, 0.18);
   color: rgba(46, 31, 22, 0.7);
-  padding: 1.2rem;
-  border-radius: 12px;
+  padding: 1rem 1.5rem !important;
+  border-radius: 12px !important;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
+  font-size: 0.82rem !important;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: 64px;
+  min-height: 56px !important;
 }
 
 .payment-option:hover {
@@ -116,19 +127,54 @@
 }
 
 .payment-option.active {
-  border-color: #a8845c;
-  background-color: rgba(179, 146, 104, 0.08);
-  color: #a8845c;
+  border-color: #a8845c !important;
+  background-color: rgba(179, 146, 104, 0.08) !important;
+  color: #a8845c !important;
   box-shadow: 0 0 10px rgba(168, 132, 92, 0.1);
 }
 
-.checkout-card .btn-large {
-  height: 52px !important;
+.build-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.build-actions button {
+  flex: 1;
+  min-height: 50px !important;
+  border-radius: 25px !important;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  border-radius: 26px;
-  margin-top: 1rem;
+}
+
+.step-nav-btn {
+  background-color: rgba(46, 31, 22, 0.05);
+  color: rgba(46, 31, 22, 0.6);
+  border: 1px solid rgba(179, 146, 104, 0.15);
+  transition: all 0.3s ease;
+}
+
+.step-nav-btn:hover {
+  background-color: rgba(46, 31, 22, 0.08);
+  color: #2e1f16;
+}
+
+.add-order-btn {
+  background: linear-gradient(135deg, #c8a97e, #b39268);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(179, 146, 104, 0.2);
+  transition: all 0.3s ease;
+}
+
+.add-order-btn:hover:not(:disabled) {
+  background: #a8845c;
+  box-shadow: 0 6px 18px rgba(168, 132, 92, 0.25);
+}
+
+.add-order-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
