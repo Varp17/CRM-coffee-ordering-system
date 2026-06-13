@@ -59,8 +59,8 @@ const Production = () => {
     <div className="production-dashboard animate-fade-in">
       <div className="production-header">
         <div>
-          <h2>Production Command Center</h2>
-          <p>Real-time manufacturing, QC tracking, and inventory depletion</p>
+          <h2>R&D Command Center</h2>
+          <p>Research & Development — recipe innovation, batch production, and quality control</p>
         </div>
         <div className="production-header-actions">
           <Button variant="primary" onClick={() => setShowWizard(true)}>

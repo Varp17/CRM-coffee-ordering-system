@@ -21,11 +21,11 @@ const Portal = () => {
         // Determine destination based on role from the backend
         let destination = '/store';
         const role = (result.role || '').toLowerCase();
-        if (role === 'super_admin' || role === 'admin') {
+        if (role === 'super_admin' || role === 'store_admin') {
           destination = '/admin';
-        } else if (role === 'barista' || role === 'kitchen') {
+        } else if (role === 'staff' || role === 'kitchen') {
           destination = '/barista';
-        } else if (role === 'store_manager' || role === 'kiosk') {
+        } else if (role === 'manager' || role === 'kiosk') {
           destination = '/kiosk';
         } else {
           // customer or any other role → D2C storefront

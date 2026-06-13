@@ -67,9 +67,14 @@ const Equipment = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await Promise.all([loadEquipment(), loadCalibrationDue()]);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    loadEquipment();
-    loadCalibrationDue();
+    handleRefresh();
   }, []);
 
   const stats = useMemo(() => {
@@ -212,7 +217,7 @@ const Equipment = () => {
           <p className="page-subtitle">Manage equipment, maintenance logs, and calibration schedules</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={loadEquipment} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={handleRefresh} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           <Button onClick={openAddModal} variant="primary"><Plus size={16} /> Add Equipment</Button>
         </div>
       </div>

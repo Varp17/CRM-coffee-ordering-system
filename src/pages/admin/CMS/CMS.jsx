@@ -53,8 +53,7 @@ const CMS = () => {
 
   const toggleBanner = async (banner) => {
     try {
-      const currentActive = banner.is_active === 1 || banner.is_active === true;
-      const newActive = currentActive ? 0 : 1;
+      const newActive = !banner.is_active;
       await cmsService.updateBanner(banner.uuid || banner.id, { is_active: newActive });
       toast.success(`Banner ${newActive ? 'activated' : 'deactivated'}`);
       loadData();
@@ -74,7 +73,7 @@ const CMS = () => {
     setBannerForm({
       title: banner.title,
       subtitle: banner.subtitle,
-      active: banner.is_active === 1 || banner.is_active === true,
+      active: Boolean(banner.is_active),
       position: banner.position || 'hero',
       ctaText: banner.cta_text || '',
       ctaLink: banner.cta_link || ''
@@ -89,7 +88,7 @@ const CMS = () => {
         title: bannerForm.title,
         subtitle: bannerForm.subtitle,
         position: bannerForm.position,
-        is_active: bannerForm.active ? 1 : 0,
+        is_active: bannerForm.active,
         cta_text: bannerForm.ctaText,
         cta_link: bannerForm.ctaLink
       };
@@ -188,7 +187,7 @@ const CMS = () => {
                       <tr><td colSpan="5" className="empty-row">No banners configured.</td></tr>
                     ) : (
                       bannersList.map(banner => {
-                        const isActive = banner.is_active === 1 || banner.is_active === true;
+                        const isActive = Boolean(banner.is_active);
                         return (
                           <tr key={banner.uuid || banner.id}>
                             <td>
@@ -289,7 +288,7 @@ const CMS = () => {
                       <tr><td colSpan="4" className="empty-row">No products found.</td></tr>
                     ) : (
                       productsList.slice(0, 5).map(product => {
-                        const isActive = product.is_active === 1 || product.is_active === true;
+                        const isActive = Boolean(product.is_active);
                         return (
                           <tr key={product.id}>
                             <td><strong>{product.name}</strong></td>

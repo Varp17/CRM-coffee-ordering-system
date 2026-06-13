@@ -35,9 +35,17 @@ const GST = () => {
     }
   };
 
-  useEffect(() => {
+  const handleRefresh = async () => {
     setIsLoading(true);
-    Promise.all([loadConfig(), loadInvoices()]).finally(() => setIsLoading(false));
+    try {
+      await Promise.all([loadConfig(), loadInvoices()]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleRefresh();
   }, []);
 
   const openAddConfig = () => {
@@ -141,7 +149,9 @@ const GST = () => {
           <h2 className="section-title">GST Management</h2>
           <p className="section-subtitle">Configure HSN codes, tax rates, and manage GST invoices</p>
         </div>
-        <button className="gst-refresh-btn" onClick={() => { loadConfig(); loadInvoices(); }}><RefreshCw size={13} /></button>
+        <button className="gst-refresh-btn" onClick={handleRefresh} disabled={isLoading}>
+          <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+        </button>
       </div>
 
       <div className="gst-tabs">

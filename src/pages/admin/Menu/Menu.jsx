@@ -4,15 +4,19 @@ import Button from '../../../components/Button/Button';
 import { productService } from '../../../services/products';
 import { inventoryService } from '../../../services/inventory';
 import { menuRecipeService } from '../../../services/menuRecipes';
+import { api } from '../../../services/api';
 import { formatCurrency } from '../../../utils/formatters';
 import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import { useConfirmation } from '../../../hooks/useConfirmation';
-import RecipeBuilder from '../RecipeBuilder/RecipeBuilder';
+import MenuTab from '../Recipes/components/MenuTab';
 import Ingredients from '../Ingredients/Ingredients';
-import { Search, Plus, MoreHorizontal, Download, Columns, SlidersHorizontal } from 'lucide-react';
+import Inventory from '../Inventory/Inventory';
+import { Search, Plus, MoreHorizontal, Download, Columns, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import { useAuthStore } from '../../../store/useAuthStore';
 
 const Menu = () => {
+  const userRole = useAuthStore((state) => state.role);
   const [activeTab, setActiveTab] = useState('products');
   const [productsList, setProductsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,34 +34,47 @@ const Menu = () => {
     category_id: 1,
     description: '',
     base_price: 0,
-    is_active: 1,
-    image_url: ''
+    product_type: 'beverage',
+    is_active: false,
+    is_available_kiosk: true,
+    is_available_d2c: false,
+    is_available_admin: true,
+    image_url: '',
+    recipe_id: '',
+    concentrate_type_id: ''
   });
 
   const [categoriesList, setCategoriesList] = useState([]);
   const [recipesList, setRecipesList] = useState([]);
+  const [concentrateTypes, setConcentrateTypes] = useState([]);
 
   const loadProductsAndCategories = async () => {
     setIsLoading(true);
-    try {
-      const [pRes, cRes, rRes] = await Promise.all([
-        productService.getAll(),
-        productService.getCategories(),
-        menuRecipeService.list(),
-      ]);
-      setProductsList(unwrapList(pRes));
-      setCategoriesList(unwrapList(cRes));
-      setRecipesList(unwrapList(rRes));
-    } catch (err) {
-      toast.error('Failed to load menu products: ' + err.message);
-    } finally {
-      setIsLoading(false);
+    const pPromise = productService.getAll().catch(err => {
+      console.error('PRODUCT ERROR:', err);
+      return null;
+    });
+    const cPromise = productService.getCategories().catch(() => null);
+    const rPromise = menuRecipeService.list().catch(() => null);
+    const ctPromise = api.get('/production/concentrate-types?limit=50').catch(() => null);
+    const [pRes, cRes, rRes, ctRes] = await Promise.all([pPromise, cPromise, rPromise, ctPromise]);
+    if (pRes) {
+      const products = unwrapList(pRes);
+      console.log('PRODUCTS LOADED:', products.length);
+      console.log('PRODUCTS:', products);
+      setProductsList(products);
+    } else {
+      toast.error('Failed to load products');
     }
+    if (cRes) setCategoriesList(unwrapList(cRes));
+    if (rRes) setRecipesList(unwrapList(rRes));
+    if (ctRes) setConcentrateTypes(unwrapList(ctRes));
+    setIsLoading(false);
   };
 
   const getLinkedRecipeName = (product) => {
     if (!product.recipe_id) return null;
-    const recipe = recipesList.find(r => r.id === product.recipe_id || r.uuid === product.recipe_id);
+    const recipe = recipesList.find(r => r._pk === product.recipe_id || r.id === product.recipe_id);
     return recipe ? recipe.name : null;
   };
 
@@ -74,22 +91,20 @@ const Menu = () => {
   }, []);
 
   const categories = useMemo(() => {
-    return ['all', ...categoriesList.map(c => c.name)];
+    return ['all', ...new Set(categoriesList.map(c => c.name))];
   }, [categoriesList]);
 
   const filteredProducts = useMemo(() => {
     return productsList.filter(p => {
       const matchesSearch = (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                             (p.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = categoryFilter === 'all' || p.category_name === categoryFilter;
+      const matchesCategory = categoryFilter === 'all' || (p.category?.name || 'Uncategorized') === categoryFilter;
       
       let matchesStatus = true;
       if (productStatusFilter === 'active') {
-        matchesStatus = p.is_active === 1;
+        matchesStatus = p.is_active === true;
       } else if (productStatusFilter === 'draft') {
-        matchesStatus = p.is_active === 0;
-      } else if (productStatusFilter === 'archived') {
-        matchesStatus = false; 
+        matchesStatus = p.is_active === false;
       }
       
       return matchesSearch && matchesCategory && matchesStatus;
@@ -102,9 +117,15 @@ const Menu = () => {
       name: '', 
       category_id: categoriesList[0]?.id || 1, 
       description: '', 
-      base_price: 0, 
-      is_active: 1,
-      image_url: ''
+      base_price: 0,
+      product_type: 'beverage',
+      is_active: false,
+      is_available_kiosk: true,
+      is_available_d2c: false,
+      is_available_admin: true,
+      image_url: '',
+      recipe_id: '',
+      concentrate_type_id: ''
     });
     setShowModal(true);
     setActiveDropdownId(null);
@@ -114,11 +135,17 @@ const Menu = () => {
     setEditingProduct(product);
     setFormData({
       name: product.name,
-      category_id: product.category_id,
+      category_id: product.category?.id || '',
       description: product.description || '',
       base_price: product.base_price || product.basePrice || 0,
-      is_active: product.is_active ?? 1,
-      image_url: product.image_url || ''
+      product_type: product.product_type || 'beverage',
+      is_active: product.is_active == null ? false : Boolean(product.is_active),
+      is_available_kiosk: product.is_available_kiosk == null ? true : Boolean(product.is_available_kiosk),
+      is_available_d2c: product.is_available_d2c == null ? false : Boolean(product.is_available_d2c),
+      is_available_admin: product.is_available_admin == null ? true : Boolean(product.is_available_admin),
+      image_url: product.image_url || '',
+      recipe_id: product.recipe_id || '',
+      concentrate_type_id: product.concentrate_type_id || ''
     });
     setShowModal(true);
     setActiveDropdownId(null);
@@ -135,7 +162,7 @@ const Menu = () => {
       payload: {
         details: {
           name: product?.name,
-          category: product?.category_name,
+          category: product?.category?.name || 'Uncategorized',
           price: formatCurrency(product?.base_price || product?.basePrice)
         }
       },
@@ -162,7 +189,13 @@ const Menu = () => {
         category_id: Number(formData.category_id),
         description: formData.description,
         base_price: Number(formData.base_price),
-        is_active: Number(formData.is_active)
+        product_type: formData.product_type || 'beverage',
+        is_active: formData.is_active,
+        is_available_kiosk: formData.is_available_kiosk,
+        is_available_d2c: formData.is_available_d2c,
+        is_available_admin: formData.is_available_admin,
+        recipe_id: formData.recipe_id ? Number(formData.recipe_id) : null,
+        concentrate_type_id: formData.concentrate_type_id ? Number(formData.concentrate_type_id) : null,
       };
       if (formData.image_url) {
         payload.image_url = formData.image_url;
@@ -200,7 +233,7 @@ const Menu = () => {
   };
 
   const toggleStatus = async (product) => {
-    const newStatus = product.is_active ? 0 : 1;
+    const newStatus = !product.is_active;
     const confirmed = await confirmAction({
       title: 'Update Product Status',
       description: `Mark product "${product.name}" as ${newStatus ? 'Active' : 'Inactive'}?`,
@@ -234,6 +267,9 @@ const Menu = () => {
     );
   }
 
+  console.log('productsList state:', productsList.length);
+  console.log('filteredProducts state:', filteredProducts.length);
+
   return (
     <div className="menu-view animate-fade-in">
       <div className="settings-tabs" style={{ marginBottom: '16px' }}>
@@ -258,6 +294,13 @@ const Menu = () => {
         >
           Ingredients
         </button>
+        <button
+          className={`settings-tab ${activeTab === 'stock' ? 'active' : ''}`}
+          onClick={() => setActiveTab('stock')}
+          id="menu-tab-stock"
+        >
+          Store Stock
+        </button>
       </div>
 
       {activeTab === 'products' && (
@@ -266,7 +309,7 @@ const Menu = () => {
             <div className="alert-banner warning">
               ⚠️ {stockSummary.low} ingredient{stockSummary.low > 1 ? 's' : ''} low on stock.&nbsp;
               {stockSummary.out > 0 && <>{stockSummary.out} out of stock. </>}
-              <a href="/admin/inventory" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>View Inventory</a>
+              <a href="#" onClick={e => { e.preventDefault(); setActiveTab('stock'); }} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>View Stock</a>
             </div>
           )}
           
@@ -276,26 +319,31 @@ const Menu = () => {
               <h1 className="zenith-title">Products</h1>
               <p className="zenith-subtitle">Browse and manage your product catalog.</p>
             </div>
-            <div className="zenith-header-right">
-              <button className="zenith-btn-dark" onClick={openAddModal}>
-                <Plus className="w-4 h-4" style={{ marginRight: '6px' }} /> Add Product
-              </button>
+            <div className="zenith-header-right" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <Button onClick={loadProductsAndCategories} variant="ghost" disabled={isLoading}>
+                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+              </Button>
+              {userRole === 'super_admin' && (
+                <button className="zenith-btn-dark" onClick={openAddModal}>
+                  <Plus className="w-4 h-4" style={{ marginRight: '6px' }} /> Add Product
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="zenith-filters-row">
-            {['all', 'active', 'draft', 'archived'].map(tab => (
-              <button 
-                key={tab} 
-                className={`zenith-filter-pill ${productStatusFilter === tab ? 'active' : ''}`}
-                onClick={() => setProductStatusFilter(tab)}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </div>
+          <div className="zenith-control-bar">
+            <div className="zenith-filters-row">
+              {['all', 'active', 'draft'].map(tab => (
+                <button 
+                  key={tab} 
+                  className={`zenith-filter-pill ${productStatusFilter === tab ? 'active' : ''}`}
+                  onClick={() => setProductStatusFilter(tab)}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
 
-          <div className="zenith-search-toolbar">
             <div className="zenith-search-box">
               <Search className="w-4 h-4 text-muted" />
               <input
@@ -322,11 +370,11 @@ const Menu = () => {
                 </select>
               </div>
 
-              <button className="zenith-btn-outline">
+              <button className="zenith-btn-outline" onClick={() => toast('Column visibility — coming soon')}>
                 <Columns className="w-4 h-4" style={{ marginRight: '6px' }} /> Columns
               </button>
               
-              <button className="zenith-btn-outline">
+              <button className="zenith-btn-outline" onClick={() => toast('Export — coming soon')}>
                 <Download className="w-4 h-4" style={{ marginRight: '6px' }} /> Export
               </button>
             </div>
@@ -376,20 +424,20 @@ const Menu = () => {
                         </div>
                       </td>
                       <td>
-                          <span className="zenith-category-badge">
-                            {product.category_name || 'Uncategorized'}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="product-recipe-name">
-                            {getLinkedRecipeName(product) || '—'}
-                          </span>
-                        </td>
-                        <td>
-                          <span className={`zenith-status-pill ${product.is_active ? 'active' : 'draft'}`}>
-                            {product.is_active ? 'Active' : 'Draft'}
-                          </span>
-                        </td>
+                        <span className="zenith-category-badge">
+                          {product.category?.name || 'Uncategorized'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="product-recipe-name">
+                          {getLinkedRecipeName(product) || '—'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`zenith-status-pill ${product.is_active ? 'active' : 'draft'}`}>
+                          {product.is_active ? 'Active' : 'Draft'}
+                        </span>
+                      </td>
                       <td>
                         <span className="product-stock-count">
                           {product.stock_quantity ?? 999}
@@ -424,11 +472,18 @@ const Menu = () => {
                           <>
                             <div className="zenith-dropdown-backdrop" onClick={() => setActiveDropdownId(null)} />
                             <div className="zenith-dropdown-menu">
-                              <button onClick={() => openEditModal(product)}>Edit Details</button>
-                              <button onClick={() => toggleStatus(product)}>
-                                {product.is_active ? 'Mark Inactive' : 'Mark Active'}
-                              </button>
-                              <button className="danger" onClick={() => handleDelete(product.id)}>Delete Product</button>
+                              {userRole === 'super_admin' && (
+                                <>
+                                  <button onClick={() => openEditModal(product)}>Edit Details</button>
+                                  <button onClick={() => toggleStatus(product)}>
+                                    {product.is_active ? 'Mark Inactive' : 'Mark Active'}
+                                  </button>
+                                  <button className="danger" onClick={() => handleDelete(product.id)}>Delete Product</button>
+                                </>
+                              )}
+                              {userRole !== 'super_admin' && (
+                                <button disabled style={{ color: 'var(--color-text-secondary)' }}>View Only</button>
+                              )}
                             </div>
                           </>
                         )}
@@ -442,9 +497,11 @@ const Menu = () => {
         </>
       )}
 
-      {activeTab === 'recipes' && <RecipeBuilder />}
+      {activeTab === 'recipes' && <MenuTab />}
 
       {activeTab === 'ingredients' && <Ingredients />}
+
+      {activeTab === 'stock' && <Inventory />}
 
       {/* Create/Edit Modal */}
       {showModal && activeTab === 'products' && (
@@ -467,6 +524,22 @@ const Menu = () => {
                     {categoriesList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
+                <div className="form-group">
+                  <label>Menu Recipe</label>
+                  <select value={formData.recipe_id} onChange={e => setFormData({...formData, recipe_id: e.target.value})}>
+                    <option value="">-- None --</option>
+                    {recipesList.map(r => <option key={r._pk} value={r._pk}>{r.name} {r.recipe_code ? `(${r.recipe_code})` : ''} — ₹{r.total_cost?.toFixed(2) || '0.00'}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Concentrate Type</label>
+                  <select value={formData.concentrate_type_id} onChange={e => setFormData({...formData, concentrate_type_id: e.target.value})}>
+                    <option value="">-- None --</option>
+                    {concentrateTypes.map(ct => (
+                      <option key={ct.id} value={ct.id}>{ct.name}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="form-group full-width">
                   <label>Description</label>
                   <textarea rows="3" required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
@@ -476,15 +549,44 @@ const Menu = () => {
                   <input type="number" required min="0" value={formData.base_price} onChange={e => setFormData({...formData, base_price: Number(e.target.value)})} />
                 </div>
                 <div className="form-group">
+                  <label>Product Type</label>
+                  <select value={formData.product_type} onChange={e => setFormData({...formData, product_type: e.target.value})}>
+                    <option value="beverage">Beverage</option>
+                    <option value="concentrate">Concentrate</option>
+                    <option value="food">Food</option>
+                    <option value="addon">Add-on</option>
+                  </select>
+                </div>
+                <div className="form-group">
                   <label>Image URL</label>
                   <input type="text" value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
                 </div>
                 <div className="form-group">
                   <label>Status</label>
-                  <select value={formData.is_active} onChange={e => setFormData({...formData, is_active: Number(e.target.value)})}>
+                  <select value={formData.is_active ? 1 : 0} onChange={e => setFormData({...formData, is_active: e.target.value === '1'})}>
                     <option value={1}>Active</option>
                     <option value={0}>Inactive</option>
                   </select>
+                </div>
+                <div className="form-group full-width">
+                  <label>Channel Availability</label>
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={formData.is_available_kiosk}
+                        onChange={e => setFormData({...formData, is_available_kiosk: e.target.checked})} />
+                      Kiosk
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={formData.is_available_d2c}
+                        onChange={e => setFormData({...formData, is_available_d2c: e.target.checked})} />
+                      D2C
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={formData.is_available_admin}
+                        onChange={e => setFormData({...formData, is_available_admin: e.target.checked})} />
+                      Admin
+                    </label>
+                  </div>
                 </div>
               </div>
 

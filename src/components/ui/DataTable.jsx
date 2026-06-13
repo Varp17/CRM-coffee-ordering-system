@@ -9,6 +9,7 @@ export const DataTable = ({
   searchKey = '',
   onRowView = null,
   onRowDelete = null,
+  onRowClick = null,
   exportFileName = 'data-export'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -156,7 +157,11 @@ export const DataTable = ({
               </tr>
             ) : (
               paginatedData.map((row, idx) => (
-                <tr key={idx}>
+                <tr 
+                  key={idx} 
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={onRowClick ? 'data-table-row-clickable' : ''}
+                >
                   {columns.map((col) => (
                     <td key={col.header}>
                       {col.render

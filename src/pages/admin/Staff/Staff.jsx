@@ -75,13 +75,14 @@ const Staff = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await Promise.all([loadRecords(), loadShifts(filterDate), loadTimeLogs(), loadSummary()]);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      await Promise.all([loadRecords(), loadShifts(), loadTimeLogs(), loadSummary()]);
-      setIsLoading(false);
-    };
-    load();
+    handleRefresh();
   }, []);
 
   useEffect(() => {
@@ -229,7 +230,7 @@ const Staff = () => {
           <p className="page-subtitle">Manage employee records, shifts, and time tracking</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={() => { loadRecords(); loadShifts(filterDate); loadTimeLogs(); }} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={handleRefresh} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           {currentTab === 'records' && <Button onClick={openAddRecord} variant="primary"><Plus size={16} /> Add Record</Button>}
           {currentTab === 'shifts' && <Button onClick={() => setShowShiftModal(true)} variant="primary"><Plus size={16} /> Create Shift</Button>}
         </div>

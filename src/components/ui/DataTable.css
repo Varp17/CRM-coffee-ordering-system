@@ -155,3 +155,12 @@
   color: #fff !important;
   border-color: var(--color-primary) !important;
 }
+
+.data-table-row-clickable {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.data-table-row-clickable:hover td {
+  background-color: var(--color-surface-hover, #f8fafc) !important;
+}

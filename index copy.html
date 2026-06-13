@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Digital Coffee — Premium specialty coffee ordering platform. Order concentrates, custom drinks, and subscription boxes." />
+    <meta name="theme-color" content="#C67C4E" />
+    <meta property="og:title" content="Digital Coffee — Premium Beverage Platform" />
+    <meta property="og:description" content="Experience coffee redefined. Premium concentrates, custom drinks, and subscription plans." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Digital Coffee — Premium Beverage Platform</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Global error logging for production diagnostics
+      window.addEventListener('error', function(e) {
+        console.error('[GLOBAL JS ERROR]:', e.error);
+        if (e.message) {
+          localStorage.setItem('last_js_error', e.message + ' at ' + (e.filename || '').split('/').pop() + ':' + e.lineno);
+        }
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('[UNHANDLED REJECTION]:', e.reason);
+        if (e.reason) {
+          localStorage.setItem('last_promise_error', String(e.reason.message || e.reason));
+        }
+      });
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

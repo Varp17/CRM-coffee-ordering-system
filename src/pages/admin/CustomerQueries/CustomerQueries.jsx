@@ -172,8 +172,8 @@ const CustomerQueries = () => {
           <p className="page-subtitle">Log, manage, and resolve customer concerns and faulty products</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={loadTickets} variant="ghost">
-            <RefreshCw size={16} />
+          <Button onClick={loadTickets} variant="ghost" disabled={isLoading}>
+            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
           </Button>
           <Button onClick={openAddModal} variant="primary">
             <Plus size={16} /> Log Ticket

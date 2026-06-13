@@ -79,6 +79,14 @@ const PurchaseOrders = () => {
     setShowModal(true);
   };
 
+  const getFilteredRawMaterials = useMemo(() => {
+    if (!formData.supplier_id) return rawMaterials;
+    const supplierId = parseInt(formData.supplier_id);
+    return rawMaterials.filter(rm => {
+      return parseInt(rm.supplier_id) === supplierId;
+    });
+  }, [formData.supplier_id, rawMaterials]);
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -111,7 +119,7 @@ const PurchaseOrders = () => {
         ...formData,
         items: formData.items.map((it) => ({
           raw_material_id: it.raw_material_id,
-          quantity: parseFloat(it.quantity) || 0,
+          quantity_ordered: parseFloat(it.quantity) || 0,
           unit_price: parseFloat(it.unit_price) || 0,
         })),
       };
@@ -133,7 +141,7 @@ const PurchaseOrders = () => {
     setSelectedOrder(order);
     const items = (order.items || []).map((it) => ({
       ...it,
-      received_qty: it.received_qty || 0,
+      quantity_accepted: it.quantity_received || 0,
     }));
     setReceiveData({ items });
     setShowReceiveModal(true);
@@ -141,7 +149,7 @@ const PurchaseOrders = () => {
 
   const handleReceiveQtyChange = (index, value) => {
     const updated = [...receiveData.items];
-    updated[index] = { ...updated[index], received_qty: parseFloat(value) || 0 };
+    updated[index] = { ...updated[index], quantity_accepted: parseFloat(value) || 0 };
     setReceiveData((prev) => ({ ...prev, items: updated }));
   };
 
@@ -151,11 +159,12 @@ const PurchaseOrders = () => {
     try {
       await poService.receive(selectedOrder.id, {
         items: receiveData.items.map((it) => ({
-          raw_material_id: it.raw_material_id,
-          received_qty: it.received_qty,
+          po_item_id: it.id,
+          quantity_accepted: it.quantity_accepted,
+          quantity_rejected: 0,
         })),
       });
-      toast.success('Purchase order received');
+      toast.success('Purchase order received — stock updated');
       setShowReceiveModal(false);
       loadOrders();
     } catch (err) {
@@ -206,7 +215,7 @@ const PurchaseOrders = () => {
           <p className="page-subtitle">Create and manage purchase orders for suppliers</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={loadOrders} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={loadOrders} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           <Button onClick={openAddModal} variant="primary"><Plus size={16} /> New Purchase Order</Button>
         </div>
       </div>
@@ -259,7 +268,7 @@ const PurchaseOrders = () => {
                     <label>Raw Material</label>
                     <select value={item.raw_material_id} onChange={(e) => handleItemChange(idx, 'raw_material_id', e.target.value)}>
                       <option value="">Select</option>
-                      {(Array.isArray(rawMaterials) ? rawMaterials : []).map((rm) => (
+                      {(getFilteredRawMaterials.length > 0 ? getFilteredRawMaterials : rawMaterials).map((rm) => (
                         <option key={rm.id} value={rm.id}>{rm.name}</option>
                       ))}
                     </select>
@@ -296,17 +305,17 @@ const PurchaseOrders = () => {
             <form onSubmit={handleReceiveSubmit}>
               <table className="items-table">
                 <thead>
-                  <tr><th>Item</th><th>Ordered Qty</th><th>Unit Price</th><th>Received Qty</th></tr>
+                  <tr><th>Item</th><th>Ordered</th><th>Unit Price</th><th>Accepted Qty</th></tr>
                 </thead>
                 <tbody>
                   {receiveData.items.map((it, idx) => (
                     <tr key={idx}>
-                      <td>{it.raw_material_name || it.name || `Item #${idx + 1}`}</td>
-                      <td>{it.quantity}</td>
+                      <td>{it.raw_material?.name || it.raw_material_name || it.name || `Item #${idx + 1}`}</td>
+                      <td>{it.quantity_ordered}</td>
                       <td>{formatCurrency(it.unit_price)}</td>
                       <td>
-                        <input type="number" step="0.001" min="0" max={it.quantity}
-                          value={it.received_qty || 0}
+                        <input type="number" step="0.001" min="0" max={it.quantity_ordered}
+                          value={it.quantity_accepted || 0}
                           onChange={(e) => handleReceiveQtyChange(idx, e.target.value)} />
                       </td>
                     </tr>

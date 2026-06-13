@@ -14,7 +14,7 @@ import Financials from '../Financials/Financials';
 
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState('analytics');
-  const [timeRange, setTimeRange] = useState('weekly'); // 'weekly' | 'monthly'
+  const [timeRange, setTimeRange] = useState('weekly'); // 'daily' | 'weekly' | 'monthly' | 'yearly'
   const [dashboardData, setDashboardData] = useState(null);
   const [hourlyData, setHourlyData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
@@ -256,16 +256,28 @@ const Analytics = () => {
           <motion.div className="tab-toggle-row" variants={itemVariants}>
             <div className="analytics-time-tabs">
               <button
+                className={`time-tab-btn ${timeRange === 'daily' ? 'active' : ''}`}
+                onClick={() => setTimeRange('daily')}
+              >
+                Daily
+              </button>
+              <button
                 className={`time-tab-btn ${timeRange === 'weekly' ? 'active' : ''}`}
                 onClick={() => setTimeRange('weekly')}
               >
-                Weekly Telemetry
+                Weekly
               </button>
               <button
                 className={`time-tab-btn ${timeRange === 'monthly' ? 'active' : ''}`}
                 onClick={() => setTimeRange('monthly')}
               >
-                Monthly Projections
+                Monthly
+              </button>
+              <button
+                className={`time-tab-btn ${timeRange === 'yearly' ? 'active' : ''}`}
+                onClick={() => setTimeRange('yearly')}
+              >
+                Yearly
               </button>
             </div>
             <span className="last-sync-tag">⚡ Live synced 2 mins ago</span>
@@ -312,7 +324,7 @@ const Analytics = () => {
               <div className="chart-viewport">
                 <ResponsiveContainer width="99%" height="100%" key={`${timeRange}-${weeklyChartData.length}-${monthlyChartData.length}`}>
                   {timeRange === 'weekly' ? (
-                    <AreaChart data={weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <AreaChart data={timeRange === 'daily' ? weeklyChartData.slice(-7) : timeRange === 'yearly' ? monthlyChartData : weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4}/>

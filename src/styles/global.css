@@ -362,6 +362,10 @@ ul, ol {
   to { transform: rotate(360deg); }
 }
 
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 @keyframes slideInPanel {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }

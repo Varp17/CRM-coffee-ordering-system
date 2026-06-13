@@ -1,12 +1,12 @@
 /**
  * Sidebar.jsx — Enterprise Admin Sidebar
- * Features: Accordion groups, collapse/expand, search, pinned, recently visited, tooltips
+ * Features: Accordion groups, collapse/expand, search, pinned items, tooltips
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Coffee, ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
-  LogOut, Search, Pin, PinOff, Clock, X, Star
+  LogOut, Search, Pin, PinOff, X, Star
 } from 'lucide-react';
 import useSidebarStore from '../../store/useSidebarStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -64,14 +64,14 @@ const SidebarItem = React.memo(({ item, collapsed, onNavigate }) => {
       {!collapsed && (
         <>
           <span className="sb-item-label">{item.label}</span>
-          <button
+          {/* <button
             className={`sb-pin-btn ${isPinned ? 'pinned' : ''}`}
             onClick={handlePinClick}
             aria-label={isPinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
             tabIndex={-1}
           >
             {isPinned ? <PinOff size={11} /> : <Pin size={11} />}
-          </button>
+          </button> */}
         </>
       )}
     </NavLink>
@@ -247,66 +247,7 @@ const SidebarSearch = ({ onClose }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RECENTLY VISITED SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-const RecentlyVisited = ({ collapsed, onNavigate }) => {
-  const recentlyVisited = useSidebarStore((s) => s.recentlyVisited);
-  const visit = useSidebarStore((s) => s.visit);
 
-  if (!recentlyVisited.length) return null;
-
-  // Find full item data from config for icons
-  const itemsWithIcons = recentlyVisited
-    .map((r) => ALL_MENU_ITEMS.find((m) => m.key === r.key))
-    .filter(Boolean)
-    .slice(0, 4);
-
-  if (!itemsWithIcons.length) return null;
-
-  return (
-    <div className="sb-recent-section">
-      {!collapsed && (
-        <span className="sb-recent-label">
-          <Clock size={10} style={{ marginRight: 4 }} />
-          Recent
-        </span>
-      )}
-      {itemsWithIcons.map((item) => {
-        if (collapsed) {
-          return (
-            <Tooltip key={item.key} label={item.label} badge={0}>
-              <NavLink
-                to={item.to}
-                end={item.end}
-                onClick={() => { visit(item); onNavigate?.(); }}
-                className={({ isActive }) => `sb-item sb-recent-item ${isActive ? 'active' : ''}`}
-              >
-                <span className="sb-item-icon">
-                  <item.icon size={15} strokeWidth={1.8} />
-                </span>
-              </NavLink>
-            </Tooltip>
-          );
-        }
-        return (
-          <NavLink
-            key={item.key}
-            to={item.to}
-            end={item.end}
-            onClick={() => { visit(item); onNavigate?.(); }}
-            className={({ isActive }) => `sb-item sb-recent-item ${isActive ? 'active' : ''}`}
-          >
-            <span className="sb-item-icon">
-              <item.icon size={15} strokeWidth={1.8} />
-            </span>
-            <span className="sb-item-label">{item.label}</span>
-          </NavLink>
-        );
-      })}
-    </div>
-  );
-};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PINNED ITEMS SECTION
@@ -388,7 +329,7 @@ const Sidebar = ({ onNavigate }) => {
   // Auto-expand the group that contains the current route
   useEffect(() => {
     const group = findGroupByPath(location.pathname);
-    if (group) expandGroup(group.key);
+    if (group && !group.isSingle) expandGroup(group.key);
   }, [location.pathname, expandGroup]);
 
   // Keyboard shortcut: Ctrl+K / Cmd+K to open search
@@ -423,7 +364,13 @@ const Sidebar = ({ onNavigate }) => {
       >
         {/* ── Brand Header ── */}
         <div className="sb-brand">
-          <NavLink to="/admin" className="sb-brand-link" aria-label="Dashboard">
+          <button
+            className="sb-brand-link"
+            onClick={toggleSidebar}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
             <div className="sb-brand-icon">
               <Coffee size={16} strokeWidth={2.5} />
             </div>
@@ -433,7 +380,7 @@ const Sidebar = ({ onNavigate }) => {
                 <span className="sb-brand-tagline">Admin Portal</span>
               </div>
             )}
-          </NavLink>
+          </button>
 
           <button
             className="sb-toggle"
@@ -472,21 +419,28 @@ const Sidebar = ({ onNavigate }) => {
 
         {/* ── Nav Body ── */}
         <nav className="sb-nav" aria-label="Main navigation">
-          {/* Pinned items */}
-          <PinnedItems collapsed={collapsed} onNavigate={onNavigate} />
-
-          {/* Recently visited */}
-          <RecentlyVisited collapsed={collapsed} onNavigate={onNavigate} />
-
           {/* ── Main groups ── */}
-          {filteredMenu.map((group) => (
-            <SidebarGroup
-              key={group.key}
-              group={group}
-              collapsed={collapsed}
-              onNavigate={onNavigate}
-            />
-          ))}
+          {filteredMenu.map((group) => {
+            if (group.isSingle) {
+              return (
+                <div key={group.key} className="sb-single-item-wrap">
+                  <SidebarItem
+                    item={group}
+                    collapsed={collapsed}
+                    onNavigate={onNavigate}
+                  />
+                </div>
+              );
+            }
+            return (
+              <SidebarGroup
+                key={group.key}
+                group={group}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+              />
+            );
+          })}
         </nav>
 
         {/* ── Sidebar Footer ── */}

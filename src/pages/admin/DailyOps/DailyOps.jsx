@@ -275,7 +275,9 @@ const DailyOps = () => {
         </div>
         <div className="dops-header-actions">
           <input type="date" className="dops-date-input" value={date} onChange={(e) => setDate(e.target.value)} />
-          <button className="dops-action-btn ghost" onClick={loadDaily}><RefreshCw size={13} /> Refresh</button>
+          <button className="dops-action-btn ghost" onClick={loadDaily} disabled={loading}>
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
+          </button>
         </div>
       </div>
 

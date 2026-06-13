@@ -10,10 +10,16 @@ import { Plus, Package, TrendingUp, Archive, AlertTriangle, RefreshCw } from 'lu
 
 const CATEGORIES = [
   { value: 'all', label: 'All Categories' },
-  { value: 'beans', label: 'Coffee Beans' },
-  { value: 'milk', label: 'Milk & Dairy' },
-  { value: 'syrup', label: 'Syrups & Sweeteners' },
-  { value: 'flavor', label: 'Flavorings' },
+  { value: 'coffee_beans', label: 'Coffee Beans' },
+  { value: 'additives', label: 'Additives & Powders' },
+  { value: 'tea', label: 'Tea & Fruit' },
+  { value: 'sweeteners', label: 'Syrups & Sweeteners' },
+  { value: 'dairy', label: 'Dairy' },
+  { value: 'dairy_alt', label: 'Alternative Dairy' },
+  { value: 'liquids', label: 'Liquids & Soda' },
+  { value: 'juices', label: 'Juices & Produce' },
+  { value: 'produce', label: 'Fresh Produce' },
+  { value: 'toppings', label: 'Toppings' },
   { value: 'packaging', label: 'Packaging' },
   { value: 'other', label: 'Other' },
 ];
@@ -43,12 +49,18 @@ const RawMaterials = () => {
   const [reorderRules, setReorderRules] = useState([]);
   const [showReorderModal, setShowReorderModal] = useState(false);
 
+  const stats = useMemo(() => {
+    const low = materials.filter(m => getStockLevel(m.current_stock, m.low_stock_threshold, m.critical_stock_threshold) === 'low').length;
+    const critical = materials.filter(m => getStockLevel(m.current_stock, m.low_stock_threshold, m.critical_stock_threshold) === 'critical').length;
+    return { low, critical };
+  }, [materials]);
+
   const [formData, setFormData] = useState({
     name: '', category: 'other', unit: 'kg',
     supplier_name: '', supplier_contact: '',
     cost_per_unit: 0, opening_balance: 0,
     low_stock_threshold: 10, critical_stock_threshold: 5,
-    is_active: true,
+    is_active: true, image_url: '',
   });
 
   const [purchaseForm, setPurchaseForm] = useState({
@@ -86,19 +98,11 @@ const RawMaterials = () => {
     });
   }, [materials, searchQuery, categoryFilter, stockFilter]);
 
-  const stats = useMemo(() => {
-    const arr = Array.isArray(materials) ? materials : [];
-    return {
-      total: arr.length,
-      low: arr.filter(m => getStockLevel(m.current_stock, m.low_stock_threshold, m.critical_stock_threshold) === 'low').length,
-      critical: arr.filter(m => getStockLevel(m.current_stock, m.low_stock_threshold, m.critical_stock_threshold) === 'critical').length,
-      out: arr.filter(m => getStockLevel(m.current_stock, m.low_stock_threshold, m.critical_stock_threshold) === 'out').length,
-    };
-  }, [materials]);
+
 
   const openAddModal = () => {
     setEditingItem(null);
-    setFormData({ name: '', category: 'other', unit: 'kg', supplier_name: '', supplier_contact: '', cost_per_unit: 0, opening_balance: 0, low_stock_threshold: 10, critical_stock_threshold: 5, is_active: true });
+    setFormData({ name: '', category: 'other', unit: 'kg', supplier_name: '', supplier_contact: '', cost_per_unit: 0, opening_balance: 0, low_stock_threshold: 10, critical_stock_threshold: 5, is_active: true, image_url: '' });
     setShowModal(true);
   };
 
@@ -110,7 +114,7 @@ const RawMaterials = () => {
       cost_per_unit: item.cost_per_unit, opening_balance: item.opening_balance || 0,
       low_stock_threshold: item.low_stock_threshold ?? 10,
       critical_stock_threshold: item.critical_stock_threshold ?? 5,
-      is_active: item.is_active,
+      is_active: item.is_active, image_url: item.image_url || '',
     });
     setShowModal(true);
   };
@@ -129,6 +133,7 @@ const RawMaterials = () => {
         opening_balance: parseFloat(formData.opening_balance) || 0,
         low_stock_threshold: parseFloat(formData.low_stock_threshold) || 0,
         critical_stock_threshold: parseFloat(formData.critical_stock_threshold) || 0,
+        image_url: formData.image_url,
       };
       if (editingItem) {
         await rawMaterialService.update(editingItem.id, payload);
@@ -254,17 +259,12 @@ const RawMaterials = () => {
           <p className="page-subtitle">Manage your coffee ingredients, supplies, and stock levels</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={loadMaterials} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={loadMaterials} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           <Button onClick={openAddModal} variant="primary"><Plus size={16} /> Add Raw Material</Button>
         </div>
       </div>
 
-      <div className="stats-row">
-        <div className="stat-card"><span className="stat-value">{stats.total}</span><span className="stat-label">Total Materials</span></div>
-        <div className="stat-card warning"><span className="stat-value">{stats.low}</span><span className="stat-label">Low Stock</span></div>
-        <div className="stat-card danger"><span className="stat-value">{stats.critical}</span><span className="stat-label">Critical</span></div>
-        <div className="stat-card danger"><span className="stat-value">{stats.out}</span><span className="stat-label">Out of Stock</span></div>
-      </div>
+
 
       <div className="filters-row">
         <div className="search-wrapper">
@@ -317,6 +317,8 @@ const RawMaterials = () => {
               <div className="form-grid">
                 <div className="form-group"><label>Name *</label>
                   <input name="name" value={formData.name} onChange={handleFormChange} required /></div>
+                <div className="form-group"><label>Image URL *</label>
+                  <input name="image_url" type="url" value={formData.image_url} onChange={handleFormChange} required placeholder="https://..." /></div>
                 <div className="form-group"><label>Category</label>
                   <select name="category" value={formData.category} onChange={handleFormChange}>
                     {CATEGORIES.filter((c) => c.value !== 'all').map((c) => (

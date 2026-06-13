@@ -26,7 +26,7 @@ const Notifications = () => {
       const list = unwrapList(res);
       const mapped = list.map(t => ({
         ...t,
-        active: t.is_active === 1 || t.is_active === true
+        active: Boolean(t.is_active)
       }));
       setTemplates(mapped);
       if (mapped.length > 0) {
@@ -55,10 +55,9 @@ const Notifications = () => {
       const target = templates.find(t => t.id === id);
       if (!target) return;
       
-      const newActiveState = target.active ? 0 : 1;
-      await notificationService.updateTemplate(id, { is_active: newActiveState });
+      await notificationService.updateTemplate(id, { is_active: !target.active });
       
-      toast.success(`Template ${newActiveState ? 'Enabled 🟢' : 'Disabled 🔴'}`);
+      toast.success(`Template ${!target.active ? 'Enabled 🟢' : 'Disabled 🔴'}`);
       loadTemplates();
     } catch (err) {
       toast.error('Failed to toggle template status: ' + err.message);

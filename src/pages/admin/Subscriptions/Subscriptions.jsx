@@ -178,7 +178,9 @@ const Subscriptions = () => {
           <p className="subs-sub">Manage subscription plans and subscribers</p>
         </div>
         <div className="subs-header-actions">
-          <button className="subs-action-btn ghost" onClick={loadData}><RefreshCw size={13} /> Refresh</button>
+          <button className="subs-action-btn ghost" onClick={loadData} disabled={loading}>
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
+          </button>
           <button className="subs-action-btn primary" onClick={handleProcessDue}>Process Due</button>
           {tab === 'plans' && (
             <button className="subs-action-btn primary" onClick={openAdd}><Plus size={13} /> Add Plan</button>

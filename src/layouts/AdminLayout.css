@@ -320,12 +320,16 @@ html, body, #root {
   border-radius: var(--al-radius-lg);
   padding: 24px;
   width: 100%;
-  max-width: 520px;
+  max-width: 760px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--al-shadow-lg);
   animation: modal-content-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+}
+
+.modal-content.modal-wide {
+  max-width: 920px;
 }
 
 @keyframes modal-content-in {
@@ -634,4 +638,39 @@ html, body, #root {
   background: rgba(255,255,255,0.04) !important;
   border-color: rgba(255,255,255,0.09) !important;
   color: var(--al-text) !important;
+}
+
+/* ============================================================
+   GLOBAL OVERRIDES TO EXPAND MODAL POPUPS ACROSS ALL MODULES
+   ============================================================ */
+.modal-content, 
+.suppliers-page .modal-content,
+.purchase-orders-page .modal-content,
+.store-transfers-page .modal-content,
+.waste-logs-page .modal-content,
+.staff-page .modal-content,
+.packaging-page .modal-content,
+.shipping-page .modal-content,
+.raw-materials-page .modal-content,
+.categories-page .modal-content,
+.settings-page .modal-content,
+.orders-page .modal-content,
+.roles-modal,
+.menu-modal,
+.promo-modal-lg,
+.loyalty-modal {
+  width: 100% !important;
+  max-width: 780px !important;
+  max-height: 85vh !important;
+}
+
+/* Wide modals overrides */
+.modal-content.modal-wide,
+.suppliers-page .modal-content.modal-wide,
+.purchase-orders-page .modal-content.modal-wide,
+.store-transfers-page .modal-content.modal-wide,
+.waste-logs-page .modal-content.modal-wide,
+.raw-materials-page .modal-content.modal-wide,
+.packaging-page .modal-content.modal-wide {
+  max-width: 920px !important;
 }

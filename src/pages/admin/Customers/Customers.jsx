@@ -13,14 +13,13 @@ import {
 // ── Customer Detail Side Panel ──────────────────────────────────
 const CustomerPanel = ({ customer, onClose, onToggleStatus, onContact }) => {
   if (!customer) return null;
-  const isActive = customer.is_active ?? 1;
+                  const isActive = customer.is_active ?? true;
   const orders = customer.order_count || customer.orders || 0;
   const segment =
     customer.segment ||
-    (orders >= 15 ? 'VIP' : orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive');
+    (orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive');
 
   const segmentColor = {
-    VIP: '#C8853E',
     Regular: '#2563EB',
     New: '#16A34A',
     Inactive: '#9CA3AF',
@@ -142,7 +141,7 @@ const CustomerPanel = ({ customer, onClose, onToggleStatus, onContact }) => {
 };
 
 // ── Main Customers Component ────────────────────────────────────
-const SEGMENTS = ['All', 'VIP', 'Regular', 'New', 'Inactive'];
+const SEGMENTS = ['All', 'Regular', 'New', 'Inactive'];
 
 const Customers = () => {
   const [customersList, setCustomersList] = useState([]);
@@ -186,7 +185,7 @@ const Customers = () => {
       const orders = c.orders || c.order_count || 0;
       const seg =
         c.segment ||
-        (orders >= 15 ? 'VIP' : orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive');
+        (orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive');
 
       const matchSegment =
         segmentFilter === 'All' || seg.toLowerCase() === segmentFilter.toLowerCase();
@@ -201,7 +200,6 @@ const Customers = () => {
     return {
       total: list.length,
       active: list.filter(c => c.is_active ?? 1).length,
-      vip: list.filter(c => c.segment === 'VIP').length,
       ltv: list.reduce((s, c) => s + parseFloat(c.total_spent || c.totalSpent || 0), 0),
     };
   }, [customersList]);
@@ -258,7 +256,6 @@ const Customers = () => {
   // Segment color helper
   const getSegmentStyle = (seg) => {
     const map = {
-      VIP: { bg: 'rgba(200,133,62,0.10)', color: '#C8853E' },
       Regular: { bg: 'rgba(37,99,235,0.08)', color: '#2563EB' },
       New: { bg: 'rgba(22,163,74,0.08)', color: '#16A34A' },
       Inactive: { bg: 'rgba(0,0,0,0.04)', color: '#9CA3AF' },
@@ -269,7 +266,7 @@ const Customers = () => {
   const resolveSegment = (c) => {
     if (c.segment) return c.segment;
     const orders = c.orders || c.order_count || 0;
-    return orders >= 15 ? 'VIP' : orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive';
+    return orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive';
   };
 
   return (
@@ -280,12 +277,12 @@ const Customers = () => {
         <div>
           <h1 className="cust-page-title">Customers</h1>
           <p className="cust-page-sub">
-            {stats.total} total · {stats.active} active · {stats.vip} VIP
+            {stats.total} total · {stats.active} active
           </p>
         </div>
         <div className="cust-header-actions">
-          <button className="cust-btn ghost" onClick={loadCustomers} title="Refresh">
-            <RefreshCw size={13} />
+          <button className="cust-btn ghost" onClick={loadCustomers} title="Refresh" disabled={isLoading}>
+            <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
           </button>
           <button className="cust-btn ghost" onClick={handleExport}>
             <Download size={13} /> Export
@@ -302,10 +299,6 @@ const Customers = () => {
         <div className="cust-kpi-item">
           <strong>{stats.active}</strong>
           <span>Active</span>
-        </div>
-        <div className="cust-kpi-item">
-          <strong>{stats.vip}</strong>
-          <span>VIP</span>
         </div>
         <div className="cust-kpi-item">
           <strong>{formatCurrency(stats.ltv)}</strong>
@@ -350,8 +343,8 @@ const Customers = () => {
         ) : loadError ? (
           <div className="cust-error">
             <p>{loadError}</p>
-            <button className="cust-btn ghost" onClick={loadCustomers}>
-              <RefreshCw size={13} /> Retry
+            <button className="cust-btn ghost" onClick={loadCustomers} disabled={isLoading}>
+              <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} /> Retry
             </button>
           </div>
         ) : (
@@ -377,7 +370,7 @@ const Customers = () => {
                 filteredCustomers.map((customer, i) => {
                   const seg = resolveSegment(customer);
                   const segStyle = getSegmentStyle(seg);
-                  const isActive = customer.is_active ?? 1;
+  const isActive = customer.is_active ?? true;
                   return (
                     <tr
                       key={customer.id || i}

@@ -32,16 +32,14 @@ import Ingredients from './pages/admin/Ingredients/Ingredients';
 import CentralInventory from './pages/admin/CentralInventory/CentralInventory';
 import RawMaterials from './pages/admin/RawMaterials/RawMaterials';
 import Production from './pages/admin/Production/Production';
-import BrewRecipes from './pages/admin/BrewRecipes/BrewRecipes';
+import Recipes from './pages/admin/Recipes/Recipes';
 import Customers from './pages/admin/Customers/Customers';
 import Roles from './pages/admin/Roles/Roles';
 import CMS from './pages/admin/CMS/CMS';
-import RecipeEngine from './pages/admin/RecipeEngine/RecipeEngine';
 import Analytics from './pages/admin/Analytics/Analytics';
 import Notifications from './pages/admin/Notifications/Notifications';
 import Stores from './pages/admin/Stores/Stores';
 import Financials from './pages/admin/Financials/Financials';
-import ActivityLog from './pages/admin/ActivityLog/ActivityLog';
 import Settings from './pages/admin/Settings/Settings';
 
 // New Admin Pages
@@ -63,10 +61,9 @@ import FoodSafety from './pages/admin/FoodSafety/FoodSafety';
 import Staff from './pages/admin/Staff/Staff';
 import Shipping from './pages/admin/Shipping/Shipping';
 import DailyOps from './pages/admin/DailyOps/DailyOps';
-import DailyNotes from './pages/admin/DailyNotes/DailyNotes';
 import CustomerQueries from './pages/admin/CustomerQueries/CustomerQueries';
-import RecipeBuilder from './pages/admin/RecipeBuilder/RecipeBuilder';
 import CompatibilityRules from './pages/admin/CompatibilityRules/CompatibilityRules';
+import Categories from './pages/admin/Categories/Categories';
 
 // Existing Barista Pages
 import OrderQueue from './pages/barista/OrderQueue/OrderQueue';
@@ -188,15 +185,15 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="orders" element={<Orders />} />
           <Route path="menu" element={<Menu />} />
-          <Route path="recipe-engine" element={<RecipeEngine />} />
-          <Route path="recipe-builder" element={<RecipeBuilder />} />
+          <Route path="recipes" element={<Recipes />} />
           <Route path="compatibility-rules" element={<CompatibilityRules />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="ingredients" element={<Ingredients />} />
           <Route path="central-inventory" element={<CentralInventory />} />
           <Route path="raw-materials" element={<RawMaterials />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="rd" element={<Production />} />
           <Route path="production" element={<Production />} />
-          <Route path="brew-recipes" element={<BrewRecipes />} />
           <Route path="customers" element={<Customers />} />
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="purchase-orders" element={<PurchaseOrders />} />
@@ -217,7 +214,6 @@ function App() {
           <Route path="shifts" element={<Staff />} />
           <Route path="shipping" element={<Shipping />} />
           <Route path="daily-ops" element={<DailyOps />} />
-          <Route path="daily-notes" element={<DailyNotes />} />
           <Route path="customer-queries" element={<CustomerQueries />} />
           {/* Legacy routes */}
           <Route path="settings" element={<Settings />} />
@@ -229,7 +225,7 @@ function App() {
           <Route path="stores" element={<Stores />} />
           <Route path="financials" element={<Financials />} />
           <Route path="cms" element={<CMS />} />
-          <Route path="activity-log" element={<ActivityLog />} />
+
         </Route>
 
         {/* ── 3. Barista Kitchen Display System (KDS) ── */}

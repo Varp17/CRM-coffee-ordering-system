@@ -15,11 +15,10 @@ export const ORDER_PRIORITY = {
 
 export const USER_ROLES = {
   SUPER_ADMIN: 'Super Admin',
-  ADMIN: 'Admin',
-  STORE_MANAGER: 'Store Manager',
-  BARISTA: 'Barista',
-  INVENTORY_MANAGER: 'Inventory Manager',
-  FINANCE_MANAGER: 'Finance Manager',
+  STORE_ADMIN: 'Store Admin',
+  MANAGER: 'Manager',
+  STAFF: 'Staff',
+  CUSTOMER: 'Customer',
 };
 
 export const TAX_RATES = {

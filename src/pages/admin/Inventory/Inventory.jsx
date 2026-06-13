@@ -10,7 +10,7 @@ import { useConfirmation } from '../../../hooks/useConfirmation';
 import InventoryCard from './components/InventoryCard';
 import InventoryTimeline from './components/InventoryTimeline';
 
-const Inventory = () => {
+const Inventory = ({ embedded = false }) => {
   const [currentTab, setCurrentTab] = useState('store');
   const [storeItems, setStoreItems] = useState([]);
   const [centralItems, setCentralItems] = useState([]);
@@ -232,6 +232,7 @@ const Inventory = () => {
 
   return (
     <div className="inventory-view animate-fade-in">
+      {!embedded && (
       <div className="view-header">
         <div>
           <h2 className="section-title">Logistics & Supply Chain</h2>
@@ -242,6 +243,7 @@ const Inventory = () => {
           <Button variant="primary" onClick={handleCreatePO}>+ Purchase Order</Button>
         </div>
       </div>
+      )}
 
       {lowStockItems.length > 0 && (
         <div className="alerts-section">

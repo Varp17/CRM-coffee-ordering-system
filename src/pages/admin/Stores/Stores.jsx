@@ -120,7 +120,7 @@ const Stores = () => {
 
       <div className="stores-grid">
         {stores.map((store) => {
-          const isActive = store.is_active === true || store.is_active === 1;
+          const isActive = Boolean(store.is_active);
           const statusText = isActive ? 'Active' : 'Suspended';
           return (
             <div key={store.id} className="store-panel-card">

@@ -160,7 +160,9 @@ const Support = () => {
           <p className="support-sub">Customer support tickets</p>
         </div>
         <div className="support-header-actions">
-          <button className="support-action-btn ghost" onClick={loadAll}><RefreshCw size={13} /> Refresh</button>
+          <button className="support-action-btn ghost" onClick={loadAll} disabled={loading}>
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
+          </button>
         </div>
       </div>
 

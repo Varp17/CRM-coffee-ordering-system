@@ -26,9 +26,6 @@ const useSidebarStore = create(
       // ── Pinned / favorites ───────────────────────────────────
       pinnedItems: [], // array of item.key strings
 
-      // ── Recently visited ─────────────────────────────────────
-      recentlyVisited: [], // array of { key, label, to, icon } — last 5
-
       // ── Search ───────────────────────────────────────────────
       searchQuery: '',
       searchOpen: false,
@@ -87,15 +84,7 @@ const useSidebarStore = create(
 
       isPinned: (itemKey) => get().pinnedItems.includes(itemKey),
 
-      visit: (item) => {
-        if (!item?.to) return;
-        set((s) => {
-          const filtered = s.recentlyVisited.filter((r) => r.to !== item.to);
-          return {
-            recentlyVisited: [{ key: item.key, label: item.label, to: item.to }, ...filtered].slice(0, 6),
-          };
-        });
-      },
+      visit: () => {},
 
       setSearchQuery: (q) => set({ searchQuery: q }),
       openSearch: () => set({ searchOpen: true }),
@@ -120,7 +109,6 @@ const useSidebarStore = create(
       partialize: (s) => ({
         expandedGroups: s.expandedGroups,
         pinnedItems: s.pinnedItems,
-        recentlyVisited: s.recentlyVisited,
         theme: s.theme,
       }),
     }

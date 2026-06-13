@@ -8,7 +8,7 @@ import { orderService } from '../../../services/orders';
 import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
-import { X, ChevronRight, RefreshCw, AlertCircle, Search, Plus, MoreHorizontal, Play, CheckCircle, Eye, Printer } from 'lucide-react';
+import { X, ChevronRight, RefreshCw, AlertCircle, Search, MoreHorizontal, Play, CheckCircle, Eye, Printer } from 'lucide-react';
 
 const Orders = () => {
   const { orders: ordersList, fetchOrders, updateOrderStatus, refundOrder, isLoading } = useOrderStore();
@@ -168,7 +168,7 @@ const Orders = () => {
       sortable: true,
       render: (row) => (
         <span style={{ fontSize: '0.85rem', color: '#374151' }}>
-          {(row.items_summary || '').split(', ')[0] || 'Unknown Product'}
+          {(row.items_summary || '').split(', ').filter(Boolean)[0] || '—'}
         </span>
       )
     },
@@ -325,28 +325,22 @@ const Orders = () => {
           <h1 className="zenith-title">Orders</h1>
           <p className="zenith-subtitle">Manage and track all customer orders.</p>
         </div>
-        <div className="zenith-header-right">
-          <button className="zenith-btn-dark">
-            <Plus className="w-4 h-4" style={{ marginRight: '6px' }} /> New Order
-          </button>
+      </div>
+
+      {/* Filters & Search Row */}
+      <div className="orders-filters-search-row">
+        <div className="zenith-filters-row">
+          {['all', 'completed', 'in_progress', 'pending', 'cancelled'].map(tab => (
+            <button 
+              key={tab} 
+              className={`zenith-filter-pill ${statusFilter === tab ? 'active' : ''}`}
+              onClick={() => setStatusFilter(tab)}
+            >
+              {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1).replace('_', ' ')}
+            </button>
+          ))}
         </div>
-      </div>
 
-      {/* Zenith Filter Pills */}
-      <div className="zenith-filters-row">
-        {['all', 'completed', 'in_progress', 'pending', 'cancelled'].map(tab => (
-          <button 
-            key={tab} 
-            className={`zenith-filter-pill ${statusFilter === tab ? 'active' : ''}`}
-            onClick={() => setStatusFilter(tab)}
-          >
-            {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1).replace('_', ' ')}
-          </button>
-        ))}
-      </div>
-
-      {/* Search Bar - styled to match Zenith, DataTable toolbar is hidden if we pass searchKey="" */}
-      <div className="zenith-search-toolbar">
         <div className="zenith-search-box">
           <Search className="w-4 h-4 text-muted" />
           <input
@@ -553,7 +547,7 @@ const Orders = () => {
                     <tbody>
                       {selectedOrder.items.map((item, i) => (
                         <tr key={i}>
-                          <td>{item.item_name || item.name}</td>
+                          <td>{item.name || item.item_name}</td>
                           <td>{item.quantity || item.qty}</td>
                           <td>{formatCurrency(item.unit_price || item.price)}</td>
                           <td><strong>{formatCurrency((item.unit_price || item.price) * (item.quantity || item.qty))}</strong></td>

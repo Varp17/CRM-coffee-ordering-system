@@ -1,0 +1,116 @@
+/* ============================================================
+   RECIPES UNIFIED PAGE — Tab-based layout
+   ============================================================ */
+
+.recipes-unified-page {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-24, 24px);
+  gap: var(--space-24, 24px);
+  height: 100%;
+}
+
+/* ── Tab Bar ── */
+.recipes-tab-bar {
+  display: flex;
+  gap: 4px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 14px;
+  padding: 4px;
+  overflow-x: auto;
+}
+
+.recipes-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #64748b);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.recipes-tab:hover {
+  background: var(--color-bg-hover, #f1f5f9);
+  color: var(--color-text, #1e293b);
+}
+
+.recipes-tab.active {
+  background: var(--color-primary, #6b46c1);
+  color: #fff;
+}
+
+.recipes-tab-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.recipes-tab-label {
+  font-weight: 600;
+}
+
+/* ── Tab Content ── */
+.recipes-tab-content {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Recipe Engine tab inherits existing styles ── */
+.recipes-tab-content .recipe-engine-view {
+  padding: 0;
+  gap: 0;
+}
+
+.recipes-tab-content .recipe-workspace-layout {
+  height: calc(100vh - 240px);
+}
+
+/* ── Shared table styles ── */
+.recipes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.recipes-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--color-border, #e2e8f0);
+  font-weight: 600;
+  color: var(--color-text-secondary, #64748b);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recipes-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-light, #f1f5f9);
+  vertical-align: middle;
+}
+
+.recipes-table tbody tr:hover {
+  background: var(--color-bg-hover, #f8fafc);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .recipes-tab-bar {
+    gap: 2px;
+    padding: 3px;
+  }
+  .recipes-tab {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .recipes-tab-icon {
+    font-size: 14px;
+  }
+}

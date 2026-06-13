@@ -84,7 +84,19 @@ const Login = () => {
     setIsSubmitting(true);
     const loadingToast = toast.loading('Authenticating operator...');
 
-    const result = await loginStore(email, password);
+    let result;
+    try {
+      result = await loginStore(email, password);
+    } catch (err) {
+      console.error('[Login] Error in handleSubmit:', err.message);
+      toast.dismiss(loadingToast);
+      setIsSubmitting(false);
+      toast.error('Authentication failed. Please try again.', {
+        style: { background: '#dc3545', color: '#fff' }
+      });
+      generateCaptcha();
+      return;
+    }
 
     toast.dismiss(loadingToast);
     setIsSubmitting(false);

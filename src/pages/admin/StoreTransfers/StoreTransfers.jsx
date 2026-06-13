@@ -163,7 +163,7 @@ const StoreTransfers = () => {
           <p className="page-subtitle">Transfer inventory between stores</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={loadTransfers} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={loadTransfers} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           <Button onClick={openAddModal} variant="primary"><Plus size={16} /> New Transfer</Button>
         </div>
       </div>

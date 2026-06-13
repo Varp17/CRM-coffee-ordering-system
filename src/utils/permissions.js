@@ -1,11 +1,9 @@
 // Permission list mapped to roles
 const ROLE_PERMISSIONS = {
   'Super Admin': ['all'],
-  'Admin': ['all'],
-  'Store Manager': ['dashboard', 'orders', 'inventory', 'recipes'],
-  'Barista': ['kds'],
-  'Inventory Manager': ['inventory'],
-  'Finance Manager': ['financials', 'analytics'],
+  'Store Admin': ['all'],
+  'Manager': ['dashboard', 'orders', 'inventory', 'recipes'],
+  'Staff': ['kds'],
 };
 
 /**

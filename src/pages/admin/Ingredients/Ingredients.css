@@ -104,6 +104,37 @@
   color: #c44040;
 }
 
+/* ── Stock Badge ── */
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.stock-badge.ok {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.stock-badge.low {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.stock-badge.critical {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.stock-badge.out {
+  background: #fce4ec;
+  color: #b71c1c;
+}
+
 /* ── Modal Form ── */
 .ingredients-modal {
   max-width: 600px;
@@ -153,3 +184,4 @@
   border-color: var(--color-primary);
   background: #fff;
 }
+

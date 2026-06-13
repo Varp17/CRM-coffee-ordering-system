@@ -33,6 +33,7 @@ const FoodSafety = () => {
   });
 
   const loadLicenses = async (expiring = false) => {
+    setIsLoading(true);
     try {
       const params = expiring ? { expiring_soon: true } : {};
       const resp = expiring
@@ -41,11 +42,14 @@ const FoodSafety = () => {
       setLicenses(unwrapList(resp));
     } catch (err) {
       toast.error('Failed to load licenses: ' + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const loadAllergens = async (id) => {
     if (!id) return;
+    setIsLoading(true);
     try {
       const resp = await foodSafetyService.getAllergens(id);
       const data = unwrapList(resp);
@@ -54,11 +58,14 @@ const FoodSafety = () => {
     } catch {
       setAllergens([]);
       setAllergenRows([{ name: '', is_present: false, notes: '' }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const loadNutrition = async (id) => {
     if (!id) return;
+    setIsLoading(true);
     try {
       const resp = await foodSafetyService.getNutrition(id);
       const data = resp?.data || resp;
@@ -73,16 +80,13 @@ const FoodSafety = () => {
       setNutritionForm({
         serving_size: '', calories: '', fat: '', carbs: '', protein: '', sodium: '', caffeine: '',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      await loadLicenses();
-      setIsLoading(false);
-    };
-    load();
+    loadLicenses();
   }, []);
 
   useEffect(() => {
@@ -219,7 +223,7 @@ const FoodSafety = () => {
       {currentTab === 'licenses' && (
         <>
           <div className="filters-row">
-            <Button onClick={() => loadLicenses()} variant="ghost"><RefreshCw size={16} /></Button>
+            <Button onClick={() => loadLicenses(showExpiring)} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
             <Button
               variant={showExpiring ? 'primary' : 'outline'}
               onClick={() => { setShowExpiring(!showExpiring); loadLicenses(!showExpiring); }}
@@ -251,7 +255,7 @@ const FoodSafety = () => {
                 className="search-input"
               />
             </div>
-            <Button onClick={() => loadAllergens(productId)} variant="ghost"><RefreshCw size={16} /></Button>
+            <Button onClick={() => loadAllergens(productId)} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           </div>
           {productId ? (
             <div className="allergen-editor">
@@ -320,7 +324,7 @@ const FoodSafety = () => {
                 className="search-input"
               />
             </div>
-            <Button onClick={() => loadNutrition(productId)} variant="ghost"><RefreshCw size={16} /></Button>
+            <Button onClick={() => loadNutrition(productId)} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           </div>
           {productId ? (
             <div className="nutrition-editor">

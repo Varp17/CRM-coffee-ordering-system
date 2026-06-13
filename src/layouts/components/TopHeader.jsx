@@ -13,6 +13,8 @@ import useSidebarStore from '../../store/useSidebarStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useOrderStore } from '../../store/useOrderStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { storeService } from '../../services/stores';
+import { unwrapList } from '../../utils/apiResponse';
 import { ALL_MENU_ITEMS, findMenuItemByPath } from '../../constants/menuConfig';
 import './TopHeader.css';
 
@@ -126,19 +128,12 @@ const UserDropdown = ({ user, onClose, onLogout }) => (
   </div>
 );
 
-// ── Store Selector ───────────────────────────────────────────
-const STORES = [
-  { id: 'all', name: 'All Stores' },
-  { id: '1', name: 'Bandra Kiosk' },
-  { id: '2', name: 'Andheri Kiosk' },
-  { id: '3', name: 'Central Kitchen' },
-];
-
 // ── Main TopHeader ───────────────────────────────────────────
 const TopHeader = () => {
   const [showNotif, setShowNotif] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [selectedStore, setSelectedStore] = useState('all');
+  const [stores, setStores] = useState([{ id: 'all', name: 'All Stores' }]);
   const notifRef = useRef(null);
   const userRef = useRef(null);
 
@@ -159,6 +154,12 @@ const TopHeader = () => {
   useEffect(() => {
     fetchNotifications();
     fetchUnreadCount();
+    storeService.getAll({ limit: 100 }).then((res) => {
+      const list = unwrapList(res, []);
+      if (list.length > 0) {
+        setStores([{ id: 'all', name: 'All Stores' }, ...list]);
+      }
+    }).catch(() => {});
   }, [fetchNotifications, fetchUnreadCount]);
 
   const pendingCount = (orders || []).filter((o) => o.status === 'pending').length;
@@ -208,17 +209,17 @@ const TopHeader = () => {
 
       {/* Right: store, alerts, theme, user */}
       <div className="th-right">
-        {/* Store Selector */}
+        {/* Store Locator */}
         <div className="th-store-selector">
           <MapPin size={13} className="th-store-icon" />
           <select
             value={selectedStore}
             onChange={(e) => setSelectedStore(e.target.value)}
             className="th-store-select"
-            aria-label="Select store"
+            aria-label="Store Locator"
             id="admin-store-selector"
           >
-            {STORES.map((s) => (
+            {stores.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>

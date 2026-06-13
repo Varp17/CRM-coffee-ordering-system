@@ -30,7 +30,7 @@ const emptyRule = {
   condition_json: '{"if":{"ingredient_id":""},"then":{"exclude":[]},"message":""}',
   error_message: '',
   display_order: 1,
-  is_active: 1,
+  is_active: true,
 };
 
 function isValidJson(str) {
@@ -198,7 +198,7 @@ const CompatibilityRules = () => {
 
   const handleToggleActive = async (rule) => {
     try {
-      await recipeService.updateCompatibilityRule(rule.id, { is_active: rule.is_active ? 0 : 1 });
+      await recipeService.updateCompatibilityRule(rule.id, { is_active: !rule.is_active });
       toast.success(rule.is_active ? 'Rule disabled' : 'Rule enabled');
       fetchRules();
     } catch (err) {

@@ -165,7 +165,9 @@ const Loyalty = () => {
           <h2 className="section-title">Loyalty Program</h2>
           <p className="section-subtitle">Manage tiers, customer points, and rewards catalog</p>
         </div>
-        <button className="loyalty-refresh-btn" onClick={loadAll}><RefreshCw size={13} /></button>
+        <button className="loyalty-refresh-btn" onClick={loadAll} disabled={isLoading}>
+          <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+        </button>
       </div>
 
       <div className="loyalty-tabs">

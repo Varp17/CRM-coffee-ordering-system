@@ -2,38 +2,38 @@ import { api } from './api';
 
 export const menuRecipeService = {
   list: async (params = {}) => {
-    return api.get('/menu-recipes', params);
+    return api.get('/recipes/menu', params);
   },
 
   getById: async (id) => {
-    return api.get(`/menu-recipes/${id}`);
+    return api.get(`/recipes/menu/${id}`);
   },
 
   create: async (data) => {
-    return api.post('/menu-recipes', data);
+    return api.post('/recipes/menu', data);
   },
 
   update: async (id, data) => {
-    return api.put(`/menu-recipes/${id}`, data);
+    return api.put(`/recipes/menu/${id}`, data);
   },
 
   delete: async (id) => {
-    return api.delete(`/menu-recipes/${id}`);
+    return api.delete(`/recipes/menu/${id}`);
   },
 
   addIngredient: async (recipeId, data) => {
-    return api.post(`/menu-recipes/${recipeId}/ingredients`, data);
+    return api.post(`/recipes/menu/${recipeId}/ingredients`, data);
   },
 
   removeIngredient: async (recipeId, ingredientId) => {
-    return api.delete(`/menu-recipes/${recipeId}/ingredients/${ingredientId}`);
+    return api.delete(`/recipes/menu/${recipeId}/ingredients/${ingredientId}`);
   },
 
   recalculate: async (recipeId) => {
-    return api.post(`/menu-recipes/${recipeId}/recalculate`);
+    return api.post(`/recipes/menu/${recipeId}/recalculate`);
   },
 
   getCosting: async (recipeId) => {
-    return api.get(`/menu-recipes/${recipeId}/costing`);
+    return api.get(`/recipes/menu/${recipeId}/costing`);
   },
 };

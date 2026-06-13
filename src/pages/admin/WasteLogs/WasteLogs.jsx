@@ -175,7 +175,7 @@ const WasteLogs = () => {
           <p className="page-subtitle">Track and manage inventory waste across stores</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={() => { loadLogs(); loadSummary(); }} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={() => { loadLogs(); loadSummary(); }} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           <Button onClick={openAddModal} variant="primary"><Plus size={16} /> Log Waste</Button>
         </div>
       </div>

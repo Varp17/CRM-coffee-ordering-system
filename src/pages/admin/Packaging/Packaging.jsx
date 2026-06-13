@@ -158,7 +158,7 @@ const Packaging = () => {
           <p className="page-subtitle">Manage packaging types and inventory levels</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={loadAll} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={loadAll} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           {activeTab === 'types' && (
             <Button onClick={openAddModal} variant="primary"><Plus size={16} /> Add Packaging Type</Button>
           )}

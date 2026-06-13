@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Users, Store, FileText, ChevronRight, Plus, Trash2, Edit2, Shield, Search, AlertCircle, RefreshCw } from 'lucide-react';
+import { Users, Store, ChevronRight, Plus, Trash2, Edit2, Shield, AlertCircle, RefreshCw } from 'lucide-react';
 import { roleService } from '../../../services/roles';
 import { storeService } from '../../../services/stores';
-import { activityLogService } from '../../../services/activityLog';
 import { unwrapList } from '../../../utils/apiResponse';
 import { useAuthStore } from '../../../store/useAuthStore';
 import Button from '../../../components/Button/Button';
-import Input from '../../../components/Input/Input';
 import toast from 'react-hot-toast';
 import './Settings.css';
 
 const TABS = [
-  { id: 'roles',    label: 'Roles',    icon: Shield },
-  { id: 'stores',   label: 'Stores',   icon: Store },
-  { id: 'activity', label: 'Activity', icon: FileText },
+  { id: 'roles',  label: 'Roles',  icon: Shield },
+  { id: 'stores', label: 'Stores', icon: Store },
 ];
 
 const PERMISSIONS = [
@@ -38,8 +35,6 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('roles');
   const [roles, setRoles] = useState([]);
   const [stores, setStores] = useState([]);
-  const [logs, setLogs] = useState([]);
-  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -66,13 +61,6 @@ const Settings = () => {
     timezone: 'Asia/Kolkata',
     is_active: true,
   });
-
-  // Activity Log State
-  const [logPage, setLogPage] = useState(1);
-  const [logTotal, setLogTotal] = useState(0);
-  const [logLimit, setLogLimit] = useState(10);
-  const [userSearch, setUserSearch] = useState('');
-  const [actionFilter, setActionFilter] = useState('');
 
   // ── LOAD ROLES ──
   const loadRoles = async () => {
@@ -104,38 +92,14 @@ const Settings = () => {
     }
   };
 
-  // ── LOAD ACTIVITY LOGS ──
-  const loadLogs = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const params = {
-        page: logPage,
-        limit: logLimit,
-        user: userSearch || undefined,
-        action: actionFilter || undefined,
-      };
-      const res = await activityLogService.getAll(params);
-      setLogs(unwrapList(res));
-      setLogTotal(res.total || 0);
-    } catch (err) {
-      setError('Failed to load activity logs: ' + err.message);
-      toast.error('Failed to load activity logs.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Load active tab data
   useEffect(() => {
     if (activeTab === 'roles') {
       loadRoles();
     } else if (activeTab === 'stores') {
       loadStores();
-    } else if (activeTab === 'activity') {
-      loadLogs();
     }
-  }, [activeTab, logPage, actionFilter]);
+  }, [activeTab]);
 
   // ── ROLE ACTIONS ──
   const openAddRole = () => {
@@ -300,17 +264,6 @@ const Settings = () => {
     }
   };
 
-  // Helper to format date
-  const formatLogDate = (dateStr) => {
-    if (!dateStr) return '';
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleString('en-IN', { hour12: true });
-    } catch (e) {
-      return dateStr;
-    }
-  };
-
   return (
     <div className="settings-view animate-fade-in">
       <div className="settings-header">
@@ -320,7 +273,7 @@ const Settings = () => {
         </div>
         <button
           className="btn-sm-ghost refresh-btn"
-          onClick={() => activeTab === 'roles' ? loadRoles() : activeTab === 'stores' ? loadStores() : loadLogs()}
+          onClick={() => activeTab === 'roles' ? loadRoles() : loadStores()}
           aria-label="Refresh settings data"
           id="btn-settings-refresh"
         >
@@ -350,7 +303,7 @@ const Settings = () => {
         <div className="error-banner">
           <AlertCircle size={16} />
           <span>{error}</span>
-          <button className="error-retry" onClick={() => activeTab === 'roles' ? loadRoles() : activeTab === 'stores' ? loadStores() : loadLogs()}>Retry</button>
+          <button className="error-retry" onClick={() => activeTab === 'roles' ? loadRoles() : loadStores()}>Retry</button>
         </div>
       )}
 
@@ -509,109 +462,7 @@ const Settings = () => {
               </div>
             )}
 
-            {/* ── ACTIVITY LOG ── */}
-            {activeTab === 'activity' && (
-              <div className="settings-activity">
-                <div className="panel-header-row">
-                  <div>
-                    <h2>System Audit logs</h2>
-                    <p>Trace log audits of staff operations and system modifications.</p>
-                  </div>
-                </div>
 
-                {/* Audit filters */}
-                <form
-                  onSubmit={(e) => { e.preventDefault(); setLogPage(1); loadLogs(); }}
-                  className="logs-filters-bar"
-                  id="logs-filter-form"
-                >
-                  <div className="search-wrapper">
-                    <Search size={14} className="search-icon" />
-                    <input
-                      type="text"
-                      placeholder="Search users..."
-                      value={userSearch}
-                      onChange={(e) => setUserSearch(e.target.value)}
-                      className="search-input"
-                      id="input-log-search"
-                    />
-                  </div>
-                  <select
-                    value={actionFilter}
-                    onChange={(e) => { setActionFilter(e.target.value); setLogPage(1); }}
-                    className="filter-select"
-                    id="select-log-action"
-                  >
-                    <option value="">All Operations</option>
-                    <option value="login">Login</option>
-                    <option value="update">Update</option>
-                    <option value="add">Add / Create</option>
-                    <option value="delete">Delete / Deactivate</option>
-                    <option value="refund">Refunds</option>
-                    <option value="fulfill">Order Fulfillment</option>
-                  </select>
-                  <button type="submit" className="btn-sm-primary" id="btn-log-search-submit">Apply</button>
-                </form>
-
-                <div className="activity-table-wrap">
-                  <table className="activity-table">
-                    <thead>
-                      <tr>
-                        <th>Timestamp</th>
-                        <th>User Account</th>
-                        <th>Operation</th>
-                        <th>Resource Target</th>
-                        <th>IP Origin</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {logs.map((log) => (
-                        <tr key={log.id}>
-                          <td className="log-time">{formatLogDate(log.created_at)}</td>
-                          <td><span className="log-user">{log.user_name}</span></td>
-                          <td>
-                            <span className={`log-badge ${String(log.action).toLowerCase()}`}>
-                              {log.action}
-                            </span>
-                          </td>
-                          <td className="log-target">{log.details || log.resource || 'System'}</td>
-                          <td className="log-ip">{log.ip_address || '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {logs.length === 0 && <p className="empty-message text-center">No audit logs matching selection.</p>}
-                </div>
-
-                {/* Pagination footer */}
-                {logTotal > 0 && (
-                  <div className="logs-pagination">
-                    <span className="pagination-info">
-                      Showing {((logPage - 1) * logLimit) + 1} - {Math.min(logPage * logLimit, logTotal)} of {logTotal} records
-                    </span>
-                    <div className="pagination-buttons">
-                      <button
-                        className="btn-sm-ghost"
-                        onClick={() => setLogPage((p) => Math.max(p - 1, 1))}
-                        disabled={logPage === 1}
-                        id="btn-log-prev"
-                      >
-                        Prev
-                      </button>
-                      <span className="pagination-page">Page {logPage}</span>
-                      <button
-                        className="btn-sm-ghost"
-                        onClick={() => setLogPage((p) => (p * logLimit < logTotal ? p + 1 : p))}
-                        disabled={logPage * logLimit >= logTotal}
-                        id="btn-log-next"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </>
         )}
       </div>

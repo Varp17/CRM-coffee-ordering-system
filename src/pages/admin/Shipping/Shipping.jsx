@@ -62,13 +62,14 @@ const Shipping = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await Promise.all([loadCarriers(), loadShipments()]);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      await Promise.all([loadCarriers(), loadShipments()]);
-      setIsLoading(false);
-    };
-    load();
+    handleRefresh();
   }, []);
 
   useEffect(() => {
@@ -218,7 +219,7 @@ const Shipping = () => {
           <p className="page-subtitle">Manage carriers and shipments</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={() => { loadCarriers(); loadShipments(); }} variant="ghost"><RefreshCw size={16} /></Button>
+          <Button onClick={handleRefresh} variant="ghost" disabled={isLoading}><RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} /></Button>
           {currentTab === 'carriers' && <Button onClick={openAddCarrier} variant="primary"><Plus size={16} /> Add Carrier</Button>}
           {currentTab === 'shipments' && <Button onClick={() => setShowShipmentModal(true)} variant="primary"><Plus size={16} /> Create Shipment</Button>}
         </div>

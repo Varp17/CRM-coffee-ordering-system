@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotificationStore } from '../../../store/useNotificationStore';
 import {
   DollarSign, ShoppingBag, Users, Package,
-  AlertTriangle, RefreshCw, Download, Plus,
+  AlertTriangle, RefreshCw, Download,
   ArrowUpRight, ArrowDownRight, Activity, CheckCircle,
   Clock, ChevronRight, Eye, Timer, AlertCircle
 } from 'lucide-react';
@@ -85,6 +85,8 @@ const Dashboard = () => {
   const chartData = (safe.weeklyRevenue || []).map(d => ({
     name: d.day,
     Revenue: Number(d.revenue || 0),
+    orders: Number(d.orders || 0),
+    profit: Number(d.profit || 0),
   }));
 
   // Create fake sparkline data based on trend
@@ -131,8 +133,8 @@ const Dashboard = () => {
       <div className="db-error">
         <AlertTriangle size={32} color="#D97706" />
         <p>Could not load dashboard data.</p>
-        <button className="db-retry-btn" onClick={loadData}>
-          <RefreshCw size={14} /> Try Again
+        <button className="db-retry-btn" onClick={loadData} disabled={isLoading}>
+          <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /> Try Again
         </button>
       </div>
     );
@@ -148,11 +150,8 @@ const Dashboard = () => {
           <p className="db-page-sub">Welcome back, Admin. Here's what's happening with your business today.</p>
         </div>
         <div className="db-header-actions">
-          <button className="db-action-btn ghost" onClick={loadData}>
-            <RefreshCw size={14} />
-          </button>
-          <button className="db-action-btn primary" onClick={() => navigate('/admin/orders')}>
-            <Plus size={14} /> New Order
+          <button className="db-action-btn ghost" onClick={loadData} disabled={isLoading}>
+            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
           </button>
         </div>
       </div>

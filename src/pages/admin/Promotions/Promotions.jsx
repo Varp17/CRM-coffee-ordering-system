@@ -167,7 +167,9 @@ const Promotions = () => {
           <p className="section-subtitle">Create and manage discounts, BOGO offers, and promo codes</p>
         </div>
         <div className="promo-header-actions">
-          <button className="promo-action-btn ghost" onClick={loadPromotions}><RefreshCw size={13} /></button>
+          <button className="promo-action-btn ghost" onClick={loadPromotions} disabled={isLoading}>
+            <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+          </button>
           <button className="promo-action-btn primary" onClick={openAddModal}><Plus size={14} /> Add Promotion</button>
         </div>
       </div>

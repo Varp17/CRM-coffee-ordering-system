@@ -2,26 +2,30 @@ import { api } from './api';
 
 export const brewRecipeService = {
   getAll: async (params = {}) => {
-    return api.get('/brew-recipes', params);
+    return api.get('/recipes/brew', params);
   },
 
   getById: async (id) => {
-    return api.get(`/brew-recipes/${id}`);
+    return api.get(`/recipes/brew/${id}`);
   },
 
   create: async (data) => {
-    return api.post('/brew-recipes', data);
+    return api.post('/recipes/brew', data);
   },
 
   update: async (id, data) => {
-    return api.patch(`/brew-recipes/${id}`, data);
+    return api.patch(`/recipes/brew/${id}`, data);
   },
 
   delete: async (id) => {
-    return api.delete(`/brew-recipes/${id}`);
+    return api.delete(`/recipes/brew/${id}`);
   },
 
   getCosting: async (id) => {
-    return api.get(`/brew-recipes/${id}/costing`);
+    return api.get(`/recipes/brew/${id}/costing`);
+  },
+
+  list: async (params = {}) => {
+    return api.get('/recipes/brew', params);
   },
 };

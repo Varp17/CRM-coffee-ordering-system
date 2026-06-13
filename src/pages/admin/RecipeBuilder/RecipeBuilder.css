@@ -420,3 +420,120 @@
   color: var(--color-text-tertiary, #94a3b8);
   font-size: 13px;
 }
+
+/* Beverage Formulator */
+.beverage-formulator {
+  padding: 16px;
+  background: var(--color-surface, #fff);
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.formulator-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light, #f1f5f9);
+}
+
+.formulator-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-text, #1e293b);
+}
+
+.formulator-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formulator-row {
+  display: flex;
+  gap: 16px;
+}
+
+.formulator-row .form-group {
+  flex: 1;
+}
+
+.formulator-row.full-width .form-group {
+  width: 100%;
+}
+
+.formulator-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-light, #f1f5f9);
+}
+
+/* ── Visual Connectivity Pipeline ── */
+.rb-connectivity-pipeline {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 20px 20px;
+  padding: 16px;
+  background: var(--color-bg, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+}
+
+.pipeline-node {
+  flex: 1;
+  background: var(--color-surface, #ffffff);
+  padding: 12px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.pipeline-node.active {
+  border-color: var(--color-primary, #6b46c1);
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.08);
+}
+
+.pipeline-node.warning {
+  border-color: var(--color-warning, #f59e0b);
+  background-color: var(--color-warning-light, #fffbeb);
+}
+
+.pipeline-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-size: 18px;
+  padding: 0 4px;
+}
+
+.pipeline-node-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary, #64748b);
+  margin-bottom: 6px;
+}
+
+.pipeline-node-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pipeline-node-meta {
+  font-size: 11px;
+  color: var(--color-text-tertiary, #94a3b8);
+  margin-top: 4px;
+}
+

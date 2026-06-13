@@ -108,7 +108,7 @@ export const useKioskStore = create((set, get) => ({
 
       // Map cart to backend order item schema
       const items = cart.map(item => ({
-        product_id: item.menuItem.id, // Must be UUID
+        product_id: item.id || item.uuid || item.product_id, // UUID from catalog or customized item
         quantity: item.quantity || 1,
         notes: `Size: ${item.size}, Temperature: ${item.temperature}, Sweetness: ${item.sweetness}, Milk: ${item.milk}, Syrup: ${item.syrup}, Topping: ${item.topping}`,
       }));
