@@ -26,6 +26,7 @@ import {
   MapPin,
   Shield,
   Factory,
+  UserPlus,
 } from 'lucide-react';
 
 export const MENU_CONFIG = [
@@ -37,6 +38,7 @@ export const MENU_CONFIG = [
     roles: ['*'],
     end: true,
     isSingle: true,
+    permission: 'Dashboard',
   },
   {
     key: 'orders',
@@ -46,6 +48,7 @@ export const MENU_CONFIG = [
     roles: ['*'],
     badgeKey: 'pendingOrders',
     isSingle: true,
+    permission: 'Orders',
   },
   {
     key: 'RECIPES',
@@ -53,9 +56,9 @@ export const MENU_CONFIG = [
     icon: BookOpen,
     defaultOpen: false,
     items: [
-      { key: 'recipes', label: 'Recipes', to: '/admin/recipes', icon: BookOpen, roles: ['super_admin', 'store_admin', 'manager'] },
-      { key: 'compatibility-rules', label: 'Compatibility Rules', to: '/admin/compatibility-rules', icon: AlertTriangle, roles: ['super_admin', 'store_admin', 'manager'] },
-      { key: 'rd', label: 'R&D', to: '/admin/production', icon: Factory, roles: ['super_admin', 'store_admin', 'manager'] },
+      { key: 'recipes', label: 'Recipes', to: '/admin/recipes', icon: BookOpen, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Menu' },
+      { key: 'compatibility-rules', label: 'Compatibility Rules', to: '/admin/compatibility-rules', icon: AlertTriangle, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Menu' },
+      { key: 'rd', label: 'R&D', to: '/admin/production', icon: Factory, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Menu' },
     ],
   },
   {
@@ -64,12 +67,12 @@ export const MENU_CONFIG = [
     icon: Warehouse,
     defaultOpen: false,
     items: [
-      { key: 'raw-materials', label: 'Raw Materials', to: '/admin/raw-materials', icon: Wheat, roles: ['super_admin', 'store_admin', 'manager'] },
-      { key: 'products', label: 'Menu & Stock', to: '/admin/menu', icon: Package, roles: ['*'], badgeKey: 'lowStock' },
-      { key: 'categories', label: 'Categories', to: '/admin/categories', icon: Tags, roles: ['super_admin', 'store_admin'] },
-      { key: 'central-inventory', label: 'Central Inventory', to: '/admin/central-inventory', icon: Warehouse, roles: ['super_admin', 'store_admin'] },
-      { key: 'store-transfers', label: 'Store Transfers', to: '/admin/store-transfers', icon: ArrowLeftRight, roles: ['super_admin', 'store_admin', 'manager'] },
-      { key: 'waste-logs', label: 'Waste Logs', to: '/admin/waste-logs', icon: Trash2, roles: ['*'], badgeKey: 'pendingWaste' },
+      { key: 'raw-materials', label: 'Raw Materials', to: '/admin/raw-materials', icon: Wheat, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Inventory' },
+      { key: 'products', label: 'Menu & Stock', to: '/admin/menu', icon: Package, roles: ['*'], badgeKey: 'lowStock', permission: 'Inventory' },
+      { key: 'categories', label: 'Categories', to: '/admin/categories', icon: Tags, roles: ['super_admin', 'store_admin'], permission: 'Inventory' },
+      { key: 'central-inventory', label: 'Central Inventory', to: '/admin/central-inventory', icon: Warehouse, roles: ['super_admin', 'store_admin'], permission: 'Inventory' },
+      { key: 'store-transfers', label: 'Store Transfers', to: '/admin/store-transfers', icon: ArrowLeftRight, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Inventory' },
+      { key: 'waste-logs', label: 'Waste Logs', to: '/admin/waste-logs', icon: Trash2, roles: ['*'], badgeKey: 'pendingWaste', permission: 'Inventory' },
     ],
   },
   {
@@ -78,12 +81,12 @@ export const MENU_CONFIG = [
     icon: Users,
     defaultOpen: false,
     items: [
-      { key: 'customers', label: 'Customers', to: '/admin/customers', icon: Users, roles: ['super_admin', 'store_admin', 'manager'] },
+      { key: 'customers', label: 'Customers', to: '/admin/customers', icon: Users, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Customers' },
       // { key: 'loyalty', label: 'Loyalty', to: '/admin/loyalty', icon: Star, roles: ['super_admin', 'store_admin', 'manager'] },
       // { key: 'promotions', label: 'Promotions', to: '/admin/promotions', icon: Tags, roles: ['super_admin', 'store_admin'] },
       // { key: 'subscriptions', label: 'Subscriptions', to: '/admin/subscriptions', icon: Repeat, roles: ['super_admin', 'store_admin'] },
-      { key: 'support', label: 'Support Tickets', to: '/admin/support', icon: MessageSquare, roles: ['*'], badgeKey: 'openTickets' },
-      { key: 'customer-queries', label: 'Customer Queries', to: '/admin/customer-queries', icon: HelpCircle, roles: ['*'] },
+      { key: 'support', label: 'Support Tickets', to: '/admin/support', icon: MessageSquare, roles: ['*'], badgeKey: 'openTickets', permission: 'Customers' },
+      { key: 'customer-queries', label: 'Customer Queries', to: '/admin/customer-queries', icon: HelpCircle, roles: ['*'], permission: 'Customers' },
     ],
   },
   {
@@ -92,8 +95,8 @@ export const MENU_CONFIG = [
     icon: Truck,
     defaultOpen: false,
     items: [
-      { key: 'suppliers', label: 'Suppliers', to: '/admin/suppliers', icon: Truck, roles: ['super_admin', 'store_admin'] },
-      { key: 'purchase-orders', label: 'Purchase Orders', to: '/admin/purchase-orders', icon: Receipt, roles: ['super_admin', 'store_admin', 'manager'] },
+      { key: 'suppliers', label: 'Suppliers', to: '/admin/suppliers', icon: Truck, roles: ['super_admin', 'store_admin'], permission: 'Inventory' },
+      { key: 'purchase-orders', label: 'Purchase Orders', to: '/admin/purchase-orders', icon: Receipt, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Inventory' },
     ],
   },
   {
@@ -102,8 +105,9 @@ export const MENU_CONFIG = [
     icon: UserCog,
     defaultOpen: false,
     items: [
-      { key: 'staff', label: 'Staff', to: '/admin/staff', icon: UserCog, roles: ['super_admin', 'store_admin', 'manager'] },
-      { key: 'shifts', label: 'Shifts', to: '/admin/shifts', icon: Clock, roles: ['super_admin', 'store_admin', 'manager'] },
+      { key: 'staff-list', label: 'List Staff', to: '/admin/staff', icon: Users, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Roles' },
+      { key: 'staff-add', label: 'Add Staff', to: '/admin/staff?action=add', icon: UserPlus, roles: ['super_admin', 'store_admin'], permission: 'Roles' },
+      { key: 'shifts', label: 'Shifts', to: '/admin/shifts', icon: Clock, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Roles' },
     ],
   },
   {
@@ -112,9 +116,8 @@ export const MENU_CONFIG = [
     icon: BarChart3,
     defaultOpen: false,
     items: [
-      { key: 'daily-ops', label: 'Daily Ops', to: '/admin/daily-ops', icon: TrendingUp, roles: ['super_admin', 'store_admin', 'manager'] },
-      { key: 'reports', label: 'Reports', to: '/admin/reports', icon: BarChart3, roles: ['super_admin', 'store_admin'] },
-      { key: 'analytics', label: 'Analytics', to: '/admin/analytics', icon: Activity, roles: ['super_admin', 'store_admin'] },
+      { key: 'daily-ops', label: 'Daily Ops', to: '/admin/daily-ops', icon: TrendingUp, roles: ['super_admin', 'store_admin', 'manager'], permission: 'Financials' },
+      { key: 'reports', label: 'Reports', to: '/admin/reports', icon: BarChart3, roles: ['super_admin', 'store_admin'], permission: 'Financials' },
     ],
   },
   {
@@ -123,9 +126,9 @@ export const MENU_CONFIG = [
     icon: Settings,
     defaultOpen: false,
     items: [
-      { key: 'settings', label: 'Settings', to: '/admin/settings', icon: Settings, roles: ['super_admin', 'store_admin'] },
-      { key: 'stores', label: 'Stores', to: '/admin/stores', icon: MapPin, roles: ['super_admin', 'store_admin'] },
-      { key: 'roles', label: 'Roles', to: '/admin/roles', icon: Shield, roles: ['super_admin'] },
+      { key: 'settings', label: 'Settings', to: '/admin/settings', icon: Settings, roles: ['super_admin', 'store_admin'], permission: 'CMS' },
+      { key: 'stores', label: 'Stores', to: '/admin/stores', icon: MapPin, roles: ['super_admin', 'store_admin'], permission: 'CMS' },
+      { key: 'roles', label: 'Roles', to: '/admin/roles', icon: Shield, roles: ['super_admin'], permission: 'Roles' },
     ],
   },
 ];
@@ -158,17 +161,24 @@ export const findGroupByPath = (path) => {
 };
 
 /**
- * Filter items by role
+ * Filter items by role and custom permissions override
  */
-export const filterByRole = (role) =>
-  MENU_CONFIG.map((group) => {
+export const filterByRole = (role, permissions = []) => {
+  const hasAllAccess = role === 'super_admin' || permissions.includes('All Access');
+  return MENU_CONFIG.map((group) => {
     if (group.isSingle) {
-      return (group.roles.includes('*') || group.roles.includes(role)) ? group : null;
+      const roleAllowed = group.roles.includes('*') || group.roles.includes(role);
+      const permissionAllowed = !group.permission || hasAllAccess || permissions.includes(group.permission);
+      return (roleAllowed || permissionAllowed) ? group : null;
     }
+    const filteredItems = group.items.filter((item) => {
+      const roleAllowed = item.roles.includes('*') || item.roles.includes(role);
+      const permissionAllowed = !item.permission || hasAllAccess || permissions.includes(item.permission);
+      return roleAllowed || permissionAllowed;
+    });
     return {
       ...group,
-      items: group.items.filter(
-        (item) => item.roles.includes('*') || item.roles.includes(role)
-      ),
+      items: filteredItems,
     };
   }).filter((group) => group && (group.isSingle || group.items.length > 0));
+};

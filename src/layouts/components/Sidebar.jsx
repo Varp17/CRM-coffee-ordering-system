@@ -351,8 +351,8 @@ const Sidebar = ({ onNavigate }) => {
 
   // Get role-filtered menu
   const filteredMenu = useMemo(
-    () => filterByRole(user?.role || 'admin'),
-    [user?.role]
+    () => filterByRole(user?.role || 'admin', user?.permissions || []),
+    [user?.role, user?.permissions]
   );
 
   return (

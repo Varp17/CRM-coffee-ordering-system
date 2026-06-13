@@ -193,7 +193,7 @@ const WasteLogs = () => {
         <select value={storeFilter} onChange={(e) => setStoreFilter(e.target.value)} className="filter-select">
           <option value="all">All Stores</option>
           {(Array.isArray(stores) ? stores : []).map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
+            <option key={s._pk || s.id} value={s._pk || s.id}>{s.name}</option>
           ))}
         </select>
         <select value={itemTypeFilter} onChange={(e) => setItemTypeFilter(e.target.value)} className="filter-select">
@@ -228,7 +228,7 @@ const WasteLogs = () => {
                   <select name="store_id" value={formData.store_id} onChange={handleFormChange} required>
                     <option value="">Select store</option>
                     {(Array.isArray(stores) ? stores : []).map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
+                      <option key={s._pk || s.id} value={s._pk || s.id}>{s.name}</option>
                     ))}
                   </select></div>
                 <div className="form-group"><label>Item Type</label>

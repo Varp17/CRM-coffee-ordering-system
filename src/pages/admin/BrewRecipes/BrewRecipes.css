@@ -368,44 +368,85 @@
 }
 
 .select-col {
-  flex-grow: 2;
+  flex: 1;
+  min-width: 150px;
 }
 
 .qty-col {
   width: 90px;
+  flex-shrink: 0;
 }
 
 .unit-col {
-  width: 70px;
+  width: 75px;
+  flex-shrink: 0;
 }
 
 .material-select-field,
 .material-qty-field,
 .material-unit-field {
   width: 100%;
-  padding: 8px;
-  border-radius: var(--radius-sm, 4px);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: 0.85rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 0.8rem;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.material-select-field:focus,
+.material-qty-field:focus,
+.material-unit-field:focus {
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
 }
 
 .btn-remove-material {
   background: transparent;
-  border: none;
-  color: var(--color-danger, #ef4444);
+  border: 1px solid #cbd5e1;
+  color: #ef4444;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .btn-remove-material:hover {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Custom Scrollbars */
+.builder-left-pane::-webkit-scrollbar,
+.builder-right-pane::-webkit-scrollbar,
+.materials-rows-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.builder-left-pane::-webkit-scrollbar-track,
+.builder-right-pane::-webkit-scrollbar-track,
+.materials-rows-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.builder-left-pane::-webkit-scrollbar-thumb,
+.builder-right-pane::-webkit-scrollbar-thumb,
+.materials-rows-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.builder-left-pane::-webkit-scrollbar-thumb:hover,
+.builder-right-pane::-webkit-scrollbar-thumb:hover,
+.materials-rows-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Live Cost Card */

@@ -114,3 +114,19 @@
     font-size: 14px;
   }
 }
+
+/* ── Full Scroll Layout for Menu Recipes ── */
+.recipe-builder-layout.full-scroll-layout {
+  height: auto !important;
+}
+
+.recipe-builder-layout.full-scroll-layout .rb-left-pane,
+.recipe-builder-layout.full-scroll-layout .rb-main-pane,
+.recipe-builder-layout.full-scroll-layout .rb-recipes-list,
+.recipe-builder-layout.full-scroll-layout .rb-detail-body {
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  overflow-y: visible !important;
+}

@@ -110,7 +110,7 @@ const MenuTab = ({ refreshKey, setLoading }) => {
 
   return (
     <div className="recipe-builder-page" style={{ padding: 0, marginTop: 0 }}>
-      <div className="recipe-builder-layout" style={{ marginTop: 0, height: 'calc(100vh - 280px)' }}>
+      <div className="recipe-builder-layout full-scroll-layout" style={{ marginTop: 0, height: 'auto' }}>
         <aside className="rb-left-pane">
           <div className="rb-search-wrapper">
             <Search size={16} className="rb-search-icon" />

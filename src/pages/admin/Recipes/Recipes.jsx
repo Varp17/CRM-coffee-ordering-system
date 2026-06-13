@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import BrewTab from './components/BrewTab';
 import MenuTab from './components/MenuTab';
 import EngineTab from './components/EngineTab';
+import CustomerTab from './components/CustomerTab';
 import Button from '../../../components/Button/Button';
 import { RefreshCw } from 'lucide-react';
 import '../BrewRecipes/BrewRecipes.css';
@@ -12,6 +13,7 @@ import './Recipes.css';
 const TABS = [
   { key: 'brew', label: 'Brew Recipes', icon: '☕' },
   { key: 'menu', label: 'Menu Recipes', icon: '📋' },
+  { key: 'customer', label: 'Customer Recipes', icon: '⭐' },
   { key: 'engine', label: 'Recipe Engine', icon: '⚙️' },
 ];
 
@@ -57,6 +59,7 @@ const Recipes = () => {
       <div className="recipes-tab-content">
         {activeTab === 'brew' && <BrewTab refreshKey={refreshKey} setLoading={setIsLoading} />}
         {activeTab === 'menu' && <MenuTab refreshKey={refreshKey} setLoading={setIsLoading} />}
+        {activeTab === 'customer' && <CustomerTab refreshKey={refreshKey} setLoading={setIsLoading} />}
         {activeTab === 'engine' && <EngineTab refreshKey={refreshKey} setLoading={setIsLoading} />}
       </div>
     </div>

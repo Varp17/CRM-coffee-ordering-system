@@ -1,38 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Roles.css';
 import Button from '../../../components/Button/Button';
 import { roleService } from '../../../services/roles';
 import { unwrapList } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
+import { 
+  Shield, 
+  Users, 
+  CheckCircle2, 
+  ChevronRight, 
+  Plus, 
+  Save, 
+  Trash2,
+  Lock,
+  Globe,
+  AlertCircle,
+  Search,
+  BookOpen,
+  Info
+} from 'lucide-react';
 
-const ALL_PERMISSIONS = [
-  { module: 'Dashboard', actions: ['View', 'Export'] },
-  { module: 'Orders', actions: ['View', 'Edit', 'Refund', 'Delete'] },
-  { module: 'Menu', actions: ['View', 'Edit', 'Create', 'Delete'] },
-  { module: 'Inventory', actions: ['View', 'Edit', 'Adjust', 'Transfer'] },
-  { module: 'Customers', actions: ['View', 'Edit', 'Contact'] },
-  { module: 'Roles', actions: ['View', 'Edit', 'Assign'] },
-  { module: 'Financials', actions: ['View', 'Export'] },
-  { module: 'CMS', actions: ['View', 'Edit', 'Publish'] },
+const ALL_MODULES = [
+  { key: 'Dashboard', label: 'Dashboard', desc: 'Analytics, overview metrics, and sales charts' },
+  { key: 'Orders', label: 'Orders Management', desc: 'View, edit, cancel, and refund customer orders' },
+  { key: 'Menu', label: 'Menu & Recipes (R&D)', desc: 'Manage products, ingredients, recipes, and rules' },
+  { key: 'Inventory', label: 'Stock & Inventory', desc: 'Central inventory, transfers, and wastage logs' },
+  { key: 'Customers', label: 'Customer Management', desc: 'Customer profiles, support queries, and tickets' },
+  { key: 'Roles', label: 'Roles & Staffing', desc: 'Define access sets, staff profiles, and shifts' },
+  { key: 'Financials', label: 'Financials & Reports', desc: 'Daily operations reporting and performance audits' },
+  { key: 'CMS', label: 'Settings & CMS', desc: 'Modify stores, banners, coupons, and configurations' }
 ];
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editingRole, setEditingRole] = useState(null);
-  
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    permissions: []
-  });
+  const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Form State
+  const [roleName, setRoleName] = useState('');
+  const [roleDesc, setRoleDesc] = useState('');
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
 
   const loadRoles = async () => {
     setIsLoading(true);
     try {
       const res = await roleService.getAll();
-      setRoles(unwrapList(res));
+      const loadedRoles = unwrapList(res);
+      setRoles(loadedRoles);
+      
+      // Auto-select first role or preserve selected one
+      if (loadedRoles.length > 0) {
+        if (selectedRole) {
+          const current = loadedRoles.find(r => r.id === selectedRole.id);
+          if (current) {
+            handleSelectRole(current);
+            return;
+          }
+        }
+        handleSelectRole(loadedRoles[0]);
+      }
     } catch (err) {
       toast.error('Failed to load roles: ' + err.message);
     } finally {
@@ -44,223 +72,300 @@ const Roles = () => {
     loadRoles();
   }, []);
 
-  const openAddModal = () => {
-    setEditingRole(null);
-    setFormData({ name: '', description: '', permissions: [] });
-    setShowModal(true);
+  const handleSelectRole = (role) => {
+    setSelectedRole(role);
+    setRoleName(role.name);
+    setRoleDesc(role.description || '');
+    setSelectedPermissions(Array.isArray(role.permissions) ? [...role.permissions] : []);
   };
 
-  const openEditModal = (role) => {
-    setEditingRole(role);
-    setFormData({ 
-      name: role.name, 
-      description: role.description || '', 
-      permissions: Array.isArray(role.permissions) ? [...role.permissions] : [] 
-    });
-    setShowModal(true);
+  const handleNewRole = () => {
+    setSelectedRole(null);
+    setRoleName('');
+    setRoleDesc('');
+    setSelectedPermissions([]);
   };
 
-  const handlePermissionToggle = (permissionName) => {
-    setFormData(prev => {
-      const perms = [...prev.permissions];
-      if (permissionName === 'All Access') {
-        return { ...prev, permissions: perms.includes('All Access') ? [] : ['All Access'] };
+  const togglePermission = (permKey) => {
+    if (selectedRole?.name === 'Super Admin') {
+      toast.error('Cannot modify Super Admin system permissions');
+      return;
+    }
+    setSelectedPermissions(prev => {
+      if (permKey === 'All Access') {
+        return prev.includes('All Access') ? [] : ['All Access', ...ALL_MODULES.map(m => m.key)];
       }
-      
-      const newPerms = perms.filter(p => p !== 'All Access');
-      if (newPerms.includes(permissionName)) {
-        return { ...prev, permissions: newPerms.filter(p => p !== permissionName) };
+      const newPerms = prev.filter(p => p !== 'All Access');
+      if (newPerms.includes(permKey)) {
+        return newPerms.filter(p => p !== permKey);
       } else {
-        return { ...prev, permissions: [...newPerms, permissionName] };
+        return [...newPerms, permKey];
       }
     });
   };
 
-  const handleDelete = async (id) => {
-    const roleToDelete = roles.find(r => r.id === id);
-    if (roleToDelete?.name === 'Super Admin' || roleToDelete?.name === 'Admin') {
+  const handleSave = async (e) => {
+    if (e) e.preventDefault();
+    if (!roleName.trim()) {
+      toast.error('Role name is required');
+      return;
+    }
+
+    if (selectedRole && selectedRole.name === 'Super Admin') {
+      toast.error('Cannot modify system Super Admin role');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload = {
+        name: roleName,
+        description: roleDesc,
+        permissions: selectedPermissions
+      };
+
+      if (selectedRole) {
+        await roleService.update(selectedRole.id, payload);
+        toast.success('Role updated successfully');
+      } else {
+        await roleService.create(payload);
+        toast.success('Role created successfully');
+      }
+      await loadRoles();
+    } catch (err) {
+      toast.error('Failed to save role: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedRole) return;
+    
+    if (selectedRole.name === 'Super Admin' || selectedRole.name === 'Store Admin' || selectedRole.name === 'Admin') {
       toast.error('Cannot delete system default roles');
       return;
     }
-    if (window.confirm('Are you sure you want to delete this role?')) {
+
+    if (window.confirm(`Are you sure you want to delete the role "${selectedRole.name}"?`)) {
       try {
-        await roleService.delete(id);
+        await roleService.delete(selectedRole.id);
         toast.success('Role deleted successfully');
-        loadRoles();
+        setSelectedRole(null);
+        await loadRoles();
       } catch (err) {
         toast.error('Failed to delete role: ' + err.message);
       }
     }
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (editingRole && editingRole.name === 'Super Admin') {
-      toast.error('Cannot modify Super Admin role');
-      return;
-    }
-
-    try {
-      const payload = {
-        name: formData.name,
-        description: formData.description,
-        permissions: formData.permissions
-      };
-
-      if (editingRole) {
-        await roleService.update(editingRole.id, payload);
-        toast.success('Role updated successfully');
-      } else {
-        await roleService.create(payload);
-        toast.success('Role created successfully');
-      }
-      setShowModal(false);
-      loadRoles();
-    } catch (err) {
-      toast.error('Failed to save role: ' + err.message);
-    }
-  };
+  const filteredRoles = useMemo(() => {
+    return roles.filter(role => 
+      role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (role.description && role.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  }, [roles, searchQuery]);
 
   if (isLoading && roles.length === 0) {
     return (
-      <div className="roles-view flex-center" style={{ height: '70vh' }}>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Loading roles...</p>
+      <div className="roles-loading flex-center">
+        <div className="spinner"></div>
+        <p>Loading roles and security matrix...</p>
       </div>
     );
   }
 
+  const isSuperAdminRole = selectedRole?.name === 'Super Admin';
+
   return (
-    <div className="roles-view animate-fade-in">
-      <div className="view-header">
-        <div>
-          <h2 className="section-title">Roles & Access Management (RBAC)</h2>
-          <p className="section-subtitle">Define permission sets and assign operational roles</p>
-        </div>
-        <Button variant="primary" onClick={openAddModal}>+ Create Custom Role</Button>
-      </div>
-
-      <div className="roles-grid">
-        {roles.map(role => (
-          <div key={role.id} className="role-card">
-            <div className="role-card-header">
-              <div className="role-title-group">
-                <h3>{role.name}</h3>
-                <span className={`user-count ${role.users > 0 ? 'active' : ''}`}>
-                  👥 {role.users} {role.users === 1 ? 'User' : 'Users'}
-                </span>
-              </div>
-              <div className="role-actions">
-                <button className="icon-btn" onClick={() => openEditModal(role)}>✏️</button>
-                {role.name !== 'Super Admin' && role.name !== 'Admin' && (
-                  <button className="icon-btn danger" onClick={() => handleDelete(role.id)}>🗑️</button>
-                )}
-              </div>
-            </div>
-            
-            <p className="role-desc">{role.description}</p>
-            
-            <div className="role-permissions">
-              <h4>Assigned Permissions:</h4>
-              <div className="perm-tags">
-                {Array.isArray(role.permissions) && role.permissions.includes('All Access') ? (
-                  <span className="perm-tag all-access">🌟 Full System Access (All Modules)</span>
-                ) : (
-                  Array.isArray(role.permissions) && role.permissions.map((perm, i) => (
-                    <span key={i} className="perm-tag">{perm}</span>
-                  ))
-                )}
-              </div>
-            </div>
+    <div className="roles-view-container animate-fade-in">
+      {/* Header Banner */}
+      <div className="roles-header-banner">
+        <div className="banner-content">
+          <div className="banner-icon-wrapper">
+            <Shield className="w-6 h-6 text-white" />
           </div>
-        ))}
+          <div>
+            <h1>Roles & Access Management (RBAC)</h1>
+            <p>Define dynamic access levels, operational permissions, and functional scopes for all staff members</p>
+          </div>
+        </div>
+        <Button variant="primary" onClick={handleNewRole} className="new-role-btn">
+          <Plus className="w-4 h-4" /> Create Custom Role
+        </Button>
       </div>
 
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content roles-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingRole ? `Edit Role: ${editingRole.name}` : 'Create Custom Role'}</h2>
-              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
-            </div>
-            
-            <form onSubmit={handleSave} className="roles-form">
-              <div className="form-group">
-                <label>Role Name</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={formData.name} 
-                  onChange={e => setFormData({...formData, name: e.target.value})}
-                  placeholder="e.g., Regional Manager" 
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Description</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={formData.description} 
-                  onChange={e => setFormData({...formData, description: e.target.value})}
-                  placeholder="Brief description of responsibilities" 
-                />
-              </div>
+      {/* Main 3-Column Grid */}
+      <div className="roles-matrix-layout">
+        
+        {/* Column 1: Roles List */}
+        <div className="matrix-column roles-list-card">
+          <div className="column-header">
+            <h3>System Roles</h3>
+            <span className="badge">{roles.length} Roles</span>
+          </div>
+          
+          <div className="search-box-wrapper">
+            <Search className="search-icon" />
+            <input 
+              type="text" 
+              placeholder="Search roles..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+          </div>
 
-              <div className="permissions-matrix-section">
-                <div className="matrix-header">
-                  <h3>Permission Matrix</h3>
-                  <label className="all-access-toggle">
-                    <input 
-                      type="checkbox" 
-                      checked={formData.permissions.includes('All Access')}
-                      onChange={() => handlePermissionToggle('All Access')}
-                    />
-                    <span>Grant Full "All Access" (Super User)</span>
-                  </label>
-                </div>
-
-                {!formData.permissions.includes('All Access') && (
-                  <div className="matrix-grid">
-                    {ALL_PERMISSIONS.map(module => {
-                      const isModuleChecked = formData.permissions.includes(module.module);
-                      
-                      return (
-                        <div key={module.module} className="matrix-module-card">
-                          <label className="module-header-toggle">
-                            <input 
-                              type="checkbox" 
-                              checked={isModuleChecked}
-                              onChange={() => handlePermissionToggle(module.module)}
-                            />
-                            <strong>{module.module}</strong>
-                          </label>
-                          <div className="module-actions-list">
-                            {module.actions.map(action => (
-                              <label key={action} className="action-toggle">
-                                <input 
-                                  type="checkbox" 
-                                  checked={isModuleChecked}
-                                  onChange={() => !isModuleChecked && handlePermissionToggle(module.module)}
-                                />
-                                <span>{action}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
+          <div className="roles-items-list">
+            {filteredRoles.map(role => {
+              const isSelected = selectedRole?.id === role.id;
+              return (
+                <button
+                  key={role.id}
+                  onClick={() => handleSelectRole(role)}
+                  className={`role-item-btn ${isSelected ? 'active' : ''}`}
+                >
+                  <div className="role-item-info">
+                    <div className="role-item-title">
+                      <h4>{role.name}</h4>
+                      {role.name === 'Super Admin' && <span className="sys-badge">System</span>}
+                    </div>
+                    <p className="role-item-desc">{role.description || 'No description provided.'}</p>
+                    <span className="role-item-users-count">
+                      👥 {role.users || 0} {role.users === 1 ? 'staff member' : 'staff members'}
+                    </span>
                   </div>
-                )}
+                  <ChevronRight className="chevron-icon" />
+                </button>
+              );
+            })}
+            {filteredRoles.length === 0 && (
+              <div className="empty-state">
+                <Info className="w-8 h-8 text-[#94a3b8] mb-2" />
+                <p>No roles match your search.</p>
               </div>
-
-              <div className="modal-footer">
-                <Button variant="ghost" onClick={() => setShowModal(false)} type="button">Cancel</Button>
-                <Button variant="primary" type="submit">{editingRole ? 'Update Role' : 'Create Role'}</Button>
-              </div>
-            </form>
+            )}
           </div>
         </div>
-      )}
+
+        {/* Column 2: Permission Matrix */}
+        <div className="matrix-column permission-matrix-card">
+          <div className="column-header">
+            <h3>Permission Matrix</h3>
+            <p className="column-subtitle">Select accessible modules for this operational role</p>
+          </div>
+
+          <div className="matrix-control-group">
+            <div className="all-access-banner">
+              <div className="all-access-info">
+                <strong>Grant Full Administrative Access</strong>
+                <p>Bypasses all module filters to authorize access to every dashboard and configuration option.</p>
+              </div>
+              <label className="switch-toggle">
+                <input 
+                  type="checkbox" 
+                  checked={selectedPermissions.includes('All Access') || isSuperAdminRole}
+                  onChange={() => togglePermission('All Access')}
+                  disabled={isSuperAdminRole}
+                />
+                <span className="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <div className="modules-list">
+            {ALL_MODULES.map(module => {
+              const hasAccess = selectedPermissions.includes('All Access') || selectedPermissions.includes(module.key) || isSuperAdminRole;
+              return (
+                <div 
+                  key={module.key} 
+                  className={`module-permission-row ${hasAccess ? 'authorized' : ''} ${isSuperAdminRole ? 'disabled' : ''}`}
+                  onClick={() => !isSuperAdminRole && togglePermission(module.key)}
+                >
+                  <div className="module-info-cell">
+                    <div className="module-title-group">
+                      <h4>{module.label}</h4>
+                      <span className="module-key-badge">{module.key}</span>
+                    </div>
+                    <p>{module.desc}</p>
+                  </div>
+                  <div className="module-checkbox-cell">
+                    <div className={`matrix-checkbox ${hasAccess ? 'checked' : ''}`}>
+                      {hasAccess && <CheckCircle2 className="w-5 h-5 text-white" />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Column 3: Identity & Configuration Details */}
+        <div className="matrix-column role-details-card">
+          <div className="column-header border-bottom">
+            <h3>Role Properties</h3>
+          </div>
+
+          <form onSubmit={handleSave} className="role-properties-form">
+            <div className="form-field">
+              <label>Role Identifier Name</label>
+              <input 
+                type="text" 
+                required 
+                value={roleName} 
+                onChange={e => setRoleName(e.target.value)}
+                placeholder="e.g., Regional Lead"
+                disabled={isSuperAdminRole}
+                className="prop-input"
+              />
+            </div>
+            
+            <div className="form-field">
+              <label>Functional Scope Description</label>
+              <textarea 
+                rows={4}
+                value={roleDesc} 
+                onChange={e => setRoleDesc(e.target.value)}
+                placeholder="e.g., Manages inventories and raw materials across store clusters"
+                disabled={isSuperAdminRole}
+                className="prop-textarea"
+              />
+            </div>
+
+            {isSuperAdminRole && (
+              <div className="sys-lock-warning">
+                <Lock className="w-4 h-4" />
+                <span>System role properties are locked for core security integrity.</span>
+              </div>
+            )}
+
+            <div className="properties-actions">
+              {!isSuperAdminRole && (
+                <Button 
+                  variant="primary" 
+                  type="submit" 
+                  disabled={saving} 
+                  className="save-matrix-btn"
+                >
+                  <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Configuration'}
+                </Button>
+              )}
+              
+              {selectedRole && !isSuperAdminRole && selectedRole.name !== 'Store Admin' && selectedRole.name !== 'Admin' && (
+                <Button 
+                  variant="danger" 
+                  type="button" 
+                  onClick={handleDelete}
+                  className="delete-role-btn"
+                >
+                  <Trash2 className="w-4 h-4" /> Delete Role
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
+
+      </div>
     </div>
   );
 };

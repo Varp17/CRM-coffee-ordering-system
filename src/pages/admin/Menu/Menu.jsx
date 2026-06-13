@@ -413,7 +413,11 @@ const Menu = () => {
                       <td>
                         <div className="product-info-cell">
                           {product.image_url ? (
-                            <img src={product.image_url} alt={product.name} className="product-thumb" />
+                            product.image_url.endsWith('.mp4') ? (
+                              <video src={product.image_url} autoPlay loop muted playsInline className="product-thumb" style={{ objectFit: 'cover' }} />
+                            ) : (
+                              <img src={product.image_url} alt={product.name} className="product-thumb" />
+                            )
                           ) : (
                             <div className="product-thumb placeholder">☕</div>
                           )}

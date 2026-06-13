@@ -3,6 +3,7 @@ import './Staff.css';
 import Button from '../../../components/Button/Button';
 import { DataTable } from '../../../components/ui/DataTable';
 import { staffService } from '../../../services/staff';
+import { storeService } from '../../../services/stores';
 import { unwrapList } from '../../../utils/apiResponse';
 import { formatDate } from '../../../utils/formatters';
 import toast from 'react-hot-toast';
@@ -10,12 +11,14 @@ import { Plus, RefreshCw, Clock, UserCheck, UserX } from 'lucide-react';
 
 const EMPLOYMENT_TYPES = ['full_time', 'part_time', 'contract', 'intern'];
 const SHIFT_STATUSES = ['scheduled', 'checked_in', 'checked_out', 'absent'];
+const PERMISSIONS_LIST = ['Dashboard', 'Orders', 'Menu', 'Inventory', 'Customers', 'Roles', 'Financials', 'CMS'];
 
 const Staff = () => {
   const [currentTab, setCurrentTab] = useState('records');
   const [records, setRecords] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [timeLogs, setTimeLogs] = useState([]);
+  const [stores, setStores] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [showShiftModal, setShowShiftModal] = useState(false);
@@ -24,14 +27,24 @@ const Staff = () => {
   const [summary, setSummary] = useState({ on_duty: 0, scheduled: 0, absent: 0 });
 
   const [recordForm, setRecordForm] = useState({
-    employee_code: '', name: '', designation: '', store: '',
+    employee_code: '', name: '', designation: '', store_id: '',
     employment_type: 'full_time', status: 'active', user_id: '',
+    permissions: [],
   });
 
   const [shiftForm, setShiftForm] = useState({
     staff_id: '', date: new Date().toISOString().split('T')[0],
     start_time: '09:00', end_time: '17:00',
   });
+
+  const loadStores = async () => {
+    try {
+      const resp = await storeService.getAll();
+      setStores(unwrapList(resp));
+    } catch (err) {
+      toast.error('Failed to load stores: ' + err.message);
+    }
+  };
 
   const loadRecords = async () => {
     try {
@@ -77,12 +90,24 @@ const Staff = () => {
 
   const handleRefresh = async () => {
     setIsLoading(true);
-    await Promise.all([loadRecords(), loadShifts(filterDate), loadTimeLogs(), loadSummary()]);
+    await Promise.all([loadRecords(), loadShifts(filterDate), loadTimeLogs(), loadSummary(), loadStores()]);
     setIsLoading(false);
   };
 
   useEffect(() => {
     handleRefresh();
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.get('action') === 'add') {
+      setEditingRecord(null);
+      setRecordForm({
+        employee_code: '', name: '', designation: '', store_id: '',
+        employment_type: 'full_time', status: 'active', user_id: '',
+        permissions: [],
+      });
+      setShowRecordModal(true);
+      // Clean query parameter from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   useEffect(() => {
@@ -93,8 +118,9 @@ const Staff = () => {
   const openAddRecord = () => {
     setEditingRecord(null);
     setRecordForm({
-      employee_code: '', name: '', designation: '', store: '',
+      employee_code: '', name: '', designation: '', store_id: '',
       employment_type: 'full_time', status: 'active', user_id: '',
+      permissions: [],
     });
     setShowRecordModal(true);
   };
@@ -103,8 +129,9 @@ const Staff = () => {
     setEditingRecord(item);
     setRecordForm({
       employee_code: item.employee_code, name: item.name, designation: item.designation || '',
-      store: item.store || '', employment_type: item.employment_type || 'full_time',
+      store_id: item.store_id || '', employment_type: item.employment_type || 'full_time',
       status: item.status, user_id: item.user_id || '',
+      permissions: item.permissions || [],
     });
     setShowRecordModal(true);
   };
@@ -156,7 +183,7 @@ const Staff = () => {
     { header: 'Employee Code', accessor: 'employee_code', sortable: true },
     { header: 'Name', accessor: 'name', sortable: true },
     { header: 'Designation', accessor: 'designation', sortable: true },
-    { header: 'Store', accessor: 'store', sortable: true },
+    { header: 'Store', accessor: 'store_name', sortable: true },
     {
       header: 'Type', accessor: 'employment_type', sortable: true,
       render: (row) => <span className="badge">{row.employment_type?.replace('_', ' ')}</span>,
@@ -310,8 +337,11 @@ const Staff = () => {
                   <input value={recordForm.name} onChange={(e) => setRecordForm({ ...recordForm, name: e.target.value })} required /></div>
                 <div className="form-group"><label>Designation</label>
                   <input value={recordForm.designation} onChange={(e) => setRecordForm({ ...recordForm, designation: e.target.value })} /></div>
-                <div className="form-group"><label>Store</label>
-                  <input value={recordForm.store} onChange={(e) => setRecordForm({ ...recordForm, store: e.target.value })} /></div>
+                <div className="form-group"><label>Store *</label>
+                  <select value={recordForm.store_id} onChange={(e) => setRecordForm({ ...recordForm, store_id: Number(e.target.value) })} required>
+                    <option value="">Select Store</option>
+                    {stores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select></div>
                 <div className="form-group"><label>Employment Type</label>
                   <select value={recordForm.employment_type} onChange={(e) => setRecordForm({ ...recordForm, employment_type: e.target.value })}>
                     {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
@@ -323,6 +353,29 @@ const Staff = () => {
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select></div>
+                <div className="form-group" style={{ gridColumn: 'span 2', marginTop: '12px' }}>
+                  <label style={{ fontWeight: '600', marginBottom: '8px', display: 'block' }}>Custom Permissions Override</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                    {PERMISSIONS_LIST.map((p) => {
+                      const checked = (recordForm.permissions || []).includes(p);
+                      return (
+                        <label key={p} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer', color: 'var(--color-text-primary)' }}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              const newPerms = checked
+                                ? recordForm.permissions.filter((x) => x !== p)
+                                : [...(recordForm.permissions || []), p];
+                              setRecordForm({ ...recordForm, permissions: newPerms });
+                            }}
+                          />
+                          {p}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
               <div className="modal-actions">
                 <Button type="button" variant="ghost" onClick={() => setShowRecordModal(false)}>Cancel</Button>

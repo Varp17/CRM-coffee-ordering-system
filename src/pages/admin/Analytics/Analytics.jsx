@@ -74,6 +74,14 @@ const Analytics = () => {
     loadAnalytics();
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const range = params.get('range');
+    if (range && ['daily', 'weekly', 'monthly', 'yearly'].includes(range)) {
+      setTimeRange(range);
+    }
+  }, [window.location.search]);
+
   const handleExportReport = (format) => {
     toast.success(`Generating and exporting P&L ${format} statement to Central ERP... 📊`);
   };

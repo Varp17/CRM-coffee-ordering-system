@@ -99,7 +99,21 @@ class ApiClient {
       // Handle other errors
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        const message = errData.message || errData.error || `Request failed with status ${response.status}`;
+        let message = errData.message || errData.error || `Request failed with status ${response.status}`;
+        
+        // If it is a validation error containing field details, construct a friendly message
+        const valErrors = errData.errors || errData.error;
+        if (Array.isArray(valErrors) && valErrors.length > 0) {
+          const detail = valErrors.map(e => `${e.field}: ${e.message}`).join(', ');
+          message = `Validation failed (${detail})`;
+        } else if (typeof valErrors === 'object' && valErrors !== null) {
+          // If error details is a key-value object
+          const detail = Object.entries(valErrors).map(([f, msg]) => `${f}: ${msg}`).join(', ');
+          if (detail) {
+            message = `Validation failed (${detail})`;
+          }
+        }
+        
         throw new ApiError(message, response.status, errData);
       }
 

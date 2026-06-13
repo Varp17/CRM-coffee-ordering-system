@@ -38,8 +38,7 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
     sweetener: DRINK_OPTIONS.sweeteners[0],
     toppings: [],
   });
-  const [videoBlob, setVideoBlob] = useState(null);
-  const [showVideoModal, setShowVideoModal] = useState(false);
+
 
   const addItemInternal = useCartStore((state) => state.addItem);
 
@@ -162,10 +161,7 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
     if (onClose) onClose();
   }, [selections, totalPrice, externalAddToCart, addItemInternal, onClose]);
 
-  const handleRecordComplete = useCallback((blob) => {
-    setVideoBlob(blob);
-    setShowVideoModal(true);
-  }, []);
+
 
   const matchedRecipe = useMemo(() => findMatchingRecipe(selections), [selections]);
 
@@ -375,8 +371,6 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
           selections={selectionForPreview}
           size={220}
           autoPlay
-          recordingEnabled
-          onRecordComplete={handleRecordComplete}
         />
         <div className="preview-drink-info">
           {matchedRecipe ? (
@@ -404,78 +398,7 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
             </div>
           )}
         </div>
-
-        <button
-          onClick={() => {
-            setShowVideoModal(true);
-          }}
-          className="preview-btn"
-        >
-          <Video className="w-3.5 h-3.5" />
-          Watch Preview
-        </button>
       </div>
-
-      <AnimatePresence>
-        {showVideoModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="video-modal-overlay"
-            onClick={() => setShowVideoModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="video-modal-card"
-              onClick={e => e.stopPropagation()}
-            >
-              <h3 className="video-modal-title">Your Drink Preview</h3>
-              <p className="video-modal-sub">Watch the full animation or download as video</p>
-
-              <div className="video-modal-preview">
-                <CupAnimation
-                  selections={selectionForPreview}
-                  size={260}
-                  autoPlay
-                  recordingEnabled
-                  onRecordComplete={handleRecordComplete}
-                />
-              </div>
-
-              <div className="video-modal-footer">
-                <div className="modal-drink-details">
-                  <div className="modal-drink-name">{matchedRecipe?.name || `${selections.base.name} Brew`}</div>
-                  <div className="modal-drink-price">₹{totalPrice}</div>
-                </div>
-                <div className="modal-btn-group">
-                  <button
-                    onClick={() => {
-                      setShowVideoModal(false);
-                      setVideoBlob(null);
-                    }}
-                    className="modal-btn"
-                  >
-                    Close
-                  </button>
-                  {videoBlob && (
-                    <a
-                      href={URL.createObjectURL(videoBlob)}
-                      download={`custom-coffee-${Date.now()}.webm`}
-                      className="modal-btn modal-btn-primary"
-                    >
-                      <Camera className="w-4 h-4" />
-                      Download Video
-                    </a>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

@@ -178,15 +178,18 @@ const Orders = () => {
       sortable: true,
       render: (row) => {
         const STATUS_MAP = {
-          'pending':     { bg: '#FEF3C7', color: '#92400E', border: '#F59E0B' },
-          'in_progress': { bg: '#DBEAFE', color: '#1E40AF', border: '#3B82F6' },
-          'ready':       { bg: '#EDE9FE', color: '#5B21B6', border: '#7C3AED' },
-          'completed':   { bg: '#D1FAE5', color: '#065F46', border: '#10B981' },
-          'cancelled':   { bg: '#FEE2E2', color: '#991B1B', border: '#EF4444' },
-          'refunded':    { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' },
+          'pending':       { bg: '#FEF3C7', color: '#92400E', border: '#F59E0B' },
+          'in_progress':   { bg: '#DBEAFE', color: '#1E40AF', border: '#3B82F6' },
+          'ready':         { bg: '#EDE9FE', color: '#5B21B6', border: '#7C3AED' },
+          'completed':     { bg: '#D1FAE5', color: '#065F46', border: '#10B981' },
+          'cancelled':     { bg: '#FEE2E2', color: '#991B1B', border: '#EF4444' },
+          'refunded':      { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' },
+          'kot_generated': { bg: '#E0F2FE', color: '#0369A1', border: '#0284C7' },
         };
         const sm = STATUS_MAP[row.status?.toLowerCase()] || { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' };
         const badgeStyle = {
+          display: 'inline-block',
+          whiteSpace: 'nowrap',
           padding: '4px 12px',
           borderRadius: '100px',
           fontSize: '0.72rem',
