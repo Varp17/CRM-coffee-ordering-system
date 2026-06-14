@@ -16,7 +16,7 @@ const Portal = () => {
     setLoading(true);
     try {
       const result = await loginStore(email, password);
-      
+
       if (result.success) {
         // Determine destination based on role from the backend
         let destination = '/store';
@@ -26,7 +26,8 @@ const Portal = () => {
         } else if (role === 'staff' || role === 'kitchen') {
           destination = '/barista';
         } else if (role === 'manager' || role === 'kiosk') {
-          destination = '/kiosk';
+          window.location.href = 'https://coffee-ordering-kiosk-248e1f.gitlab.io/';
+          return;
         } else {
           // customer or any other role → D2C storefront
           destination = '/store';
@@ -48,12 +49,12 @@ const Portal = () => {
       <div className="portal-card glass">
         <h1 className="portal-title">{t('portal.title', 'Login')}</h1>
         <p className="portal-subtitle">{t('portal.subtitle', 'Vasify Coffee Ordering System')}</p>
-        
+
         <form className="portal-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>{t('portal.emailLabel', 'Email Address')}</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -61,8 +62,8 @@ const Portal = () => {
           </div>
           <div className="form-group">
             <label>{t('portal.passwordLabel', 'Password')}</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -105,12 +106,12 @@ const Portal = () => {
             {t('portal.autofillHint', '*Click a row to autofill credentials.')}
           </p>
         </div>
-        
+
         {/* Added shortcut to D2C for easy access */}
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <button 
-            type="button" 
-            className="back-btn" 
+          <button
+            type="button"
+            className="back-btn"
             style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', textDecoration: 'underline' }}
             onClick={() => navigate('/store')}
           >

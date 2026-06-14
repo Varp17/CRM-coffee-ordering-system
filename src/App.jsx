@@ -69,13 +69,13 @@ import Categories from './pages/admin/Categories/Categories';
 import OrderQueue from './pages/barista/OrderQueue/OrderQueue';
 
 // Existing Kiosk Pages
-import KioskHome from './pages/kiosk/Home/Home';
-import KioskCatalog from './pages/kiosk/Catalog/Catalog';
-import KioskLogin from './pages/kiosk/Login/Login';
-import KioskQrOrder from './pages/kiosk/QrOrder/QrOrder';
-import KioskCustomDrink from './pages/kiosk/CustomDrink/CustomDrink';
+// import KioskHome from './pages/kiosk/Home/Home';
+// import KioskCatalog from './pages/kiosk/Catalog/Catalog';
+// import KioskLogin from './pages/kiosk/Login/Login';
+// import KioskQrOrder from './pages/kiosk/QrOrder/QrOrder';
+// import KioskCustomDrink from './pages/kiosk/CustomDrink/CustomDrink';
 import DrinkBuilder from './features/customizer/components/DrinkBuilder';
-import KioskCheckout from './pages/kiosk/Checkout/Checkout';
+// import KioskCheckout from './pages/kiosk/Checkout/Checkout';
 
 // Simulated Real-Time WebSocket Hook
 import { useWebSocket } from './hooks/useWebSocket';
@@ -85,7 +85,7 @@ import ActivePrep from './pages/barista/ActivePrep/ActivePrep';
 import CompletedOrders from './pages/barista/CompletedOrders/CompletedOrders';
 import DelayedOrders from './pages/barista/DelayedOrders/DelayedOrders';
 import Performance from './pages/barista/Performance/Performance';
-import TokenConfirmation from './pages/kiosk/TokenConfirmation/TokenConfirmation';
+// import TokenConfirmation from './pages/kiosk/TokenConfirmation/TokenConfirmation';
 
 // Portal (unified login hub)
 import Portal from './pages/Portal/Portal';
@@ -96,6 +96,13 @@ import { useKioskStore } from './store/useKioskStore';
 import { useOrderStore } from './store/useOrderStore';
 import { useAuthStore } from './store/useAuthStore';
 import { useCartStore } from './store/useCartStore';
+
+function KioskRedirect() {
+  useEffect(() => {
+    window.location.href = 'https://coffee-ordering-kiosk-248e1f.gitlab.io/';
+  }, []);
+  return null;
+}
 
 function App() {
   const navigate = useNavigate();
@@ -125,11 +132,11 @@ function App() {
 
   const kioskSubtotal = kioskCart.reduce((sum, item) => sum + (item.price || item.totalPrice || 0), 0);
 
-   const handleKioskComplete = async () => {
-     // Generate pickup token and estimates via kiosk store
-     const { tokenNum, order } = await completeKioskOrder();
-     navigate('/kiosk/token', { state: { order } });
-   };
+  const handleKioskComplete = async () => {
+    // Generate pickup token and estimates via kiosk store
+    const { tokenNum, order } = await completeKioskOrder();
+    navigate('/kiosk/token', { state: { order } });
+  };
 
   return (
     <ConfirmationProvider>
@@ -146,8 +153,8 @@ function App() {
           <Route path="shop/:id" element={<ProductDetail />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="cart" element={<Cart onProceedToCheckout={() => {}} />} />
-          <Route path="checkout" element={<Checkout onBackToCart={() => {}} />} />
+          <Route path="cart" element={<Cart onProceedToCheckout={() => { }} />} />
+          <Route path="checkout" element={<Checkout onBackToCart={() => { }} />} />
           <Route path="profile" element={<Profile />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="subscriptions" element={<Subscription />} />
@@ -238,6 +245,8 @@ function App() {
         </Route>
 
         {/* ── 4. Self-Ordering Kiosk Terminal ── */}
+        <Route path="/kiosk" element={<KioskRedirect />} />
+        {/*
         <Route path="/kiosk" element={<KioskLayout />}>
           <Route index element={
             <KioskHome
@@ -286,6 +295,7 @@ function App() {
           <Route path="qr" element={<KioskQrOrder onBack={() => navigate('/kiosk')} />} />
           <Route path="token" element={<TokenConfirmation />} />
         </Route>
+        */}
 
         {/* ── Catch-all / Redirect to Portal ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
