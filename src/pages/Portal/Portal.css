@@ -1,54 +1,110 @@
 /* ==========================================================================
-   UNIFIED HUB PORTAL STYLE — Digital Coffee Platform
-   Professional, compact, legible design system aligned with Admin panel
+   UNIFIED HUB PORTAL STYLE — Coffee System
+   Premium Coffee Shop Aesthetics: Espresso, Cream & Warm Caramel Palette
    ========================================================================== */
 
 .portal-page {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #FAFAFA;
-  color: #111827;
+  background: radial-gradient(circle at 10% 20%, #FAF6F0 0%, #F0E8DB 90%);
+  color: #2C1A0E;
   padding: 24px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+/* Decorative ambient background glow behind the card */
+.portal-card-glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(200, 133, 62, 0.1) 0%, rgba(200, 133, 62, 0) 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .portal-card {
+  position: relative;
   width: 100%;
-  max-width: 420px;
-  padding: 32px;
-  background-color: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
+  max-width: 440px;
+  padding: 40px 32px 32px 32px;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #E2D4C4;
+  border-radius: 16px;
+  box-shadow: 
+    0 10px 25px -5px rgba(44, 26, 14, 0.1),
+    0 8px 16px -6px rgba(44, 26, 14, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   text-align: center;
   box-sizing: border-box;
+  z-index: 1;
 }
 
-.portal-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 6px;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-.portal-subtitle {
-  color: #6B7280;
-  font-size: 0.875rem;
+/* Header badge - Info Blue Style */
+.portal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  padding: 6px 14px;
+  border-radius: 20px;
   margin-bottom: 24px;
-  font-weight: 400;
 }
 
+.portal-badge .badge-icon {
+  font-size: 12px;
+}
+
+.portal-badge .badge-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #2563EB;
+  letter-spacing: 0.01em;
+}
+
+/* Text Logo - Coffee System */
+.portal-logo-container {
+  margin-bottom: 28px;
+}
+
+.portal-brand-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #2C1A0E; /* Deep Espresso */
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.portal-brand-title .brand-accent {
+  color: #C8853E; /* Warm Caramel Accent */
+  position: relative;
+}
+
+.portal-brand-subtitle {
+  color: #7A6050;
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Form Styles */
 .portal-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 18px;
+  margin-bottom: 16px;
 }
 
-/* Compact form group to eliminate massive browser default gaps */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -56,110 +112,321 @@
   text-align: left;
 }
 
-.form-group label {
+.form-label {
   font-size: 12px;
-  font-weight: 600;
-  color: #374151;
+  font-weight: 700;
+  color: #4A2E1A;
+  letter-spacing: 0.02em;
 }
 
-.portal-form input {
+.portal-input {
   background: #FFFFFF;
-  border: 1px solid #D1D5DB;
-  padding: 10px 14px;
+  border: 1px solid #D4C4B0;
+  padding: 12px 14px;
   border-radius: 8px;
-  color: #111827;
+  color: #2C1A0E;
   font-size: 14px;
-  font-weight: 400;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  font-weight: 500;
+  transition: all 0.2s ease;
   width: 100%;
   box-sizing: border-box;
-  height: 42px;
+  height: 44px;
 }
 
-.portal-form input:focus {
+.portal-input::placeholder {
+  color: #B8A090;
+}
+
+.portal-input:focus {
   outline: none;
   border-color: #C8853E;
-  box-shadow: 0 0 0 3px rgba(200, 133, 62, 0.15);
+  box-shadow: 0 0 0 4px rgba(200, 133, 62, 0.15);
+  background-color: #FFFFFF;
 }
 
+/* Access Button with micro-animations */
 .portal-login-btn {
-  background-color: #16A34A; /* Emerald green theme action */
-  color: white;
+  background-color: #2C1A0E; /* Deep Espresso brand primary */
+  color: #FFFFFF;
   border: none;
-  padding: 0 16px;
-  height: 42px;
+  padding: 0 24px;
+  height: 46px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  margin-top: 4px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   width: 100%;
+  box-shadow: 0 4px 12px rgba(44, 26, 14, 0.12);
 }
 
 .portal-login-btn:hover {
-  background-color: #15803d;
+  background-color: #4A2E1A;
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(44, 26, 14, 0.18);
 }
 
 .portal-login-btn:active {
-  transform: translateY(0);
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(44, 26, 14, 0.12);
 }
 
-/* Credentials Table - Fully Structured System Grid */
-.credentials-table-container {
-  background: #F9FAFB;
-  padding: 16px;
+.portal-login-btn:disabled {
+  background-color: #D4C4B0;
+  color: #FAF6F0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.portal-login-btn:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+/* Spinner for Loading State */
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #FFFFFF;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disclaimer text */
+.portal-disclaimer {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.4;
+  margin: 16px 0 8px 0;
+  font-weight: 500;
+}
+
+/* Partner Branding */
+.portal-partner-branding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 20px 0;
+}
+
+.partner-circle {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #0d9488;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.partner-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background-color: #0d9488;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.partner-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0d9488;
+  letter-spacing: 0.01em;
+}
+
+/* Collapsible Login Credentials Section */
+.login-credentials-drawer {
+  border-top: 1px solid #FAF6F0;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.credentials-toggle-btn {
+  background: transparent;
+  border: 1px dashed #C8853E;
+  color: #A0692A;
+  padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid #E5E7EB;
-  margin-bottom: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: auto;
+  margin: 0 auto;
+}
+
+.credentials-toggle-btn:hover {
+  background-color: rgba(200, 133, 62, 0.06);
+  border-color: #A0692A;
+}
+
+.credentials-toggle-btn.active {
+  background-color: #E5D9CA;
+  border-style: solid;
+  color: #2C1A0E;
+}
+
+/* Smooth expansion drawer transition */
+.credentials-table-wrapper {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+.credentials-table-wrapper.expanded {
+  max-height: 280px;
+  opacity: 1;
+  margin-top: 16px;
+}
+
+.credentials-table-container {
+  background: #FAF6F0;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #E2D4C4;
+  text-align: left;
 }
 
 .credentials-table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11px;
 }
 
 .credentials-table th,
 .credentials-table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid #E5E7EB;
+  padding: 6px 8px;
+  border-bottom: 1px solid #E2D4C4;
 }
 
 .credentials-table th {
-  font-weight: 600;
-  background-color: #F3F4F6;
-  color: #374151;
-  font-size: 11px;
+  font-weight: 700;
+  color: #6B4C35;
+  background-color: #FAF6F0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #E2D4C4;
 }
 
 .credentials-table tbody tr {
   cursor: pointer;
   background-color: #FFFFFF;
-  transition: background var(--transition-fast);
+  transition: all 0.15s ease;
 }
 
 .credentials-table tbody tr:hover {
-  background-color: #F3F4F6;
+  background-color: #FAF6F0;
 }
 
-.back-btn {
+.credentials-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.credentials-table code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.role-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tag-admin {
+  background-color: #E5D9CA;
+  color: #2C1A0E;
+}
+
+.tag-barista {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.tag-kiosk {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.autofill-hint {
+  text-align: center;
+  font-size: 10px;
+  color: #9B8070;
+  margin: 10px 0 0 0;
+  font-style: italic;
+}
+
+/* Secondary D2C Navigation shortcut */
+.d2c-shortcut-container {
+  margin-top: 24px;
+  border-top: 1px solid #E2D4C4;
+  padding-top: 16px;
+}
+
+.back-btn-d2c {
   background: none;
   border: none;
   color: #C8853E;
   cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 13px;
-  transition: color var(--transition-fast);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
 }
 
-.back-btn:hover {
+.back-btn-d2c:hover {
   color: #A0692A;
   text-decoration: underline;
 }
+
+.d2c-arrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.back-btn-d2c:hover .d2c-arrow {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+/* Mobile responsive constraints from SPEC.md */
+@media (max-width: 480px) {
+  .portal-card {
+    padding: 32px 20px 24px 20px;
+    border-radius: 12px;
+  }
+  
+  .portal-brand-title {
+    font-size: 1.8rem;
+  }
+}
+
