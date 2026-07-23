@@ -73,49 +73,34 @@
   text-transform: uppercase;
 }
 
-/* Website Logo Mark & Wordmark */
+/* Official Kiosk Website Chilld Logo & Wordmark */
 .portal-logo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .portal-brand-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
 }
 
-.logo-icon-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #E6F4FF;
-  border: 1px solid rgba(0, 122, 255, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-text-chilld {
-  font-family: 'Author', 'Inter', sans-serif;
-  font-size: 32px;
-  font-weight: 700;
-  color: #007AFF;
-  letter-spacing: -0.02em;
-  line-height: 1;
+.kiosk-chilld-logo-svg {
+  height: 48px;
+  width: auto;
+  max-width: 170px;
 }
 
 .logo-text-coffee {
   font-family: 'Author', 'Inter', sans-serif;
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   color: #1F2A44;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 0px;
   margin-bottom: 4px;
 }
 
