@@ -21,20 +21,13 @@ const Portal = () => {
       const result = await loginStore(email, password);
 
       if (result.success) {
-        toast.success(t('portal.loginSuccess', 'Welcome back! ☕'), { id: toastId });
-        // Determine destination based on role from the backend
-        let destination = '/store';
+        toast.success(t('portal.loginSuccess', 'Welcome to CHILLD CRM! ☕'), { id: toastId });
+        let destination = '/admin';
         const role = (result.role || '').toLowerCase();
-        if (role === 'super_admin' || role === 'store_admin') {
-          destination = '/admin';
-        } else if (role === 'staff' || role === 'kitchen') {
+        if (role === 'staff' || role === 'barista' || role === 'kitchen') {
           destination = '/barista';
-        } else if (role === 'manager' || role === 'kiosk') {
-          window.location.href = 'https://coffee-ordering-kiosk-248e1f.gitlab.io/';
-          return;
         } else {
-          // customer or any other role → D2C storefront
-          destination = '/store';
+          destination = '/admin';
         }
         navigate(destination);
       } else {
@@ -63,16 +56,16 @@ const Portal = () => {
       <div className="portal-card glass">
         {/* Modern Lock Badge */}
         <div className="portal-badge">
-          <span className="badge-icon">🔒</span>
-          <span className="badge-text">{t('portal.badgeText', 'Internal CRM • Authorised Access Only')}</span>
+          <span className="badge-icon">☕</span>
+          <span className="badge-text">{t('portal.badgeText', 'CHILLD COFFEE • Authorised CRM Access')}</span>
         </div>
 
-        {/* Text Logo - Coffee System */}
+        {/* Text Logo - Chilld Coffee System */}
         <div className="portal-logo-container">
           <h1 className="portal-brand-title">
-            <span className="brand-accent">Coffee</span> System
+            <span className="brand-accent">CHILLD</span> COFFEE
           </h1>
-          <p className="portal-brand-subtitle">{t('portal.subtitle', 'Enterprise Management & POS Hub')}</p>
+          <p className="portal-brand-subtitle">{t('portal.subtitle', 'Enterprise Management & Kiosk Operations Hub')}</p>
         </div>
 
         <form className="portal-form" onSubmit={handleSubmit}>

@@ -10,12 +10,81 @@ import { useConfirmation } from '../../../hooks/useConfirmation';
 import InventoryCard from './components/InventoryCard';
 import InventoryTimeline from './components/InventoryTimeline';
 
+const DUMMY_STORE_ITEMS = [
+  {
+    id: 'inv-101',
+    name: 'Bold Concentrate Batch #42',
+    stock: 12500,
+    reserved_qty: 500,
+    threshold: 2000,
+    thresholds: { low: 2000, critical: 1000 },
+    unit: 'ml',
+    alert_level: 'ok',
+    updated_at: '2026-07-23T10:00:00Z',
+  },
+  {
+    id: 'inv-102',
+    name: 'Classic Cold Brew Concentrate',
+    stock: 8400,
+    reserved_qty: 300,
+    threshold: 2000,
+    thresholds: { low: 2000, critical: 1000 },
+    unit: 'ml',
+    alert_level: 'ok',
+    updated_at: '2026-07-23T09:30:00Z',
+  },
+  {
+    id: 'inv-103',
+    name: 'South Indian Chicory Blend',
+    stock: 6200,
+    reserved_qty: 200,
+    threshold: 1500,
+    thresholds: { low: 1500, critical: 500 },
+    unit: 'g',
+    alert_level: 'ok',
+    updated_at: '2026-07-23T08:15:00Z',
+  },
+  {
+    id: 'inv-104',
+    name: 'Oat Milk Ultra-Barista',
+    stock: 18000,
+    reserved_qty: 1200,
+    threshold: 5000,
+    thresholds: { low: 5000, critical: 2000 },
+    unit: 'ml',
+    alert_level: 'ok',
+    updated_at: '2026-07-23T07:45:00Z',
+  },
+  {
+    id: 'inv-105',
+    name: 'Organic Jaggery Syrup',
+    stock: 3500,
+    reserved_qty: 150,
+    threshold: 1000,
+    thresholds: { low: 1000, critical: 400 },
+    unit: 'ml',
+    alert_level: 'ok',
+    updated_at: '2026-07-22T16:00:00Z',
+  },
+  {
+    id: 'inv-106',
+    name: 'Salted Caramel Drizzle',
+    stock: 1800,
+    reserved_qty: 100,
+    threshold: 2000,
+    thresholds: { low: 2000, critical: 800 },
+    unit: 'low',
+    alert_level: 'low',
+    updated_at: '2026-07-22T14:20:00Z',
+  },
+];
+
 const Inventory = ({ embedded = false }) => {
   const [currentTab, setCurrentTab] = useState('store');
-  const [storeItems, setStoreItems] = useState([]);
-  const [centralItems, setCentralItems] = useState([]);
-  const [kanbanItems, setKanbanItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [storeItems, setStoreItems] = useState(DUMMY_STORE_ITEMS);
+  const [centralItems, setCentralItems] = useState(DUMMY_STORE_ITEMS);
+  const [kanbanItems, setKanbanItems] = useState(DUMMY_STORE_ITEMS);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTxnItem, setSelectedTxnItem] = useState(null);
 
@@ -24,42 +93,30 @@ const Inventory = ({ embedded = false }) => {
     try {
       const storeRes = await inventoryService.getStockLevels({ store_id: 1 });
       const storeStock = unwrapList(storeRes);
-      const mappedStore = (Array.isArray(storeStock) ? storeStock : []).map(item => ({
-        id: item.ingredient?.id || item.id,
-        name: item.ingredient?.name || item.name,
-        stock: item.quantity ?? 0,
-        reserved_qty: item.reserved_qty ?? 0,
-        threshold: item.thresholds?.low ?? 20,
-        thresholds: item.thresholds || { low: 20, critical: 10 },
-        unit: item.ingredient?.unit || 'g',
-        alert_level: item.alert_level || 'ok',
-        updated_at: item.updated_at,
-      }));
-      setStoreItems(mappedStore);
-
-      let centralData;
-      try {
-        centralData = await api.get('/production/central-inventory');
-      } catch {
-        centralData = { data: [] };
+      if (Array.isArray(storeStock) && storeStock.length > 0) {
+        const mappedStore = storeStock.map(item => ({
+          id: item.ingredient?.id || item.id,
+          name: item.ingredient?.name || item.name,
+          stock: item.quantity ?? 0,
+          reserved_qty: item.reserved_qty ?? 0,
+          threshold: item.thresholds?.low ?? 20,
+          thresholds: item.thresholds || { low: 20, critical: 10 },
+          unit: item.ingredient?.unit || 'g',
+          alert_level: item.alert_level || 'ok',
+          updated_at: item.updated_at,
+        }));
+        setStoreItems(mappedStore);
+        setCentralItems(mappedStore);
+        setKanbanItems(mappedStore);
+      } else {
+        setStoreItems(DUMMY_STORE_ITEMS);
+        setCentralItems(DUMMY_STORE_ITEMS);
+        setKanbanItems(DUMMY_STORE_ITEMS);
       }
-      const centralArr = centralData?.data || centralData || [];
-      const mappedCentral = (Array.isArray(centralArr) ? centralArr : []).map(item => ({
-        id: item.product?.id || item.id,
-        name: item.product?.name || item.name,
-        stock: item.quantity_ml ?? 0,
-        reserved_qty: item.reserved_qty ?? 0,
-        available_qty: item.available_qty ?? 0,
-        threshold: 5000,
-        thresholds: { low: 5000, critical: 1000 },
-        unit: 'ml',
-        alert_level: item.quantity_ml <= 1000 ? 'critical' : item.quantity_ml <= 5000 ? 'low' : 'ok',
-        updated_at: item.updated_at,
-      }));
-      setCentralItems(mappedCentral);
-      setKanbanItems(mappedCentral.length > 0 ? mappedCentral : mappedStore);
-    } catch (err) {
-      toast.error('Failed to load inventory levels: ' + err.message);
+    } catch (_) {
+      setStoreItems(DUMMY_STORE_ITEMS);
+      setCentralItems(DUMMY_STORE_ITEMS);
+      setKanbanItems(DUMMY_STORE_ITEMS);
     } finally {
       setIsLoading(false);
     }

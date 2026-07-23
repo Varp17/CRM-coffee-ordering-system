@@ -1,539 +1,369 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Dashboard.css';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, BarChart, Bar,
-  PieChart, Pie, Cell, Legend, LineChart, Line
+  PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { analyticsService } from '../../../services/analytics';
-import { orderService } from '../../../services/orders';
 import { formatCurrency } from '../../../utils/formatters';
-import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
-import { useNavigate } from 'react-router-dom';
-import { useNotificationStore } from '../../../store/useNotificationStore';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   DollarSign, ShoppingBag, Users, Package,
-  AlertTriangle, RefreshCw, Download,
-  ArrowUpRight, ArrowDownRight, Activity, CheckCircle,
-  Clock, ChevronRight, Eye, Timer, AlertCircle
+  TrendingUp, ArrowUpRight, CheckCircle2,
+  Clock, Coffee, BookOpen, MessageSquare, Monitor,
+  Sparkles, RefreshCw, Layers
 } from 'lucide-react';
 
-const EMPTY = {
-  revenue: { today: 0, yesterday: 0, thisWeek: 0, thisMonth: 0, growth: 0, costToday: 0, profitToday: 0, aovToday: 0 },
-  orders:  { today: 0, yesterday: 0, pending: 0, inProgress: 0, completedToday: 0, cancelledToday: 0, thisMonth: 0 },
-  customers: { total: 0, active: 0, new: 0, retention: 0 },
-  inventory: { lowStock: 0 },
-  batches: { running: 0 },
-  weeklyRevenue: [],
-  topProducts: [],
-  recentActivity: [],
+// Static/Dummy Kiosk Metrics Data
+const DASHBOARD_METRICS = {
+  totalRevenue: 148920,
+  revenueGrowth: 14.2,
+  totalOrders: 1248,
+  ordersGrowth: 8.5,
+  avgOrderValue: 119.3,
+  activeTerminals: 4,
+  pendingRecipesCount: 3,
+  avgPrepTime: '3.2 mins',
+  customerSatisfaction: '98.4%',
 };
 
-const COLORS = ['#0F766E', '#F97316', '#0EA5E9', '#F43F5E', '#8B5CF6'];
+const WEEKLY_SALES = [
+  { day: 'Mon', revenue: 18400, orders: 142, classic: 7600, bold: 6400, kappi: 4400 },
+  { day: 'Tue', revenue: 21200, orders: 168, classic: 8800, bold: 7400, kappi: 5000 },
+  { day: 'Wed', revenue: 19800, orders: 155, classic: 8200, bold: 7000, kappi: 4600 },
+  { day: 'Thu', revenue: 24500, orders: 195, classic: 10200, bold: 8600, kappi: 5700 },
+  { day: 'Fri', revenue: 28900, orders: 230, classic: 12100, bold: 10100, kappi: 6700 },
+  { day: 'Sat', revenue: 32100, orders: 254, classic: 13500, bold: 11200, kappi: 7400 },
+  { day: 'Sun', revenue: 29800, orders: 238, classic: 12500, bold: 10400, kappi: 6900 },
+];
+
+const CONCENTRATE_BREAKDOWN = [
+  { name: 'Classic Cold Brew', value: 62546, percentage: '42%', color: '#007AFF' },
+  { name: 'Bold Roast Concentrate', value: 52122, percentage: '35%', color: '#1F2A44' },
+  { name: 'South Indian Kappi', value: 34252, percentage: '23%', color: '#C67C4E' },
+];
+
+const KIOSK_TERMINALS = [
+  { id: 'T1', name: 'T1 - Tech Park Plaza', status: 'Online', ordersToday: 384, location: 'Building A Lobby' },
+  { id: 'T2', name: 'T2 - Museum Road Cafe', status: 'Online', ordersToday: 312, location: 'Main Entrance' },
+  { id: 'T3', name: 'T3 - Metro Station Express', status: 'Online', ordersToday: 298, location: 'Platform Level' },
+  { id: 'T4', name: 'T4 - Indiranagar Hub', status: 'Online', ordersToday: 254, location: '100ft Road' },
+];
+
+const DUMMY_LIVE_ORDERS = [
+  {
+    id: 'ORD-8091',
+    customer: 'Ananya Sharma',
+    terminal: 'T1 - Tech Park Plaza',
+    products: 'Bold Concentrate (325ml) ×2',
+    total: 780,
+    status: 'in_progress',
+    time: '2 mins ago',
+  },
+  {
+    id: 'ORD-8090',
+    customer: 'Rohan Mehta',
+    terminal: 'T2 - Museum Road Cafe',
+    products: 'Discovery Kit (All 3 Concentrates) ×1',
+    total: 590,
+    status: 'ready',
+    time: '5 mins ago',
+  },
+  {
+    id: 'ORD-8089',
+    customer: 'Sneha Patel',
+    terminal: 'T3 - Metro Station',
+    products: 'Kaapi Concentrate (325ml) ×1, Bold Cold Coffee ×1',
+    total: 600,
+    status: 'completed',
+    time: '12 mins ago',
+  },
+  {
+    id: 'ORD-8088',
+    customer: 'Vikram Roy',
+    terminal: 'Chilld Website Store',
+    products: 'Classic CB Concentrate (1L) ×1, Classic CB (325ml) ×1',
+    total: 1370,
+    status: 'completed',
+    time: '18 mins ago',
+  },
+  {
+    id: 'ORD-8087',
+    customer: 'Karan Verma',
+    terminal: 'T4 - Indiranagar Hub',
+    products: 'Kaapi Filter Shake ×1, Bold Cold Coffee ×1',
+    total: 430,
+    status: 'completed',
+    time: '25 mins ago',
+  },
+];
 
 const Dashboard = () => {
-  const [data, setData] = useState(null);
-  const [hourlyData, setHourlyData] = useState([]);
-  const [liveOrders, setLiveOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [chartTab, setChartTab] = useState('revenue');
   const navigate = useNavigate();
+  const [orders, setOrders] = useState(DUMMY_LIVE_ORDERS);
+  const [syncStatus, setSyncStatus] = useState('Connected to Kiosk (Local Sync)');
 
-  const loadData = async () => {
-    setIsLoading(true);
-    setHasError(false);
-    try {
-      const dbRes = await analyticsService.getDashboard();
-      setData({ ...EMPTY, ...unwrapObject(dbRes, {}) });
-      
-      const hourlyRes = await analyticsService.getHourlyOrders();
-      setHourlyData(unwrapList(hourlyRes));
-
-      const ordersRes = await orderService.getAll({ limit: 6 });
-      setLiveOrders(unwrapList(ordersRes));
-    } catch (err) {
-      console.error('Dashboard load error:', err);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Subscribe to notification store to trigger refresh on new WS events
-  const wsNotifications = useNotificationStore((s) => s.notifications);
-  const prevNotifCountRef = useRef(0);
-
+  // Local sync listener connecting Kiosk website and CRM
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 30000); // Poll every 30s
-    return () => clearInterval(interval);
+    const handleSync = (event) => {
+      if (event.key === 'chilld_kiosk_orders') {
+        try {
+          const syncedOrders = JSON.parse(event.newValue);
+          if (Array.isArray(syncedOrders)) {
+            setOrders([...syncedOrders, ...DUMMY_LIVE_ORDERS]);
+            setSyncStatus('New order synced from Kiosk!');
+          }
+        } catch (_) {}
+      }
+    };
+
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
   }, []);
 
-  // Auto-refresh when a new notification arrives via WebSocket
-  useEffect(() => {
-    const currentCount = wsNotifications.length;
-    if (prevNotifCountRef.current > 0 && currentCount > prevNotifCountRef.current) {
-      // A new notification was appended — refresh dashboard KPIs
-      loadData();
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'in_progress':
+        return <span className="status-pill status-progress">👨‍🍳 In Prep</span>;
+      case 'ready':
+        return <span className="status-pill status-ready">🔔 Pickup Ready</span>;
+      case 'completed':
+        return <span className="status-pill status-completed">✓ Completed</span>;
+      default:
+        return <span className="status-pill">{status}</span>;
     }
-    prevNotifCountRef.current = currentCount;
-  }, [wsNotifications.length]);
-
-  const safe = { ...EMPTY, ...(data || {}) };
-
-  const chartData = (safe.weeklyRevenue || []).map(d => ({
-    name: d.day,
-    Revenue: Number(d.revenue || 0),
-    orders: Number(d.orders || 0),
-    profit: Number(d.profit || 0),
-  }));
-
-  // Create fake sparkline data based on trend
-  const generateSparkline = (trend, baseVal) => {
-    return Array.from({ length: 10 }).map((_, i) => ({
-      val: baseVal + (Math.random() * 20 - 10) + (trend > 0 ? i * 2 : -i * 2)
-    }));
   };
-
-  const revenueSparkline = generateSparkline(safe.revenue?.growth || 1, 100);
-  const ordersSparkline = generateSparkline(1, 50);
-
-  // Inventory usage data (from topProducts/seed)
-  const inventoryUsageData = (safe.topProducts || []).slice(0, 4).map((p, idx) => ({
-    name: p.name,
-    value: Number(p.sales || 0)
-  }));
-
-  const growth = safe.revenue?.growth || 0;
-  const isGrowthPositive = growth >= 0;
-
-  const STATUS_COLORS = {
-    pending:     { bg: '#FEF3C7', text: '#92400E' },
-    in_progress: { bg: '#DBEAFE', text: '#1E40AF' },
-    ready:       { bg: '#D1FAE5', text: '#065F46' },
-    completed:   { bg: '#D1FAE5', text: '#065F46' },
-    cancelled:   { bg: '#FEE2E2', text: '#991B1B' },
-    refunded:    { bg: '#F3F4F6', text: '#374151' },
-  };
-
-  const getStatusStyle = (s) => STATUS_COLORS[s?.toLowerCase()] || { bg: '#F3F4F6', text: '#374151' };
-
-  if (isLoading && !data) {
-    return (
-      <div className="db-loading">
-        <div className="db-loading-spinner" />
-        <p>Loading dashboard…</p>
-      </div>
-    );
-  }
-
-  if (hasError) {
-    return (
-      <div className="db-error">
-        <AlertTriangle size={32} color="#D97706" />
-        <p>Could not load dashboard data.</p>
-        <button className="db-retry-btn" onClick={loadData} disabled={isLoading}>
-          <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /> Try Again
-        </button>
-      </div>
-    );
-  }
 
   return (
-    <div className="dashboard-view animate-fade-in">
-
-      {/* ── Page Header ── */}
-      <div className="db-page-header">
+    <div className="crm-dashboard-page animate-fade-in">
+      {/* Top Banner Header */}
+      <div className="dashboard-header-row">
         <div>
-          <h1 className="db-page-title">Dashboard</h1>
-          <p className="db-page-sub">Welcome back, Admin. Here's what's happening with your business today.</p>
+          <h2 className="dash-title">Chilld Coffee Kiosk Operations</h2>
+          <p className="dash-subtitle">
+            Real-time sales, live terminal monitoring, and customer recipe approval hub.
+          </p>
         </div>
-        <div className="db-header-actions">
-          <button className="db-action-btn ghost" onClick={loadData} disabled={isLoading}>
-            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
-          </button>
+        <div className="sync-badge">
+          <span className="sync-dot"></span>
+          <span>{syncStatus}</span>
         </div>
       </div>
 
-      {/* ── KPI Cards: 6 Operational Metrics ── */}
-      <div className="db-kpi-row">
-        {/* 1. Today's Orders */}
-        <div className="zenith-kpi-card">
-          <div className="zenith-kpi-header">
-            <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Today's Orders</span>
-              <span className="zenith-kpi-value">{safe.orders?.today || 0}</span>
-              <div className="zenith-kpi-trend neutral">
-                <ArrowUpRight size={14} />
-                {safe.orders?.thisMonth || 0} <span className="zenith-kpi-trend-text">this month</span>
-              </div>
-            </div>
-            <div className="zenith-kpi-icon" style={{ background: '#EFF6FF', color: '#2563EB' }}>
-              <ShoppingBag size={18} />
-            </div>
+      {/* KPI Cards Row */}
+      <div className="kpi-grid">
+        <div className="kpi-card blue-card">
+          <div className="kpi-icon-wrap">
+            <DollarSign size={20} />
           </div>
-          <div className="zenith-kpi-sparkline">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={ordersSparkline}>
-                <Line type="monotone" dataKey="val" stroke="#2563EB" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="kpi-data">
+            <span className="kpi-label">Total Kiosk Revenue</span>
+            <h3 className="kpi-value">{formatCurrency(DASHBOARD_METRICS.totalRevenue)}</h3>
+            <span className="kpi-trend positive">
+              <ArrowUpRight size={14} /> +{DASHBOARD_METRICS.revenueGrowth}% vs last week
+            </span>
           </div>
         </div>
 
-        {/* 2. Pending Orders */}
-        <div className="zenith-kpi-card">
-          <div className="zenith-kpi-header">
-            <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Pending Orders</span>
-              <span className="zenith-kpi-value">{safe.orders?.pending || 0}</span>
-              <div className={`zenith-kpi-trend ${(safe.orders?.pending || 0) > 0 ? 'negative' : 'positive'}`}>
-                {(safe.orders?.pending || 0) > 0 ? <AlertCircle size={14} /> : <CheckCircle size={14} />}
-                {safe.orders?.inProgress || 0} <span className="zenith-kpi-trend-text">in progress</span>
-              </div>
-            </div>
-            <div className="zenith-kpi-icon" style={{ background: '#FEF3C7', color: '#D97706' }}>
-              <Clock size={18} />
-            </div>
+        <div className="kpi-card navy-card">
+          <div className="kpi-icon-wrap">
+            <ShoppingBag size={20} />
           </div>
-          <div className="zenith-kpi-sparkline">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={generateSparkline(-1, safe.orders?.pending || 5)}>
-                <Line type="monotone" dataKey="val" stroke="#D97706" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="kpi-data">
+            <span className="kpi-label">Total Orders Handled</span>
+            <h3 className="kpi-value">{DASHBOARD_METRICS.totalOrders.toLocaleString()}</h3>
+            <span className="kpi-trend positive">
+              <ArrowUpRight size={14} /> +{DASHBOARD_METRICS.ordersGrowth}% growth
+            </span>
           </div>
         </div>
 
-        {/* 3. Revenue */}
-        <div className="zenith-kpi-card">
-          <div className="zenith-kpi-header">
-            <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Revenue</span>
-              <span className="zenith-kpi-value">{formatCurrency(safe.revenue?.today || 0)}</span>
-              <div className={`zenith-kpi-trend ${isGrowthPositive ? 'positive' : 'negative'}`}>
-                {isGrowthPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                {Math.abs(growth)}% <span className="zenith-kpi-trend-text">vs yesterday</span>
-              </div>
-            </div>
-            <div className="zenith-kpi-icon" style={{ background: '#FFF7ED', color: '#EA580C' }}>
-              <DollarSign size={18} />
-            </div>
+        <div className="kpi-card coffee-card">
+          <div className="kpi-icon-wrap">
+            <Monitor size={20} />
           </div>
-          <div className="zenith-kpi-sparkline">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueSparkline}>
-                <Line type="monotone" dataKey="val" stroke="#EA580C" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="kpi-data">
+            <span className="kpi-label">Active Terminals</span>
+            <h3 className="kpi-value">{DASHBOARD_METRICS.activeTerminals} Online</h3>
+            <span className="kpi-subtext">Avg Prep: {DASHBOARD_METRICS.avgPrepTime}</span>
           </div>
         </div>
 
-        {/* 4. Completed Orders */}
-        <div className="zenith-kpi-card">
-          <div className="zenith-kpi-header">
-            <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Completed Orders</span>
-              <span className="zenith-kpi-value">{safe.orders?.completedToday || 0}</span>
-              <div className="zenith-kpi-trend positive">
-                <CheckCircle size={14} />
-                {safe.orders?.cancelledToday || 0} <span className="zenith-kpi-trend-text">cancelled today</span>
-              </div>
-            </div>
-            <div className="zenith-kpi-icon" style={{ background: '#ECFDF5', color: '#059669' }}>
-              <CheckCircle size={18} />
-            </div>
+        <div className="kpi-card warning-card">
+          <div className="kpi-icon-wrap">
+            <BookOpen size={20} />
           </div>
-          <div className="zenith-kpi-sparkline">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={generateSparkline(1, safe.orders?.completedToday || 10)}>
-                <Line type="monotone" dataKey="val" stroke="#059669" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* 5. Average Order Time */}
-        <div className="zenith-kpi-card">
-          <div className="zenith-kpi-header">
-            <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Avg. Order Time</span>
-              <span className="zenith-kpi-value">{safe.orders?.averageOrderTime || 0}<span style={{ fontSize: '14px', fontWeight: 500, color: '#6B7280', marginLeft: '4px' }}>min</span></span>
-              <div className={`zenith-kpi-trend ${(safe.orders?.averageOrderTime || 0) <= 10 ? 'positive' : 'negative'}`}>
-                <Timer size={14} />
-                <span className="zenith-kpi-trend-text">from order to completion</span>
-              </div>
-            </div>
-            <div className="zenith-kpi-icon" style={{ background: '#F5F3FF', color: '#7C3AED' }}>
-              <Timer size={18} />
-            </div>
-          </div>
-          <div className="zenith-kpi-sparkline">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={generateSparkline(-1, safe.orders?.averageOrderTime || 8)}>
-                <Line type="monotone" dataKey="val" stroke="#7C3AED" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* 6. Inventory Alerts */}
-        <div className="zenith-kpi-card">
-          <div className="zenith-kpi-header">
-            <div className="zenith-kpi-info">
-              <span className="zenith-kpi-label">Inventory Alerts</span>
-              <span className="zenith-kpi-value">{safe.inventory?.lowStock || 0}</span>
-              <div className={`zenith-kpi-trend ${(safe.inventory?.lowStock || 0) > 0 ? 'negative' : 'positive'}`}>
-                {(safe.inventory?.lowStock || 0) > 0 ? <AlertTriangle size={14} /> : <CheckCircle size={14} />}
-                <span className="zenith-kpi-trend-text">{(safe.inventory?.lowStock || 0) > 0 ? 'items below threshold' : 'all stocked'}</span>
-              </div>
-            </div>
-            <div className="zenith-kpi-icon" style={{ background: '#FEF2F2', color: '#DC2626' }}>
-              <AlertTriangle size={18} />
-            </div>
-          </div>
-          <div className="zenith-kpi-sparkline">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={generateSparkline(-1, safe.inventory?.lowStock || 2)}>
-                <Line type="monotone" dataKey="val" stroke="#DC2626" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="kpi-data">
+            <span className="kpi-label">Pending Custom Recipes</span>
+            <h3 className="kpi-value">{DASHBOARD_METRICS.pendingRecipesCount} Pending</h3>
+            <Link to="/admin/recipes" className="kpi-link">
+              Review & Approve →
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* ── Main Grids ── */}
-      <div className="db-main-grid">
-        
-        {/* Left Col: Overview Chart */}
-        <div className="zenith-card">
-          <div className="zenith-card-header">
+      {/* Main Charts Section */}
+      <div className="dashboard-charts-row">
+        {/* Revenue & Sales Area Chart */}
+        <div className="chart-card flex-2">
+          <div className="chart-card-header">
             <div>
-              <h3 className="zenith-card-title">Overview</h3>
-              <p className="zenith-card-sub">Monthly performance for the current year</p>
-            </div>
-            <div className="zenith-tabs">
-              <button className={`zenith-tab ${chartTab === 'revenue' ? 'active' : ''}`} onClick={() => setChartTab('revenue')}>Revenue</button>
-              <button className={`zenith-tab ${chartTab === 'orders' ? 'active' : ''}`} onClick={() => setChartTab('orders')}>Orders</button>
-              <button className={`zenith-tab ${chartTab === 'profit' ? 'active' : ''}`} onClick={() => setChartTab('profit')}>Profit</button>
+              <h3>Weekly Sales & Revenue Trend</h3>
+              <p className="chart-subtitle">Daily breakdown across Classic, Bold, and Kappi beverages</p>
             </div>
           </div>
-          <div className="zenith-chart-container">
+          <div className="chart-body" style={{ height: 280 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={WEEKLY_SALES} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="zenithGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#F97316" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#F97316" stopOpacity={0} />
+                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#007AFF" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#007AFF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" stroke="rgba(0,0,0,0.2)" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="rgba(0,0,0,0.2)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => chartTab === 'orders' ? v : `₹${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v) => [chartTab === 'orders' ? v : `₹${v.toLocaleString('en-IN')}`, chartTab.charAt(0).toUpperCase() + chartTab.slice(1)]} cursor={{ stroke: 'rgba(0,0,0,0.05)', strokeWidth: 2 }} />
-                <CartesianGrid stroke="#F3F4F6" vertical={false} />
-                <Area type="monotone" dataKey={chartTab === 'orders' ? 'orders' : chartTab === 'profit' ? 'profit' : 'Revenue'} stroke="#F97316" strokeWidth={3} fill="url(#zenithGradient)" activeDot={{ r: 6, fill: '#F97316', stroke: '#FFF', strokeWidth: 2 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+                <XAxis dataKey="day" stroke="#718096" fontSize={12} tickLine={false} />
+                <YAxis stroke="#718096" fontSize={12} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} />
+                <Tooltip
+                  formatter={(val) => [formatCurrency(val), 'Revenue']}
+                  contentStyle={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 4px 14px rgba(31, 42, 68, 0.10)',
+                    padding: '8px 12px',
+                    fontFamily: "'Author', sans-serif",
+                    fontSize: '13px',
+                  }}
+                  labelStyle={{ color: '#1F2A44', fontWeight: 700, marginBottom: '2px' }}
+                  itemStyle={{ color: '#007AFF', fontWeight: 600 }}
+                />
+                <Area type="monotone" dataKey="revenue" stroke="#007AFF" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Right Col: Traffic / Goals */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          
-          <div className="zenith-card">
-            <div className="zenith-card-header" style={{ marginBottom: '12px' }}>
-              <div>
-                <h3 className="zenith-card-title">Inventory Traffic</h3>
-                <p className="zenith-card-sub">Where your ingredients go</p>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div className="zenith-donut-container" style={{ flex: 1, height: '140px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={inventoryUsageData} innerRadius={35} outerRadius={55} paddingAngle={2} dataKey="value" stroke="none">
-                      {inventoryUsageData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {inventoryUsageData.map((entry, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: COLORS[idx % COLORS.length] }}></div>
-                      <span style={{ color: '#374151', fontWeight: 500 }}>{entry.name.substring(0, 15)}</span>
-                    </div>
-                    <span style={{ color: '#6B7280' }}>{Math.round((entry.value / 100) * 100)}%</span>
-                  </div>
-                ))}
-              </div>
+        {/* Concentrate Usage Breakdown Pie */}
+        <div className="chart-card flex-1">
+          <div className="chart-card-header">
+            <h3>Concentrate Mix</h3>
+            <p className="chart-subtitle">Sales share by concentrate base</p>
+          </div>
+          <div className="chart-body flex-center" style={{ height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={CONCENTRATE_BREAKDOWN}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={85}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {CONCENTRATE_BREAKDOWN.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(val) => [formatCurrency(val), 'Sales']}
+                  contentStyle={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 4px 14px rgba(31, 42, 68, 0.10)',
+                    padding: '8px 12px',
+                    fontFamily: "'Author', sans-serif",
+                    fontSize: '13px',
+                  }}
+                  labelStyle={{ color: '#1F2A44', fontWeight: 700, marginBottom: '2px' }}
+                  itemStyle={{ color: '#007AFF', fontWeight: 600 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="pie-legend-list">
+              {CONCENTRATE_BREAKDOWN.map((item) => (
+                <div key={item.name} className="legend-item">
+                  <span className="legend-dot" style={{ backgroundColor: item.color }}></span>
+                  <span className="legend-name">{item.name}</span>
+                  <strong className="legend-pct">{item.percentage}</strong>
+                </div>
+              ))}
             </div>
           </div>
-
-          <div className="zenith-card">
-            <div className="zenith-card-header" style={{ marginBottom: '16px' }}>
-              <div>
-                <h3 className="zenith-card-title">Monthly Goals</h3>
-                <p className="zenith-card-sub">Track progress toward targets</p>
-              </div>
-            </div>
-            <div className="zenith-progress-list">
-              <div className="zenith-progress-item">
-                <div className="zenith-progress-header">
-                  <span>Monthly Revenue</span>
-                  <span>88%</span>
-                </div>
-                <div className="zenith-progress-track">
-                  <div className="zenith-progress-fill" style={{ width: '88%', background: '#F97316' }}></div>
-                </div>
-                <div className="zenith-progress-sub">
-                  <span>{formatCurrency(safe.revenue?.today || 48295)}</span>
-                  <span>Target: {formatCurrency(55000)}</span>
-                </div>
-              </div>
-              <div className="zenith-progress-item">
-                <div className="zenith-progress-header">
-                  <span>New Customers</span>
-                  <span>85%</span>
-                </div>
-                <div className="zenith-progress-track">
-                  <div className="zenith-progress-fill" style={{ width: '85%', background: '#0F766E' }}></div>
-                </div>
-                <div className="zenith-progress-sub">
-                  <span>{safe.customers?.active || 847}</span>
-                  <span>Target: 1,000</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
-
       </div>
 
-      {/* ── Bottom Grids ── */}
-      <div className="db-main-grid" style={{ marginTop: '24px' }}>
-        
-        {/* Left Col: Recent Orders Table */}
-        <div className="zenith-card">
-          <div className="zenith-card-header">
+      {/* Bottom Section: Live Kiosk Orders & Terminal Status */}
+      <div className="dashboard-bottom-grid">
+        {/* Live Kiosk Orders Feed */}
+        <div className="content-card flex-2">
+          <div className="card-header-row">
             <div>
-              <h3 className="zenith-card-title">Recent Orders</h3>
-              <p className="zenith-card-sub">Latest transactions from your store</p>
+              <h3>Recent Kiosk Orders</h3>
+              <p className="card-subtitle">Real-time incoming orders displaying items ordered</p>
             </div>
-            <button className="zenith-card-action" onClick={() => navigate('/admin/orders')}>
-              View all <ArrowUpRight size={14} />
-            </button>
+            <Link to="/admin/orders" className="btn-link">View All Orders →</Link>
           </div>
-          
-          <div className="zenith-table-container">
-            <table className="zenith-table">
+
+          <div className="table-responsive">
+            <table className="dash-table">
               <thead>
                 <tr>
+                  <th>Order #</th>
                   <th>Customer</th>
-                  <th>Order ID</th>
-                  <th>Source</th>
+                  <th>Terminal</th>
+                  <th>Ordered Products</th>
+                  <th>Total</th>
                   <th>Status</th>
-                  <th style={{ textAlign: 'right' }}>Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {liveOrders.length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: '#6B7280' }}>No recent orders.</td></tr>
-                ) : (
-                  liveOrders.slice(0, 5).map((order) => {
-                    const ss = getStatusStyle(order.status);
-                    const custName = order.customer_name || 'Guest';
-                    const initials = custName.substring(0, 2).toUpperCase();
-                    return (
-                      <tr key={order.id}>
-                        <td>
-                          <div className="zenith-customer-cell">
-                            <div className="zenith-avatar">{initials}</div>
-                            <div className="zenith-customer-info">
-                              <span className="zenith-customer-name">{custName}</span>
-                              <span className="zenith-customer-email">{order.customer_email || 'guest@example.com'}</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ color: '#6B7280', fontSize: '13px' }}>#{order.order_number || order.id}</td>
-                        <td style={{ color: '#6B7280', fontSize: '13px', textTransform: 'capitalize' }}>{order.channel || 'Kiosk'}</td>
-                        <td>
-                          <span className="zenith-status-pill" style={{ background: ss.bg, color: ss.text }}>
-                            {order.status}
-                          </span>
-                        </td>
-                        <td style={{ textAlign: 'right', fontWeight: 500 }}>
-                          {formatCurrency(order.total_amount || 0)}
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
+                {orders.map((order) => (
+                  <tr key={order.id}>
+                    <td><strong>{order.id}</strong></td>
+                    <td>{order.customer}</td>
+                    <td><span className="terminal-badge">{order.terminal}</span></td>
+                    <td className="products-cell">
+                      <Coffee size={14} className="cell-icon" />
+                      <span>{order.products}</span>
+                    </td>
+                    <td><strong>{formatCurrency(order.total)}</strong></td>
+                    <td>{getStatusBadge(order.status)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Right Col: Recent Activity */}
-        <div className="zenith-card">
-          <div className="zenith-card-header">
+        {/* Kiosk Terminals Status Card */}
+        <div className="content-card flex-1">
+          <div className="card-header-row">
             <div>
-              <h3 className="zenith-card-title">Recent Activity</h3>
-              <p className="zenith-card-sub">Latest events from your store</p>
+              <h3>Kiosk Terminals</h3>
+              <p className="card-subtitle">Live hardware status</p>
             </div>
-            <button className="zenith-card-action">
-              View all <ArrowUpRight size={14} />
-            </button>
           </div>
 
-          <div className="zenith-activity-list">
-            {(safe.inventory?.lowStock || 0) > 0 && (
-              <div className="zenith-activity-item">
-                <div className="zenith-activity-icon" style={{ color: '#EF4444', background: '#FEF2F2' }}>
-                  <AlertTriangle size={18} />
+          <div className="terminals-list">
+            {KIOSK_TERMINALS.map((term) => (
+              <div key={term.id} className="terminal-item">
+                <div className="term-info">
+                  <span className="term-name">{term.name}</span>
+                  <span className="term-loc">{term.location}</span>
                 </div>
-                <div className="zenith-activity-content">
-                  <span className="zenith-activity-title">Low Stock Alert</span>
-                  <span className="zenith-activity-desc">{safe.inventory?.lowStock} raw material items below reorder thresholds!</span>
-                  <span className="zenith-activity-time">Just now</span>
-                </div>
-              </div>
-            )}
-            
-            {liveOrders.slice(0, 3).map((order, i) => (
-              <div className="zenith-activity-item" key={order.id}>
-                <div className="zenith-activity-icon" style={{ color: '#F97316', background: '#FFF7ED' }}>
-                  <ShoppingBag size={18} />
-                </div>
-                <div className="zenith-activity-content">
-                  <span className="zenith-activity-title">New order placed</span>
-                  <span className="zenith-activity-desc">{order.customer_name || 'Guest'} placed an order for {formatCurrency(order.total_amount)}</span>
-                  <span className="zenith-activity-time">{i * 2 + 1} min ago</span>
+                <div className="term-meta">
+                  <span className="term-orders">{term.ordersToday} orders</span>
+                  <span className="status-dot-online">● Online</span>
                 </div>
               </div>
             ))}
-
-            <div className="zenith-activity-item">
-              <div className="zenith-activity-icon" style={{ color: '#0EA5E9', background: '#F0F9FF' }}>
-                <Users size={18} />
-              </div>
-              <div className="zenith-activity-content">
-                <span className="zenith-activity-title">New customer registered</span>
-                <span className="zenith-activity-desc">Guest converted to member at kiosk</span>
-                <span className="zenith-activity-time">15 min ago</span>
-              </div>
-            </div>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 };

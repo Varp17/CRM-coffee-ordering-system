@@ -26,8 +26,8 @@ const Layout = () => {
 
   return (
     <div className="admin-layout">
-      {/* Sidebar */}
-      <div className="sidebar">
+      {/* Sidebar [COMMENTED OUT] */}
+      {/* <div className="sidebar">
         <div className="sidebar-header">
           <h2>TOOF · Admin</h2>
         </div>
@@ -46,7 +46,7 @@ const Layout = () => {
           <p>Signed in as Admin</p>
           <button className="logout-btn">Sign Out</button>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="main-content">

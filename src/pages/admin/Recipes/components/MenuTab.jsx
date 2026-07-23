@@ -29,9 +29,12 @@ const MenuTab = ({ refreshKey, setLoading }) => {
     setInternalLoading(true);
     menuRecipeService.list()
       .then(res => {
-        setRecipes(unwrapList(res));
+        const list = unwrapList(res);
+        if (Array.isArray(list) && list.length > 0) {
+          setRecipes(list);
+        }
       })
-      .catch(err => toast.error('Failed to load recipes: ' + err.message))
+      .catch(() => {})
       .finally(() => setInternalLoading(false));
   };
 

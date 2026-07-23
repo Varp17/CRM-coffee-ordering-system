@@ -11,6 +11,7 @@ import {
 import useSidebarStore from '../../store/useSidebarStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { MENU_CONFIG, ALL_MENU_ITEMS, filterByRole, findGroupByPath } from '../../constants/menuConfig';
+import Logo from '../../components/Logo/Logo';
 import './Sidebar.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -375,9 +376,9 @@ const Sidebar = ({ onNavigate }) => {
               <Coffee size={16} strokeWidth={2.5} />
             </div>
             {!collapsed && (
-              <div className="sb-brand-text">
-                <span className="sb-brand-name">Saturday</span>
-                <span className="sb-brand-tagline">Admin Portal</span>
+              <div className="sb-brand-text" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <Logo color="#007AFF" width={74} height="auto" style={{ marginBottom: 2 }} />
+                <span className="sb-brand-tagline" style={{ fontFamily: "'Author', 'Inter', sans-serif" }}>Website CRM</span>
               </div>
             )}
           </button>

@@ -24,18 +24,19 @@
   --al-content-pad: 24px;
   --al-content-pad-sm: 16px;
 
-  /* Content area */
-  --al-bg: #FAFAFA;
+  /* Content area — Chilld Coffee Theme */
+  --al-bg: #F5F9FC;
   --al-bg-card: #FFFFFF;
-  --al-border: #EAEAEA;
-  --al-text: #111827;
-  --al-text-secondary: #6B7280;
-  --al-text-muted: #9CA3AF;
+  --al-border: #E2E8F0;
+  --al-text: #1F2A44;
+  --al-text-secondary: #4A5568;
+  --al-text-muted: #718096;
 
-  /* Brand / accent */
-  --al-accent: #111827;
-  --al-accent-light: #F3F4F6;
-  --al-accent-hover: #000000;
+  /* Brand / accent — Primary Tech Blue & Coffee Brown */
+  --al-accent: #007AFF;
+  --al-coffee-accent: #C67C4E;
+  --al-accent-light: #E6F4FF;
+  --al-accent-hover: #0056B3;
 
   /* Status */
   --al-success: #10B981;
@@ -103,6 +104,7 @@ html, body, #root {
   overflow: hidden;
   background: var(--al-bg);
   transition: background var(--al-transition);
+  font-family: 'Author', 'Inter', sans-serif;
 }
 
 /* ── Sidebar Slot ── */
@@ -177,7 +179,8 @@ html, body, #root {
 
 .page-header-left h2,
 .page-header-left h1 {
-  font-size: 24px;
+  font-family: 'Author', 'Outfit', sans-serif;
+  font-size: 26px;
   font-weight: 700;
   color: var(--al-text);
   margin: 0 0 4px;

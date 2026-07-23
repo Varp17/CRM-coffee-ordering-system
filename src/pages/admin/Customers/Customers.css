@@ -18,15 +18,16 @@
 }
 
 .cust-page-title {
-  font-size: 32px;
+  font-family: 'Author', 'Outfit', sans-serif;
+  font-size: 30px;
   font-weight: 700;
-  color: var(--c-espresso);
+  color: #1F2A44;
   margin: 0;
 }
 
 .cust-page-sub {
   font-size: 14px;
-  color: var(--c-text-secondary);
+  color: #4A5568;
   margin: 4px 0 0;
 }
 
@@ -42,8 +43,9 @@
   height: 40px;
   padding: 0 16px;
   border-radius: 12px;
+  font-family: 'Author', sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   border: none;
   transition: all 0.15s ease;
@@ -51,56 +53,58 @@
 }
 
 .cust-btn.ghost {
-  background: transparent;
-  border: 1px solid var(--c-cream-border);
-  color: var(--c-text-secondary);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #1F2A44;
 }
 
 .cust-btn.ghost:hover { 
-  background: var(--c-cream-dark); 
-  color: var(--c-espresso);
+  background: #F5F9FC; 
+  color: #007AFF;
 }
 
 .cust-btn.primary {
-  background: var(--c-espresso);
+  background: #007AFF;
   color: #FFF;
 }
 
 .cust-btn.primary:hover { 
-  background: var(--c-espresso-mid); 
+  background: #0056B3; 
 }
 
 /* ── KPI Strip ── */
 .cust-kpi-strip {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
 @media (max-width: 900px) { .cust-kpi-strip { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .cust-kpi-strip { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .cust-kpi-strip { grid-template-columns: 1fr; } }
 
 .cust-kpi-item {
   background: #FFFFFF;
-  border: 1px solid var(--c-cream-border);
+  border: 1px solid #E2E8F0;
   border-radius: 16px;
-  padding: 24px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  box-shadow: 0 2px 8px rgba(31, 42, 68, 0.04);
 }
 
 .cust-kpi-item strong {
-  font-size: 36px;
+  font-family: 'Author', 'Outfit', sans-serif;
+  font-size: 32px;
   font-weight: 700;
-  color: var(--c-espresso);
+  color: #1F2A44;
   line-height: 1.1;
 }
 
 .cust-kpi-item span {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--c-text-secondary);
+  font-size: 13px;
+  color: #718096;
+  font-weight: 600;
 }
 
 /* ── Toolbar ── */
@@ -188,9 +192,9 @@
 .cust-table th {
   padding: 16px 24px;
   text-align: left;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--c-text-secondary);
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2A44;
   border-bottom: 1px solid var(--c-cream-border);
   background: var(--c-cream-dark);
   white-space: nowrap;
@@ -198,8 +202,8 @@
 
 .cust-table td {
   padding: 16px 24px;
-  font-size: 14px;
-  color: var(--c-espresso);
+  font-size: 15px;
+  color: #1F2A44;
   border-bottom: 1px solid var(--c-cream-border);
 }
 

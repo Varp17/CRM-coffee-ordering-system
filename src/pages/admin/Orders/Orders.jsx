@@ -163,14 +163,17 @@ const Orders = () => {
       )
     },
     {
-      header: 'Product',
+      header: 'Ordered Products',
       accessor: 'items_summary',
       sortable: true,
-      render: (row) => (
-        <span style={{ fontSize: '0.85rem', color: '#374151' }}>
-          {(row.items_summary || '').split(', ').filter(Boolean)[0] || '—'}
-        </span>
-      )
+      render: (row) => {
+        const itemsText = row.items_summary || (row.items && row.items.map(i => `${i.name || i.title} ×${i.quantity || 1}`).join(', ')) || '—';
+        return (
+          <span style={{ fontSize: '0.85rem', color: '#1F2A44', fontWeight: '600' }}>
+            {itemsText}
+          </span>
+        );
+      }
     },
     {
       header: 'Status',

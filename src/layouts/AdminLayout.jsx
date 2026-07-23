@@ -89,7 +89,7 @@ const AdminLayout = () => {
       className={`al-root al-mode-${mode}`}
       data-sidebar={mode}
     >
-      {/* ── Sidebar (hidden on mobile, use drawer instead) ── */}
+      {/* ── Sidebar ── */}
       <div className="al-sidebar-slot">
         <Sidebar />
       </div>
@@ -107,7 +107,7 @@ const AdminLayout = () => {
         </main>
       </div>
 
-      {/* ── Mobile Drawer (portal-style overlay on mobile) ── */}
+      {/* ── Mobile Drawer ── */}
       <MobileDrawer />
     </div>
   );

@@ -123,8 +123,8 @@ const D2CLayout = () => {
               </Link>
             )}
 
-            {/* Mobile Hamburger */}
-            <button
+            {/* Mobile Hamburger [COMMENTED OUT] */}
+            {/* <button
               className="hamburger"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
@@ -132,13 +132,13 @@ const D2CLayout = () => {
               id="mobile-menu-toggle"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
 
-      {/* ─── Mobile Drawer ─── */}
-      <AnimatePresence>
+      {/* ─── Mobile Drawer [COMMENTED OUT] ─── */}
+      {/* <AnimatePresence>
         {mobileMenuOpen && (
           <>
             <motion.div
@@ -207,7 +207,7 @@ const D2CLayout = () => {
             </motion.aside>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       {/* ─── Page Content ─── */}
       <main className="d2c-main">

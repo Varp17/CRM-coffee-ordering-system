@@ -191,6 +191,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="products" element={<Menu />} />
           <Route path="menu" element={<Menu />} />
           <Route path="recipes" element={<Recipes />} />
           <Route path="compatibility-rules" element={<CompatibilityRules />} />

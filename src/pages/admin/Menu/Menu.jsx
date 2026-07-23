@@ -15,11 +15,28 @@ import Inventory from '../Inventory/Inventory';
 import { Search, Plus, MoreHorizontal, Download, Columns, SlidersHorizontal, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 
+import { PRODUCTS as KIOSK_PRODUCTS, CATEGORIES as KIOSK_CATEGORIES } from '../../../data/kioskProducts';
+
+const DUMMY_KIOSK_PRODUCTS = KIOSK_PRODUCTS.map((item) => ({
+  id: item.id,
+  name: item.name,
+  description: item.description || item.tagline,
+  base_price: item.basePrice || 390,
+  category_name: item.concentrateType || 'Concentrate',
+  product_type: 'beverage',
+  is_active: true,
+  is_available_kiosk: true,
+  image_url: item.image,
+  roast: item.roast || 'Medium Dark',
+  caffeine: item.caffeine || 'High',
+  rating: item.reviews?.rating || 4.8,
+}));
+
 const Menu = () => {
   const userRole = useAuthStore((state) => state.role);
   const [activeTab, setActiveTab] = useState('products');
-  const [productsList, setProductsList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [productsList, setProductsList] = useState(DUMMY_KIOSK_PRODUCTS);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [productStatusFilter, setProductStatusFilter] = useState('all');
@@ -50,21 +67,20 @@ const Menu = () => {
 
   const loadProductsAndCategories = async () => {
     setIsLoading(true);
-    const pPromise = productService.getAll().catch(err => {
-      console.error('PRODUCT ERROR:', err);
-      return null;
-    });
+    const pPromise = productService.getAll().catch(() => null);
     const cPromise = productService.getCategories().catch(() => null);
     const rPromise = menuRecipeService.list().catch(() => null);
     const ctPromise = api.get('/production/concentrate-types?limit=50').catch(() => null);
     const [pRes, cRes, rRes, ctRes] = await Promise.all([pPromise, cPromise, rPromise, ctPromise]);
     if (pRes) {
       const products = unwrapList(pRes);
-      console.log('PRODUCTS LOADED:', products.length);
-      console.log('PRODUCTS:', products);
-      setProductsList(products);
+      if (Array.isArray(products) && products.length > 0) {
+        setProductsList(products);
+      } else {
+        setProductsList(DUMMY_KIOSK_PRODUCTS);
+      }
     } else {
-      toast.error('Failed to load products');
+      setProductsList(DUMMY_KIOSK_PRODUCTS);
     }
     if (cRes) setCategoriesList(unwrapList(cRes));
     if (rRes) setRecipesList(unwrapList(rRes));
@@ -279,20 +295,6 @@ const Menu = () => {
           id="menu-tab-products"
         >
           Products
-        </button>
-        <button
-          className={`settings-tab ${activeTab === 'recipes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('recipes')}
-          id="menu-tab-recipes"
-        >
-          Recipe Builder
-        </button>
-        <button
-          className={`settings-tab ${activeTab === 'ingredients' ? 'active' : ''}`}
-          onClick={() => setActiveTab('ingredients')}
-          id="menu-tab-ingredients"
-        >
-          Ingredients
         </button>
         <button
           className={`settings-tab ${activeTab === 'stock' ? 'active' : ''}`}

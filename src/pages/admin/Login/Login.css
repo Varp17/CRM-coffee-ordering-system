@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f7f7f5;
+  background: radial-gradient(circle at 10% 20%, #F5F9FC 0%, #E6F4FF 90%);
   padding: 20px;
   font-family: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -18,9 +18,9 @@
   background: #ffffff;
   width: 100%;
   max-width: 420px;
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px -5px rgba(31, 42, 68, 0.08);
+  border: 1px solid #E2E8F0;
   padding: 40px 32px 32px 32px;
   display: flex;
   flex-direction: column;
@@ -29,20 +29,21 @@
 
 /* ── Headings ── */
 .operator-login-title {
+  font-family: 'Outfit', sans-serif;
   font-size: 1.8rem;
-  color: #1a1a1a;
-  font-weight: 200;
+  color: #1F2A44;
+  font-weight: 800;
   text-align: center;
   margin: 0 0 6px 0;
   letter-spacing: -0.02em;
 }
 
 .operator-login-subtitle {
-  font-size: 0.82rem;
-  color: #999;
+  font-size: 0.85rem;
+  color: #4A5568;
   text-align: center;
   margin: 0 0 28px 0;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* ── Form ── */
