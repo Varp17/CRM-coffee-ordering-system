@@ -36,6 +36,8 @@ const STATUS_STYLES = {
   refunded:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#9CA3AF' },
 };
 
+const STATUS_OPTIONS = ['pending', 'in_progress', 'ready', 'completed', 'cancelled'];
+
 const Orders = () => {
   const { orders: ordersList, fetchOrders, updateOrderStatus, refundOrder, isLoading } = useOrderStore();
   const [statusFilter, setStatusFilter] = useState('all');
@@ -45,10 +47,21 @@ const Orders = () => {
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const [editingStatus, setEditingStatus] = useState(null);
-  const [editingStatusValue, setEditingStatusValue] = useState('');
 
-  const STATUS_OPTIONS = ['pending', 'in_progress', 'ready', 'completed', 'cancelled'];
+  // Smooth inline status picker state
+  const [openStatusId, setOpenStatusId] = useState(null);
+
+  useEffect(() => {
+    if (openStatusId === null) return;
+    const onDocClick = (e) => {
+      const el = e.target;
+      if (!el.closest('.icit-status-picker') && !el.closest('.icit-status-badge')) {
+        setOpenStatusId(null);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [openStatusId]);
 
   // WebSocket-driven real-time refresh
   const wsNotifications = useNotificationStore((s) => s.notifications);
@@ -292,52 +305,46 @@ const Orders = () => {
                         <span className="icit-products-text">{itemsText}</span>
                       </td>
 
-                      {/* Status Badge (Inline Editable like ICIT Leads) */}
-                      <td className="icit-td">
-                        {editingStatus === order.id ? (
-                          <div className="icit-status-edit" onClick={(e) => e.stopPropagation()}>
-                            <select
-                              className="icit-status-select"
-                              value={editingStatusValue}
-                              autoFocus
-                              onChange={(e) => setEditingStatusValue(e.target.value)}
-                            >
-                              {STATUS_OPTIONS.map(s => (
-                                <option key={s} value={s}>
+                      {/* Status Badge (smooth inline picker) */}
+                      <td className="icit-td" style={{ position: 'relative' }}>
+                        <button
+                          className="icit-status-badge icit-status-badge--clickable"
+                          style={{ backgroundColor: status.bg, color: status.text, borderColor: status.border }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenStatusId(openStatusId === order.id ? null : order.id);
+                          }}
+                        >
+                          <span className="icit-status-dot" style={{ backgroundColor: status.dot }} />
+                          {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ') : 'Unknown'}
+                          <ChevronDown size={12} style={{ opacity: 0.5, marginLeft: '2px' }} />
+                        </button>
+
+                        {openStatusId === order.id && (
+                          <div className="icit-status-picker" onClick={(e) => e.stopPropagation()}>
+                            {STATUS_OPTIONS.map(s => {
+                              const isActive = (order.status || 'pending') === s;
+                              const style = STATUS_STYLES[s] || STATUS_STYLES.refunded;
+                              return (
+                                <button
+                                  key={s}
+                                  className={`icit-status-picker-item ${isActive ? 'icit-status-picker-item--active' : ''}`}
+                                  style={{
+                                    backgroundColor: isActive ? style.bg : 'transparent',
+                                    color: isActive ? style.text : '#475569',
+                                  }}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    if (!isActive) handleStatusChange(order.id, s);
+                                    setOpenStatusId(null);
+                                  }}
+                                >
+                                  <span className="icit-status-dot" style={{ backgroundColor: style.dot }} />
                                   {s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
-                                </option>
-                              ))}
-                            </select>
-                            <div className="icit-status-edit-btns">
-                              <button
-                                className="icit-edit-save"
-                                onMouseDown={() => {
-                                  if (editingStatusValue !== order.status) {
-                                    handleStatusChange(order.id, editingStatusValue);
-                                  }
-                                  setEditingStatus(null);
-                                }}
-                              >Save</button>
-                              <button
-                                className="icit-edit-cancel"
-                                onMouseDown={() => setEditingStatus(null)}
-                              >Cancel</button>
-                            </div>
+                                </button>
+                              );
+                            })}
                           </div>
-                        ) : (
-                          <button
-                            className="icit-status-badge icit-status-badge--clickable"
-                            style={{ backgroundColor: status.bg, color: status.text, borderColor: status.border }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingStatus(order.id);
-                              setEditingStatusValue(order.status || 'pending');
-                            }}
-                          >
-                            <span className="icit-status-dot" style={{ backgroundColor: status.dot }} />
-                            {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ') : 'Unknown'}
-                            <ChevronDown size={12} style={{ opacity: 0.5, marginLeft: '2px' }} />
-                          </button>
                         )}
                       </td>
 

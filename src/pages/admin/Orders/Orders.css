@@ -390,6 +390,13 @@
   font-weight: 700;
   border: 1px solid;
   white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.icit-status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .icit-status-dot {
@@ -397,6 +404,53 @@
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+/* Smooth Status Picker */
+.icit-status-picker {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  min-width: 170px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: icitFadeIn 0.15s ease-out;
+}
+
+@keyframes icitFadeIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.icit-status-picker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.12s, color 0.12s;
+  text-align: left;
+  font-family: inherit;
+}
+
+.icit-status-picker-item:hover {
+  background: #F1F5F9 !important;
+}
+
+.icit-status-picker-item--active {
+  position: relative;
 }
 
 /* Date / Time / Amount */
