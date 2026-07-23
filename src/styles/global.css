@@ -1,5 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&display=swap');
 
+/* --- Chilld Coffee Local Font Definitions --- */
+@font-face {
+  font-family: 'Author';
+  src: url('/fonts/Author_Complete/Fonts/WEB/fonts/Author-Variable.woff2') format('woff2'),
+       url('/fonts/Author_Complete/Fonts/WEB/fonts/Author-Variable.woff') format('woff'),
+       url('/fonts/Author_Complete/Fonts/WEB/fonts/Author-Variable.ttf') format('truetype');
+  font-weight: 200 800;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Author';
+  src: url('/fonts/Author_Complete/Fonts/WEB/fonts/Author-VariableItalic.woff2') format('woff2'),
+       url('/fonts/Author_Complete/Fonts/WEB/fonts/Author-VariableItalic.woff') format('woff'),
+       url('/fonts/Author_Complete/Fonts/WEB/fonts/Author-VariableItalic.ttf') format('truetype');
+  font-weight: 200 800;
+  font-display: swap;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Heathergreen';
+  src: url('/fonts/Heathergreen.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============================================
    DIGITAL COFFEE — PREMIUM DESIGN SYSTEM
    Customer: Warm Espresso-Cream Editorial
@@ -12,67 +41,67 @@
      Espresso × Cream × Caramel × Gold
   ───────────────────────────────────────── */
 
-  /* Espresso (Primary Brand) */
-  --c-espresso:         #2C1A0E;
-  --c-espresso-mid:     #4A2E1A;
-  --c-espresso-light:   #6B4226;
-  --c-espresso-faint:   rgba(44, 26, 14, 0.06);
-  --c-espresso-glow:    rgba(44, 26, 14, 0.12);
+  /* Chilld Coffee Tech Blue & Deep Navy Palette */
+  --c-espresso:         #1F2A44;
+  --c-espresso-mid:     #162036;
+  --c-espresso-light:   #007AFF;
+  --c-espresso-faint:   rgba(0, 122, 255, 0.06);
+  --c-espresso-glow:    rgba(0, 122, 255, 0.12);
 
-  /* Caramel (Accent) */
-  --c-caramel:          #C8853E;
-  --c-caramel-light:    #E8A86A;
-  --c-caramel-dark:     #A0692A;
-  --c-caramel-faint:    rgba(200, 133, 62, 0.10);
-  --c-caramel-glow:     rgba(200, 133, 62, 0.20);
+  /* Primary Tech Accent */
+  --c-caramel:          #007AFF;
+  --c-caramel-light:    #E6F4FF;
+  --c-caramel-dark:     #0056B3;
+  --c-caramel-faint:    rgba(0, 122, 255, 0.08);
+  --c-caramel-glow:     rgba(0, 122, 255, 0.15);
 
-  /* Cream (Background) */
-  --c-cream:            #FAF6F0;
-  --c-cream-dark:       #F0E8DB;
-  --c-cream-deeper:     #E5D9CA;
-  --c-cream-border:     #E2D4C4;
+  /* Surface & Canvas (Clean Light Blue-Gray) */
+  --c-cream:            #F5F9FC;
+  --c-cream-dark:       #EBF3FA;
+  --c-cream-deeper:     #E2E8F0;
+  --c-cream-border:     #E2E8F0;
 
-  /* Gold (Premium Accent) */
-  --c-gold:             #B8933A;
-  --c-gold-light:       #D4AE5C;
+  /* Premium Accent */
+  --c-gold:             #007AFF;
+  --c-gold-light:       #3395FF;
 
-  /* Dark (Footer, Dark Sections) */
-  --c-dark:             #1A0E08;
-  --c-dark-mid:         #231711;
-  --c-dark-surface:     #2D1E16;
+  /* Dark Sections */
+  --c-dark:             #1F2A44;
+  --c-dark-mid:         #162036;
+  --c-dark-surface:     #0F172A;
 
-  /* Neutrals */
+  /* Neutrals & Typography */
   --c-white:            #FFFFFF;
-  --c-text-primary:     #2C1A0E;
-  --c-text-secondary:   #6B4C35;
-  --c-text-muted:       #9B8070;
-  --c-text-on-dark:     #F0E8DB;
+  --c-text-primary:     #1F2A44;
+  --c-text-secondary:   #4A5568;
+  --c-text-muted:       #718096;
+  --c-text-on-dark:     #F8FAFC;
 
   /* ─────────────────────────────────────────
-     GLOBAL SEMANTIC TOKENS (Customer Site)
+     GLOBAL SEMANTIC TOKENS
   ───────────────────────────────────────── */
   --color-bg:              var(--c-cream);
   --color-surface:         var(--c-white);
   --color-surface-alt:     var(--c-cream-dark);
   --color-surface-hover:   var(--c-cream-deeper);
   --color-border:          var(--c-cream-border);
-  --color-border-subtle:   rgba(226, 212, 196, 0.5);
+  --color-border-subtle:   #E2E8F0;
 
-  --color-primary:         var(--c-espresso);
-  --color-primary-hover:   var(--c-espresso-mid);
-  --color-primary-light:   var(--c-espresso-faint);
-  --color-primary-glow:    var(--c-espresso-glow);
+  --color-primary:         #007AFF;
+  --color-primary-hover:   #0056B3;
+  --color-primary-light:   #E6F4FF;
+  --color-primary-glow:    rgba(0, 122, 255, 0.15);
 
-  --color-accent:          var(--c-caramel);
-  --color-accent-light:    var(--c-caramel-faint);
-  --color-accent-glow:     var(--c-caramel-glow);
+  --color-accent:          #007AFF;
+  --color-accent-light:    #E6F4FF;
+  --color-accent-glow:     rgba(0, 122, 255, 0.15);
 
-  --color-espresso:        var(--c-dark);
-  --color-espresso-light:  var(--c-dark-mid);
-  --color-espresso-medium: var(--c-dark-surface);
+  --color-espresso:        #1F2A44;
+  --color-espresso-light:  #162036;
+  --color-espresso-medium: #0F172A;
 
-  --color-cream:           var(--c-cream);
-  --color-cream-dark:      var(--c-cream-dark);
+  --color-cream:           #F5F9FC;
+  --color-cream-dark:      #EBF3FA;
 
   --color-text:            var(--c-text-primary);
   --color-text-secondary:  var(--c-text-secondary);
@@ -99,27 +128,27 @@
   --color-forest-green-cream: #E8EDE9;
 
   /* ─────────────────────────────────────────
-     TYPOGRAPHY SYSTEM — CUSTOMER
+     TYPOGRAPHY SYSTEM — CUSTOMER & ADMIN
   ───────────────────────────────────────── */
-  --font-display:   'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-heading:   'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-body:      'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display:   'Author', 'Outfit', sans-serif;
+  --font-heading:   'Author', 'Outfit', sans-serif;
+  --font-body:      'Author', 'Inter', sans-serif;
   --font-sans:      var(--font-body);
   --font-mono:      'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace;
 
-  /* Fluid type scale (customer website) */
-  --font-size-hero:     clamp(3rem, 7vw, 5.5rem);
-  --font-size-display:  clamp(2rem, 4vw, 3.5rem);
-  --font-size-h1:       clamp(1.75rem, 3vw, 2.5rem);
-  --font-size-h2:       clamp(1.375rem, 2.5vw, 2rem);
-  --font-size-h3:       clamp(1.125rem, 2vw, 1.5rem);
-  --font-size-h4:       clamp(1rem, 1.5vw, 1.25rem);
-  --font-size-body-lg:  1.125rem;
-  --font-size-body:     1rem;
-  --font-size-sm:       0.875rem;
-  --font-size-xs:       0.75rem;
-  --font-size-caption:  0.8125rem;
-  --font-size-micro:    0.6875rem;
+  /* Increased fluid type scale */
+  --font-size-hero:     clamp(3.2rem, 7.5vw, 6rem);
+  --font-size-display:  clamp(2.2rem, 4.5vw, 3.8rem);
+  --font-size-h1:       clamp(1.9rem, 3.2vw, 2.75rem);
+  --font-size-h2:       clamp(1.5rem, 2.7vw, 2.2rem);
+  --font-size-h3:       clamp(1.25rem, 2.2vw, 1.7rem);
+  --font-size-h4:       clamp(1.1rem, 1.7vw, 1.4rem);
+  --font-size-body-lg:  1.2rem;
+  --font-size-body:     1.0625rem; /* 17px base size */
+  --font-size-sm:       0.9375rem; /* 15px */
+  --font-size-xs:       0.8125rem; /* 13px */
+  --font-size-caption:  0.875rem;
+  --font-size-micro:    0.75rem;
 
   --line-height-tight:  1.15;
   --line-height-snug:   1.3;
