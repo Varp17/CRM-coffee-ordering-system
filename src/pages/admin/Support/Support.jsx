@@ -5,7 +5,7 @@ import { formatDate } from '../../../utils/formatters';
 import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
-import { X, RefreshCw, Send, ChevronRight } from 'lucide-react';
+import { X, RefreshCw, Send, ChevronRight, ChevronDown } from 'lucide-react';
 
 const INITIAL_KIOSK_SUPPORT = [
   {
@@ -70,6 +70,16 @@ const getMergedSupport = () => {
 
 const Support = () => {
   const [tickets, setTickets] = useState(getMergedSupport);
+  const [stats, setStats] = useState({ open: 2, urgent: 1 });
+  const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMsg, setNewMsg] = useState('');
+  const [showDetail, setShowDetail] = useState(false);
+
+  // Smooth dropdown pickers for Priority and Status
+  const [openStatusId, setOpenStatusId] = useState(null);
+  const [openPriorityId, setOpenPriorityId] = useState(null);
 
   // Sync with kiosk website contact submissions
   useEffect(() => {
@@ -81,12 +91,16 @@ const Support = () => {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
-  const [stats, setStats] = useState({ open: 2, urgent: 1 });
-  const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [newMsg, setNewMsg] = useState('');
-  const [showDetail, setShowDetail] = useState(false);
+
+  // Close open pickers on global click
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setOpenStatusId(null);
+      setOpenPriorityId(null);
+    };
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
 
   useEffect(() => {
     loadAll();
@@ -114,21 +128,12 @@ const Support = () => {
     }
   };
 
-const STATUS_FLOW = {
-  open: 'in_progress',
-  in_progress: 'resolved',
-  resolved: 'closed',
-  closed: 'open',
-};
-
-const nextStatus = (current) => STATUS_FLOW[current?.toLowerCase()] || null;
-
-const priorityColor = {
-  low: '#718096',
-  medium: '#D97706',
-  high: '#DC2626',
-  urgent: '#991B1B',
-};
+  const priorityColor = {
+    low: '#718096',
+    medium: '#D97706',
+    high: '#DC2626',
+    urgent: '#991B1B',
+  };
 
   const openDetail = (ticket) => {
     setSelected(ticket);
@@ -153,6 +158,16 @@ const priorityColor = {
     toast.success(`Ticket status updated to ${newStatus.replace('_', ' ')}`);
   };
 
+  const handlePriorityUpdate = (id, newPriority) => {
+    setTickets((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, priority: newPriority } : t))
+    );
+    if (selected?.id === id) {
+      setSelected((prev) => ({ ...prev, priority: newPriority }));
+    }
+    toast.success(`Priority updated to "${newPriority.toUpperCase()}"`);
+  };
+
   const handleSend = () => {
     if (!newMsg.trim()) return;
     const msgObj = {
@@ -171,7 +186,14 @@ const priorityColor = {
       header: 'Subject',
       accessor: 'subject',
       sortable: true,
-      render: (row) => <strong style={{ color: 'var(--color-primary)' }}>{row.subject}</strong>,
+      render: (row) => (
+        <span 
+          style={{ color: '#007AFF', fontWeight: 600, cursor: 'pointer' }}
+          onClick={(e) => { e.stopPropagation(); openDetail(row); }}
+        >
+          {row.subject}
+        </span>
+      ),
     },
     { header: 'Customer', accessor: 'customer_name', sortable: true },
     { header: 'Category', accessor: 'category', sortable: true },
@@ -179,24 +201,111 @@ const priorityColor = {
       header: 'Priority',
       accessor: 'priority',
       sortable: true,
-      render: (row) => (
-        <span className="support-priority" style={{ color: priorityColor[row.priority] || '#888' }}>
-          {row.priority}
-        </span>
-      ),
+      render: (row) => {
+        const isOpen = openPriorityId === row.id;
+        return (
+          <div style={{ position: 'relative', display: 'inline-block', zIndex: isOpen ? 9999 : 1 }}>
+            <button
+              type="button"
+              className="support-priority-pill"
+              style={{ color: priorityColor[row.priority] || '#888' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPriorityId(isOpen ? null : row.id);
+                setOpenStatusId(null);
+              }}
+            >
+              {row.priority?.toUpperCase()} <ChevronDown size={12} className="picker-chevron" />
+            </button>
+
+            {isOpen && (
+              <div className="support-dropdown-picker" onClick={(e) => e.stopPropagation()}>
+                {['low', 'medium', 'high', 'urgent'].map((p) => {
+                  const isActive = row.priority === p;
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`picker-item ${isActive ? 'picker-item--active' : ''}`}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!isActive) handlePriorityUpdate(row.id, p);
+                        setOpenPriorityId(null);
+                      }}
+                    >
+                      <span className="picker-dot" style={{ backgroundColor: priorityColor[p] }} />
+                      <span style={{ color: priorityColor[p], fontWeight: isActive ? 700 : 600 }}>
+                        {p.toUpperCase()}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       header: 'Status',
       accessor: 'status',
       sortable: true,
       render: (row) => {
+        const isOpen = openStatusId === row.id;
         const cls = {
           open: 'badge-info',
           in_progress: 'badge-warning',
           resolved: 'badge-success',
           closed: 'badge-muted',
         }[row.status] || 'badge-info';
-        return <span className={`badge ${cls}`}>{row.status}</span>;
+
+        return (
+          <div style={{ position: 'relative', display: 'inline-block', zIndex: isOpen ? 9999 : 1 }}>
+            <button
+              type="button"
+              className={`badge ${cls} support-status-btn`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenStatusId(isOpen ? null : row.id);
+                setOpenPriorityId(null);
+              }}
+            >
+              {row.status?.replace('_', ' ')} <ChevronDown size={12} className="picker-chevron" />
+            </button>
+
+            {isOpen && (
+              <div className="support-dropdown-picker" onClick={(e) => e.stopPropagation()}>
+                {[
+                  { value: 'open', label: 'open', color: '#2563EB' },
+                  { value: 'in_progress', label: 'in progress', color: '#D97706' },
+                  { value: 'resolved', label: 'resolved', color: '#16A34A' },
+                  { value: 'closed', label: 'closed', color: '#6B7280' },
+                ].map((s) => {
+                  const isActive = row.status === s.value;
+                  return (
+                    <button
+                      key={s.value}
+                      type="button"
+                      className={`picker-item ${isActive ? 'picker-item--active' : ''}`}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!isActive) handleStatusUpdate(row.id, s.value);
+                        setOpenStatusId(null);
+                      }}
+                    >
+                      <span className="picker-dot" style={{ backgroundColor: s.color }} />
+                      <span style={{ color: s.color, fontWeight: isActive ? 700 : 600 }}>
+                        {s.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
       },
     },
     {
@@ -211,18 +320,13 @@ const priorityColor = {
       sortable: false,
       render: (row) => (
         <div style={{ display: 'flex', gap: 4 }}>
-          {nextStatus(row.status) && (
-            <button className="action-btn-sm outline" onClick={() => handleStatusUpdate(row.id, nextStatus(row.status))}>
-              → {nextStatus(row.status).replace('_', ' ')}
-            </button>
-          )}
-          <button className="action-btn-sm primary" onClick={() => openDetail(row)}>
+          <button className="action-btn-sm primary" onClick={(e) => { e.stopPropagation(); openDetail(row); }}>
             <ChevronRight size={12} /> View
           </button>
         </div>
       ),
     },
-  ], [tickets]);
+  ], [tickets, openStatusId, openPriorityId]);
 
   return (
     <div className="support-view animate-fade-in">

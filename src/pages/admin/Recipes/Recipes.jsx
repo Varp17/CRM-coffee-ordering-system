@@ -5,6 +5,7 @@ import {
   Search,
   Filter,
   ThumbsUp,
+  Heart,
   XCircle,
   Eye,
   Coffee,
@@ -12,28 +13,35 @@ import {
   Trash2,
   Plus,
   Sparkles,
+  Share2,
+  Printer,
+  MessageSquare,
+  Send,
 } from 'lucide-react';
 import './Recipes.css';
 
 import { RECIPES as KIOSK_WEBSITE_RECIPES } from '../../../data/kioskRecipes';
 
+const getRecipeImage = (item) => {
+  if (item.image && !item.image.includes('georgesso-hero')) {
+    return item.image;
+  }
+  const name = (item.name || '').toLowerCase();
+  if (name.includes('orange')) return 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=800&auto=format&fit=crop&q=80';
+  if (name.includes('cranberry')) return 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&auto=format&fit=crop&q=80';
+  if (name.includes('vietnamese') || name.includes('mocha')) return 'https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=800&auto=format&fit=crop&q=80';
+  if (name.includes('kaapi') || item.concentrate === 'Kappi') return 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80';
+  return 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
+};
+
 // Format all recipes from the Kiosk website catalog
 const FORMATTED_WEBSITE_RECIPES = KIOSK_WEBSITE_RECIPES.map((item) => {
   let stepsList = [];
   if (Array.isArray(item.steps)) {
-    stepsList = item.steps.map(s => typeof s === 'string' ? s : `${s.title}: ${s.copy}`);
-  }
-  
-  // Pick curated Unsplash imagery for high quality UI display
-  let bgImg = 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&auto=format&fit=crop&q=80';
-  if (item.name.toLowerCase().includes('orange')) {
-    bgImg = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&auto=format&fit=crop&q=80';
-  } else if (item.name.toLowerCase().includes('cranberry')) {
-    bgImg = 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&auto=format&fit=crop&q=80';
-  } else if (item.name.toLowerCase().includes('vietnamese') || item.name.toLowerCase().includes('mocha')) {
-    bgImg = 'https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=600&auto=format&fit=crop&q=80';
-  } else if (item.name.toLowerCase().includes('chicory') || item.name.toLowerCase().includes('kaapi') || item.concentrate === 'Kappi') {
-    bgImg = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80';
+    stepsList = item.steps.map((s, idx) => {
+      if (typeof s === 'string') return { title: `Step ${idx + 1}`, copy: s };
+      return { title: s.title || `Step ${idx + 1}`, copy: s.copy || s.title || '' };
+    });
   }
 
   return {
@@ -43,11 +51,13 @@ const FORMATTED_WEBSITE_RECIPES = KIOSK_WEBSITE_RECIPES.map((item) => {
     author: item.author || 'CHILLD Lab',
     concentrate: item.concentrate || 'Classic',
     status: 'approved',
-    likes: typeof item.likes === 'number' ? item.likes : (parseInt(String(item.likes || '120')) || 120),
+    mood: item.mood || 'Smooth, Refreshing & Charged-up',
+    tags: Array.isArray(item.tags) ? item.tags : ['#Coffee', '#Chilld'],
+    likesCount: typeof item.likes === 'number' ? item.likes : (parseInt(String(item.likes || '120')) || 120),
     createdAt: '2026-07-20T10:30:00Z',
     ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
     steps: stepsList,
-    image: bgImg,
+    image: getRecipeImage(item),
   };
 });
 
@@ -55,41 +65,59 @@ const PENDING_RECIPES = [
   {
     id: 'rec-201',
     name: 'Spiced Cardamom Cloud',
-    description: 'Shared via Kiosk custom builder: Cardamom infused cold brew with almond foam.',
-    author: 'Rohan Mehta (Kiosk T1 Guest)',
+    description: 'Shared via Kiosk custom builder: Cardamom infused cold brew with aerated almond foam.',
+    author: 'Rohan Mehta (Indiranagar Kiosk)',
     concentrate: 'Kappi',
     status: 'pending',
-    likes: 0,
+    mood: 'Spiced, Creamy & Artisanal',
+    tags: ['#Cardamom', '#AlmondMilk', '#KappiSpecial'],
+    likesCount: 45,
     createdAt: '2026-07-23T11:45:00Z',
-    ingredients: ['90 ml Kappi Concentrate', '100 ml Almond Milk', '2 pinch Ground Cardamom', '10 ml Maple Syrup'],
-    steps: ['Shake Kappi concentrate with cardamom & maple', 'Pour into glass with ice', 'Top with aerated almond milk'],
-    image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&auto=format&fit=crop&q=80',
+    ingredients: ['90 ml Kappi Concentrate', '100 ml Chilled Almond Milk', '2 pinch Ground Cardamom', '10 ml Organic Maple Syrup', 'Ice Cubes'],
+    steps: [
+      { title: 'Step 1', copy: 'Shake Kappi concentrate with ground cardamom & organic maple syrup' },
+      { title: 'Step 2', copy: 'Fill tall serving glass with crystal clear ice cubes' },
+      { title: 'Step 3', copy: 'Pour concentrate mix into glass, top with aerated almond milk froth' },
+    ],
+    image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=800&auto=format&fit=crop&q=80',
   },
   {
     id: 'rec-202',
     name: 'Salted Caramel Bold Splash',
     description: 'Shared via Kiosk custom builder: Salted caramel syrup mixed with extra bold cold brew.',
-    author: 'Sneha Patel (Kiosk T2 Guest)',
+    author: 'Sneha Patel (Koramangala Kiosk)',
     concentrate: 'Bold',
     status: 'pending',
-    likes: 0,
+    mood: 'Sweet & Salty, Bold Fuel',
+    tags: ['#Caramel', '#BoldBrew', '#SparklingCoffee'],
+    likesCount: 88,
     createdAt: '2026-07-23T08:20:00Z',
-    ingredients: ['90 ml Bold Concentrate', '150 ml Sparkling Water', '20 ml Salted Caramel Syrup', 'Ice'],
-    steps: ['Stir caramel syrup into Bold concentrate', 'Add ice cubes', 'Top up with sparkling soda water'],
-    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&auto=format&fit=crop&q=80',
+    ingredients: ['90 ml Bold Concentrate', '150 ml Sparkling Soda Water', '20 ml Salted Caramel Syrup', 'Ice Cubes'],
+    steps: [
+      { title: 'Step 1', copy: 'Stir caramel syrup into Bold concentrate until dissolved' },
+      { title: 'Step 2', copy: 'Add ice cubes into tumbler' },
+      { title: 'Step 3', copy: 'Slowly pour chilled sparkling soda water to layer' },
+    ],
+    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&auto=format&fit=crop&q=80',
   },
   {
     id: 'rec-203',
     name: 'Hazelnut Cream Classic Float',
     description: 'Shared via Kiosk custom builder: Classic cold brew concentrate with hazelnut drizzle and whipped cream.',
-    author: 'Vikram Singh (Kiosk T1 Guest)',
+    author: 'Vikram Singh (Whitefield Kiosk)',
     concentrate: 'Classic',
     status: 'pending',
-    likes: 0,
+    mood: 'Rich, Indulgent & Dessert Coffee',
+    tags: ['#Hazelnut', '#WhippedCream', '#ClassicFloat'],
+    likesCount: 64,
     createdAt: '2026-07-22T17:10:00Z',
-    ingredients: ['90 ml Classic Concentrate', '120 ml Chilled Water', '15 ml Hazelnut Syrup', 'Whipped Cream'],
-    steps: ['Fill glass with ice and cold water', 'Add Classic concentrate and hazelnut syrup', 'Top with whipped cream'],
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&auto=format&fit=crop&q=80',
+    ingredients: ['90 ml Classic Concentrate', '120 ml Chilled Mineral Water', '15 ml Hazelnut Syrup', 'Heavy Whipped Cream'],
+    steps: [
+      { title: 'Step 1', copy: 'Fill glass with ice and cold water' },
+      { title: 'Step 2', copy: 'Add Classic concentrate and hazelnut syrup, stir gently' },
+      { title: 'Step 3', copy: 'Top generously with fresh whipped cream & hazelnut drizzle' },
+    ],
+    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=800&auto=format&fit=crop&q=80',
   },
 ];
 
@@ -105,12 +133,30 @@ const getMergedRecipes = () => {
   return ALL_INITIAL_RECIPES;
 };
 
+const INITIAL_COMMENTS = [
+  {
+    name: 'Alia Bhatt',
+    time: '23 Jul 2026, 10:30 AM',
+    copy: 'I love it! Best with the jaggery espresso. Add a tiny pinch of sea salt on top to elevate the flavors.',
+  },
+  {
+    name: 'Ranveer Singh',
+    time: '22 Jul 2026, 04:15 PM',
+    copy: 'This recipe is dam good! Smooth caffeine hit without any bitterness.',
+  },
+];
+
 const Recipes = () => {
   const [recipes, setRecipes] = useState(getMergedRecipes);
-  const [activeTab, setActiveTab] = useState('approved'); // 'approved' | 'pending'
-  const [selectedConcentrate, setSelectedConcentrate] = useState('All'); // 'All' | 'Classic' | 'Bold' | 'Kappi'
+  const [activeTab, setActiveTab] = useState('approved');
+  const [selectedConcentrate, setSelectedConcentrate] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  // Modal Recipe details interactivity (Likes & Comments)
+  const [likedRecipes, setLikedRecipes] = useState({});
+  const [commentInput, setCommentInput] = useState('');
+  const [recipeComments, setRecipeComments] = useState(INITIAL_COMMENTS);
 
   // Sync with kiosk website submitted recipes
   React.useEffect(() => {
@@ -123,15 +169,11 @@ const Recipes = () => {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  // Filtered recipes list
   const filteredRecipes = useMemo(() => {
     return recipes.filter((recipe) => {
-      // Tab matching
       const matchesTab = recipe.status === activeTab;
-      // Concentrate matching
       const matchesConcentrate =
         selectedConcentrate === 'All' || recipe.concentrate === selectedConcentrate;
-      // Search matching
       const q = searchQuery.toLowerCase();
       const matchesSearch =
         !q ||
@@ -143,7 +185,6 @@ const Recipes = () => {
     });
   }, [recipes, activeTab, selectedConcentrate, searchQuery]);
 
-  // Status counters
   const approvedCount = recipes.filter((r) => r.status === 'approved').length;
   const pendingCount = recipes.filter((r) => r.status === 'pending').length;
 
@@ -152,7 +193,7 @@ const Recipes = () => {
       prev.map((r) => (r.id === id ? { ...r, status: 'approved' } : r))
     );
     if (selectedRecipe?.id === id) {
-      setSelectedRecipe(null);
+      setSelectedRecipe((prev) => prev ? { ...prev, status: 'approved' } : null);
     }
   };
 
@@ -161,6 +202,24 @@ const Recipes = () => {
     if (selectedRecipe?.id === id) {
       setSelectedRecipe(null);
     }
+  };
+
+  const toggleLike = (recipeId) => {
+    setLikedRecipes((prev) => ({
+      ...prev,
+      [recipeId]: !prev[recipeId],
+    }));
+  };
+
+  const handleAddComment = () => {
+    if (!commentInput.trim()) return;
+    const newComm = {
+      name: 'CRM Operator',
+      time: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      copy: commentInput.trim(),
+    };
+    setRecipeComments((prev) => [newComm, ...prev]);
+    setCommentInput('');
   };
 
   const getConcentrateBadgeClass = (concentrate) => {
@@ -172,18 +231,227 @@ const Recipes = () => {
       case 'Kappi':
         return 'badge-kappi';
       default:
-        return '';
+        return 'badge-classic';
     }
   };
 
+  // ── Render Full Recipe Details Page View if a recipe is selected ──
+  if (selectedRecipe) {
+    const isLiked = likedRecipes[selectedRecipe.id];
+    const likesCount = selectedRecipe.likesCount + (isLiked ? 1 : 0);
+    const relatedRecipes = recipes.filter((r) => r.id !== selectedRecipe.id).slice(0, 3);
+
+    return (
+      <div className="crm-recipes-page full-recipe-page-view animate-fade-in">
+        {/* Navigation & Admin Action Header Bar */}
+        <div className="recipe-detail-nav-bar">
+          <button className="back-to-catalog-btn" onClick={() => setSelectedRecipe(null)}>
+            ← Back to Recipes Catalog
+          </button>
+
+          <div className="nav-bar-admin-actions">
+            {selectedRecipe.status === 'pending' ? (
+              <>
+                <span className="pending-badge">Pending Approval</span>
+                <button
+                  className="btn-approve-kiosk"
+                  onClick={() => handleApprove(selectedRecipe.id)}
+                >
+                  <Check size={16} /> Approve for Kiosk Menu
+                </button>
+                <button
+                  className="btn-reject-kiosk"
+                  onClick={() => handleReject(selectedRecipe.id)}
+                >
+                  <XCircle size={16} /> Reject
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="approved-badge">Approved Formulation</span>
+                <button
+                  className="btn-reject-kiosk"
+                  onClick={() => handleReject(selectedRecipe.id)}
+                >
+                  <Trash2 size={16} /> Delete Recipe
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* HERO SECTION */}
+        <section className="kiosk-full-hero">
+          <div className="hero-left-col">
+            <div className="hero-title-row">
+              <span className={`concentrate-badge ${getConcentrateBadgeClass(selectedRecipe.concentrate)}`}>
+                {selectedRecipe.concentrate} Base
+              </span>
+              <span className="brand-author-tag">By: {selectedRecipe.author}</span>
+            </div>
+
+            <h1 className="hero-recipe-name">{selectedRecipe.name}</h1>
+
+            {/* Likes counter */}
+            <div className="hero-likes-bar">
+              <button 
+                className={`kiosk-like-btn ${isLiked ? 'is-liked' : ''}`}
+                onClick={() => toggleLike(selectedRecipe.id)}
+              >
+                <Heart 
+                  size={17} 
+                  fill={isLiked ? '#DC2626' : 'none'} 
+                  color={isLiked ? '#DC2626' : '#1F2A44'} 
+                />
+                <span>{likesCount} Likes</span>
+              </button>
+            </div>
+
+            <div className="hero-desc-box">
+              <p className="desc-eyebrow">DESCRIPTION</p>
+              <p className="desc-text">{selectedRecipe.description}</p>
+            </div>
+
+            {selectedRecipe.tags && selectedRecipe.tags.length > 0 && (
+              <div className="hero-tags-wrapper">
+                {selectedRecipe.tags.map((t) => (
+                  <span key={t} className="hero-tag">{t}</span>
+                ))}
+              </div>
+            )}
+
+            <div className="hero-meta-table">
+              <div className="meta-row">
+                <span className="meta-label">Author</span>
+                <span className="meta-val">{selectedRecipe.author}</span>
+              </div>
+              {selectedRecipe.mood && (
+                <div className="meta-row">
+                  <span className="meta-label">Mood Profile</span>
+                  <span className="meta-val">{selectedRecipe.mood}</span>
+                </div>
+              )}
+              <div className="meta-row">
+                <span className="meta-label">Concentrate Base</span>
+                <span className="meta-val" style={{ fontWeight: 700, color: '#007AFF' }}>
+                  {selectedRecipe.concentrate}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="hero-right-col">
+            <div className="hero-image-card">
+              <img 
+                src={selectedRecipe.image} 
+                alt={selectedRecipe.name} 
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
+                }}
+              />
+              <span className="ai-note">*Illustrative visual presentation</span>
+            </div>
+          </div>
+        </section>
+
+        {/* INGREDIENTS & STEPS SPLIT SECTION */}
+        <section className="kiosk-cooking-grid">
+          <div className="ingredients-box">
+            <h2><Coffee size={18} /> Ingredients</h2>
+            <ul className="ingredients-list">
+              {selectedRecipe.ingredients.map((ing, i) => (
+                <li key={i}>{ing}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="steps-box">
+            <h2>Recipe Preparation Steps</h2>
+            <div className="steps-timeline">
+              {selectedRecipe.steps.map((step, idx) => (
+                <div key={idx} className="step-card">
+                  <div className="step-number">{idx + 1}</div>
+                  <div className="step-info">
+                    <h4>{step.title || `Step ${idx + 1}`}</h4>
+                    <p>{step.copy || step}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* USER COMMENTS SECTION */}
+        <section className="kiosk-comments-section">
+          <h2>Comments & Feedback</h2>
+          
+          <div className="comment-input-row">
+            <input
+              type="text"
+              placeholder="Write a comment or internal review note..."
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
+            />
+            <button className="post-comment-btn" onClick={handleAddComment} disabled={!commentInput.trim()}>
+              <Send size={14} /> Post
+            </button>
+          </div>
+
+          <div className="comments-stream">
+            {recipeComments.map((c, i) => (
+              <div key={i} className="comment-card">
+                <div className="comment-header">
+                  <strong>{c.name}</strong>
+                  <span className="comment-time">{c.time}</span>
+                </div>
+                <p className="comment-body">{c.copy}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* MORE GREAT RECIPES CAROUSEL GRID */}
+        <section className="more-recipes-section">
+          <h2 className="more-recipes-title">More Great Recipes</h2>
+          <div className="recipes-grid">
+            {relatedRecipes.map((recipe) => (
+              <div 
+                key={recipe.id} 
+                className="recipe-card"
+                onClick={() => {
+                  setSelectedRecipe(recipe);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                <div className="recipe-card-media">
+                  <img src={recipe.image} alt={recipe.name} />
+                  <span className={`concentrate-badge ${getConcentrateBadgeClass(recipe.concentrate)}`}>
+                    {recipe.concentrate}
+                  </span>
+                </div>
+                <div className="recipe-card-content">
+                  <span className="author-name">By: {recipe.author}</span>
+                  <h3 className="recipe-title">{recipe.name}</h3>
+                  <p className="recipe-desc">{recipe.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // ── Render Recipes Catalog Grid if no recipe is selected ──
   return (
     <div className="crm-recipes-page animate-fade-in">
       {/* Header */}
       <div className="page-header">
         <div className="page-header-left">
-          <h2>Recipes Management</h2>
+          <h2>Recipes Catalog & Custom Formulations</h2>
           <p className="page-subtitle">
-            Review customer creations from the Kiosk website and manage approved brand formulations.
+            Catalog of kiosk recipes and guest custom formulations. Click any recipe card to view detailed recipe instructions.
           </p>
         </div>
       </div>
@@ -211,9 +479,8 @@ const Recipes = () => {
 
       {/* Filter Bar */}
       <div className="recipe-filter-bar">
-        {/* Concentrate Filter Chips */}
         <div className="concentrate-chips">
-          <span className="chip-label">Concentrate:</span>
+          <span className="chip-label">Concentrate Base:</span>
           {['All', 'Classic', 'Bold', 'Kappi'].map((conc) => (
             <button
               key={conc}
@@ -228,7 +495,6 @@ const Recipes = () => {
           ))}
         </div>
 
-        {/* Search Bar */}
         <div className="recipe-search-box">
           <Search size={14} className="search-icon" />
           <input
@@ -240,148 +506,110 @@ const Recipes = () => {
         </div>
       </div>
 
-      {/* Grid of Recipe Cards */}
+      {/* Kiosk Website-Style Recipe Cards Grid */}
       {filteredRecipes.length === 0 ? (
         <div className="empty-state-card">
           <Coffee size={36} className="empty-icon" />
           <h3>No Recipes Found</h3>
-          <p>No recipes match the selected tab and concentrate filters.</p>
+          <p>No recipes match the selected filter criteria.</p>
         </div>
       ) : (
         <div className="recipes-grid">
-          {filteredRecipes.map((recipe) => (
-            <div key={recipe.id} className="recipe-card">
-              <div className="recipe-card-media">
-                <img src={recipe.image} alt={recipe.name} />
-                <span className={`concentrate-badge ${getConcentrateBadgeClass(recipe.concentrate)}`}>
-                  {recipe.concentrate}
-                </span>
-              </div>
+          {filteredRecipes.map((recipe) => {
+            const isLiked = likedRecipes[recipe.id];
+            const likesCount = recipe.likesCount + (isLiked ? 1 : 0);
 
-              <div className="recipe-card-content">
-                <div className="recipe-author-row">
-                  <span className="author-name">{recipe.author}</span>
-                  <span className="recipe-date">
-                    {new Date(recipe.createdAt).toLocaleDateString()}
+            return (
+              <div 
+                key={recipe.id} 
+                className="recipe-card"
+                onClick={() => setSelectedRecipe(recipe)}
+              >
+                <div className="recipe-card-media">
+                  <img 
+                    src={recipe.image} 
+                    alt={recipe.name} 
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
+                    }}
+                  />
+                  <span className={`concentrate-badge ${getConcentrateBadgeClass(recipe.concentrate)}`}>
+                    {recipe.concentrate}
                   </span>
+                  <div className="card-likes-badge">
+                    <Heart size={13} fill="#DC2626" color="#DC2626" />
+                    <span>{likesCount} Likes</span>
+                  </div>
                 </div>
 
-                <h3 className="recipe-title">{recipe.name}</h3>
-                <p className="recipe-desc">{recipe.description}</p>
+                <div className="recipe-card-content">
+                  <div className="recipe-author-row">
+                    <span className="author-name">By: {recipe.author}</span>
+                    <span className="recipe-date">
+                      {new Date(recipe.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
 
-                <div className="recipe-ingredients-preview">
-                  <strong>Ingredients:</strong>
-                  <ul>
-                    {recipe.ingredients.slice(0, 3).map((ing, idx) => (
-                      <li key={idx}>{ing}</li>
-                    ))}
-                    {recipe.ingredients.length > 3 && (
-                      <li className="more-ingredients">+{recipe.ingredients.length - 3} more...</li>
-                    )}
-                  </ul>
-                </div>
+                  <h3 className="recipe-title">{recipe.name}</h3>
+                  <p className="recipe-desc">{recipe.description}</p>
 
-                {/* Card Actions */}
-                <div className="recipe-card-actions">
-                  <button
-                    className="action-btn view-btn"
-                    onClick={() => setSelectedRecipe(recipe)}
-                  >
-                    <Eye size={14} /> View
-                  </button>
+                  {recipe.tags && recipe.tags.length > 0 && (
+                    <div className="card-tags-row">
+                      {recipe.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="recipe-tag-pill">{tag}</span>
+                      ))}
+                    </div>
+                  )}
 
-                  {recipe.status === 'pending' ? (
-                    <>
+                  <div className="recipe-ingredients-preview">
+                    <strong>Ingredients ({recipe.ingredients.length}):</strong>
+                    <ul>
+                      {recipe.ingredients.slice(0, 3).map((ing, idx) => (
+                        <li key={idx}>{ing}</li>
+                      ))}
+                      {recipe.ingredients.length > 3 && (
+                        <li className="more-ingredients">+{recipe.ingredients.length - 3} more...</li>
+                      )}
+                    </ul>
+                  </div>
+
+                  {/* Card Actions */}
+                  <div className="recipe-card-actions" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      className="action-btn view-btn"
+                      onClick={() => setSelectedRecipe(recipe)}
+                    >
+                      <Eye size={14} /> View Detail
+                    </button>
+
+                    {recipe.status === 'pending' ? (
+                      <>
+                        <button
+                          className="action-btn approve-btn"
+                          onClick={() => handleApprove(recipe.id)}
+                        >
+                          <Check size={14} /> Approve
+                        </button>
+                        <button
+                          className="action-btn reject-btn"
+                          onClick={() => handleReject(recipe.id)}
+                        >
+                          <XCircle size={14} /> Reject
+                        </button>
+                      </>
+                    ) : (
                       <button
-                        className="action-btn approve-btn"
-                        onClick={() => handleApprove(recipe.id)}
-                      >
-                        <Check size={14} /> Approve
-                      </button>
-                      <button
-                        className="action-btn reject-btn"
+                        className="action-btn delete-btn"
                         onClick={() => handleReject(recipe.id)}
                       >
-                        <XCircle size={14} /> Reject
+                        <Trash2 size={14} /> Delete
                       </button>
-                    </>
-                  ) : (
-                    <button
-                      className="action-btn delete-btn"
-                      onClick={() => handleReject(recipe.id)}
-                    >
-                      <Trash2 size={14} /> Delete
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Recipe Detail Modal */}
-      {selectedRecipe && (
-        <div className="modal-overlay" onClick={() => setSelectedRecipe(null)}>
-          <div className="modal-content recipe-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title-wrap">
-                <span className={`concentrate-badge ${getConcentrateBadgeClass(selectedRecipe.concentrate)}`}>
-                  {selectedRecipe.concentrate} Concentrate
-                </span>
-                <h3>{selectedRecipe.name}</h3>
-                <span className="modal-author">Created by: {selectedRecipe.author}</span>
-              </div>
-              <button className="modal-close-btn" onClick={() => setSelectedRecipe(null)}>
-                ×
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <img src={selectedRecipe.image} alt={selectedRecipe.name} className="modal-recipe-img" />
-              <p className="modal-recipe-desc">{selectedRecipe.description}</p>
-
-              <div className="recipe-section">
-                <h4>Ingredients</h4>
-                <ul className="modal-ingredients-list">
-                  {selectedRecipe.ingredients.map((ing, i) => (
-                    <li key={i}>{ing}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="recipe-section">
-                <h4>Preparation Steps</h4>
-                <ol className="modal-steps-list">
-                  {selectedRecipe.steps.map((step, i) => (
-                    <li key={i}>{step}</li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              {selectedRecipe.status === 'pending' && (
-                <>
-                  <button
-                    className="btn-primary-blue"
-                    onClick={() => handleApprove(selectedRecipe.id)}
-                  >
-                    <Check size={14} /> Approve for Kiosk Menu
-                  </button>
-                  <button
-                    className="btn-danger-outline"
-                    onClick={() => handleReject(selectedRecipe.id)}
-                  >
-                    <XCircle size={14} /> Reject
-                  </button>
-                </>
-              )}
-              <button className="btn-secondary" onClick={() => setSelectedRecipe(null)}>
-                Close
-              </button>
-            </div>
-          </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -389,3 +617,4 @@ const Recipes = () => {
 };
 
 export default Recipes;
+

@@ -283,11 +283,115 @@
 }
 
 .action-btn-sm.primary {
-  background: var(--color-primary, #C8853E);
+  background: #007AFF;
   color: #fff;
 }
 
 .action-btn-sm.primary:hover {
-  opacity: 0.9;
+  background: #0056B3;
+}
+
+/* Force Table Container Overflow to Visible so Dropdowns are never clipped */
+.support-view .data-table-container,
+.support-view .data-table-wrapper,
+.support-view .data-table,
+.support-view .data-table tbody,
+.support-view .data-table tr,
+.support-view .data-table td {
+  overflow: visible !important;
+}
+
+/* Priority & Status Inline Dropdown Picker Styling */
+.support-priority-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.support-priority-pill:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.support-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.support-status-btn:hover {
+  opacity: 0.85;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.picker-chevron {
+  opacity: 0.6;
+}
+
+.support-dropdown-picker {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 999999 !important;
+  min-width: 150px;
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 12px;
+  box-shadow: 0 14px 35px -5px rgba(15, 23, 42, 0.22), 0 8px 16px -6px rgba(15, 23, 42, 0.12) !important;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  animation: pickerFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pickerFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+  text-align: left;
+}
+
+.picker-item:hover {
+  background-color: #F1F5F9;
+}
+
+.picker-item--active {
+  background-color: #E6F4FF !important;
+}
+
+.picker-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 

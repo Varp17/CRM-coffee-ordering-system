@@ -209,7 +209,7 @@ const Portal = () => {
             rel="noopener noreferrer"
             className="back-btn-d2c"
           >
-            Access Coffee Ordering Kiosk (coffee-ordering-kiosk.vercel.app)
+            Access Coffee Ordering Kiosk
             <span className="d2c-arrow">↗</span>
           </a>
         </div>
