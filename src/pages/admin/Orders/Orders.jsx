@@ -9,7 +9,7 @@ import { orderService } from '../../../services/orders';
 import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import {
-  X, RefreshCw, AlertCircle, Search, Play, CheckCircle, Eye, Printer,
+  X, RefreshCw, Search, Play, CheckCircle, Eye, Printer,
   Download, ExternalLink, ChevronDown, ShoppingBag, Clock, Bell
 } from 'lucide-react';
 
@@ -43,12 +43,11 @@ const STATUS_STYLES = {
 const STATUS_OPTIONS = ['pending', 'in_progress', 'ready', 'completed', 'cancelled'];
 
 const Orders = () => {
-  const { orders: ordersList, fetchOrders, updateOrderStatus, refundOrder, isLoading } = useOrderStore();
+  const { orders: ordersList, fetchOrders, updateOrderStatus, isLoading } = useOrderStore();
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showDetailPanel, setShowDetailPanel] = useState(false);
-  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -66,6 +65,23 @@ const Orders = () => {
     document.addEventListener('mousedown', onDocClick);
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [openStatusId]);
+
+  useEffect(() => {
+    if (!showDetailModal) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setShowDetailModal(false);
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [showDetailModal]);
 
   // WebSocket-driven real-time refresh
   const wsNotifications = useNotificationStore((s) => s.notifications);
@@ -114,20 +130,9 @@ const Orders = () => {
     }
   };
 
-  const handleRefund = async (orderId) => {
-    const res = await refundOrder(orderId);
-    if (res.success) {
-      toast.success(`Refund initiated for ${orderId}.`, { icon: '💰' });
-      setShowRefundModal(false);
-      setShowDetailPanel(false);
-    } else {
-      toast.error(`Refund failed: ${res.error}`);
-    }
-  };
-
   const openDetail = async (order) => {
     setSelectedOrder(order);
-    setShowDetailPanel(true);
+    setShowDetailModal(true);
     try {
       const res = await orderService.getById(order.id);
       const detailed = unwrapObject(res);
@@ -211,7 +216,7 @@ const Orders = () => {
       {/* ─── Summary Stat Cards (ICIT Style) ─── */}
       <div className="icit-stats-bar">
         {[
-          { label: 'Total', count: orderStats.total, description: 'all kiosk orders', tone: 'purple', icon: ShoppingBag, filter: 'all' },
+          { label: 'Total', count: orderStats.total, description: 'all store orders', tone: 'purple', icon: ShoppingBag, filter: 'all' },
           { label: 'Pending', count: orderStats.pending, description: 'awaiting preparation', tone: 'orange', icon: Clock, filter: 'pending' },
           { label: 'In Progress', count: orderStats.inProgress, description: 'currently brewing', tone: 'blue', icon: RefreshCw, filter: 'in_progress' },
           { label: 'Ready', count: orderStats.ready, description: 'ready for pickup', tone: 'cyan', icon: Bell, filter: 'ready' },
@@ -418,26 +423,31 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* ─── Side Panel Detail (ICIT Style) ─── */}
-      {showDetailPanel && selectedOrder && (
-        <>
-          <div className="icit-overlay" onClick={() => setShowDetailPanel(false)} />
-          <div className="side-panel" role="dialog" aria-label="Order Details">
-            <div className="side-panel-header">
+      {/* ─── Order Detail Modal ─── */}
+      {showDetailModal && selectedOrder && (
+        <div className="order-detail-modal-overlay" onMouseDown={() => setShowDetailModal(false)}>
+          <section
+            className="order-detail-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="order-detail-modal-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="order-detail-modal__header">
               <div>
-                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#111' }}>
+                <h3 id="order-detail-modal-title">
                   Order #{selectedOrder.order_number || selectedOrder.id}
                 </h3>
-                <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#888' }}>
+                <p>
                   {selectedOrder.customer_name || 'Guest'} · {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : ''}
                 </p>
               </div>
-              <button className="panel-close-btn" onClick={() => setShowDetailPanel(false)} aria-label="Close panel">
+              <button className="panel-close-btn" onClick={() => setShowDetailModal(false)} aria-label="Close order details">
                 <X size={16} />
               </button>
             </div>
 
-            <div className="side-panel-body">
+            <div className="order-detail-modal__body">
               <div className="detail-grid">
                 <div className="detail-section">
                   <h4>Customer Information</h4>
@@ -478,29 +488,31 @@ const Orders = () => {
               {selectedOrder.items && (
                 <div className="detail-section">
                   <h4>Items Ordered</h4>
-                  <table className="table detail-items-table">
-                    <thead>
-                      <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
-                    </thead>
-                    <tbody>
-                      {selectedOrder.items.map((item, i) => (
-                        <tr key={i}>
-                          <td>{item.name || item.item_name}</td>
-                          <td>{item.quantity || item.qty}</td>
-                          <td>{formatCurrency(item.unit_price || item.price)}</td>
-                          <td><strong>{formatCurrency((item.unit_price || item.price) * (item.quantity || item.qty))}</strong></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr><td colSpan="3" style={{ textAlign: 'right', paddingRight: '16px' }}>Grand Total</td><td><strong>{formatCurrency(selectedOrder.total_amount || selectedOrder.total)}</strong></td></tr>
-                    </tfoot>
-                  </table>
+                  <div className="detail-items-scroll">
+                    <table className="table detail-items-table">
+                      <thead>
+                        <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+                      </thead>
+                      <tbody>
+                        {selectedOrder.items.map((item, i) => (
+                          <tr key={i}>
+                            <td>{item.name || item.item_name}</td>
+                            <td>{item.quantity || item.qty}</td>
+                            <td>{formatCurrency(item.unit_price || item.price)}</td>
+                            <td><strong>{formatCurrency((item.unit_price || item.price) * (item.quantity || item.qty))}</strong></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr><td colSpan="3" style={{ textAlign: 'right', paddingRight: '16px' }}>Grand Total</td><td><strong>{formatCurrency(selectedOrder.total_amount || selectedOrder.total)}</strong></td></tr>
+                      </tfoot>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="side-panel-footer">
+            <div className="order-detail-modal__footer">
               {getNextStatus(selectedOrder.status) && (
                 <Button variant="primary" onClick={() => handleStatusChange(selectedOrder.id, getNextStatus(selectedOrder.status))}>
                   {getActionLabel(selectedOrder.status)}
@@ -511,44 +523,11 @@ const Orders = () => {
                   Print Invoice
                 </Button>
               )}
-              {selectedOrder.status !== 'refunded' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'completed' && (
-                <Button variant="danger" onClick={() => setShowRefundModal(true)}>
-                  Refund
-                </Button>
-              )}
               <Button variant="outline" onClick={() => toast.success('Invoice generated')}>
                 Invoice
               </Button>
             </div>
-          </div>
-        </>
-      )}
-
-      {/* Refund Confirmation Modal */}
-      {showRefundModal && selectedOrder && (
-        <div className="modal-overlay" onClick={() => setShowRefundModal(false)}>
-          <div className="modal-content refund-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <AlertCircle size={16} color="#DC2626" />
-                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700 }}>Confirm Refund</h3>
-              </div>
-              <button className="panel-close-btn" onClick={() => setShowRefundModal(false)} aria-label="Close">
-                <X size={16} />
-              </button>
-            </div>
-            <div className="refund-body">
-              <p>Are you sure you want to refund order <strong>{selectedOrder.order_number || selectedOrder.id}</strong>?</p>
-              <div className="refund-summary">
-                <div className="refund-row"><span>Customer</span><span>{selectedOrder.customer_name || 'Guest'}</span></div>
-                <div className="refund-row"><span>Amount</span><span className="refund-amount">{formatCurrency(selectedOrder.total_amount || selectedOrder.total)}</span></div>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <Button variant="danger" onClick={() => handleRefund(selectedOrder.id)}>Confirm Refund</Button>
-              <Button variant="ghost" onClick={() => setShowRefundModal(false)}>Cancel</Button>
-            </div>
-          </div>
+          </section>
         </div>
       )}
     </div>

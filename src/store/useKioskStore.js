@@ -117,7 +117,7 @@ export const useKioskStore = create((set, get) => ({
         store_id: storeId,
         channel: 'kiosk',
         items,
-        notes: 'Kiosk Order'
+        notes: 'Store Order'
       };
 
       const res = await orderService.create(orderData);

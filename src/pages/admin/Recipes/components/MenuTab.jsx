@@ -233,7 +233,7 @@ const MenuTab = ({ refreshKey, setLoading }) => {
                     </div>
                   ) : (
                     <div className="pipeline-node-meta" style={{ color: '#DC2626', fontWeight: 500, marginTop: 4 }}>
-                      ⚠️ Not sold on Kiosk/D2C
+                      ⚠️ Not sold in Stores/D2C
                     </div>
                   )}
                 </div>

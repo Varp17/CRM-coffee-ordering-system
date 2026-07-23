@@ -34,7 +34,7 @@ const getRecipeImage = (item) => {
   return 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
 };
 
-// Format all recipes from the Kiosk website catalog
+// Format all recipes from the customer website catalog
 const FORMATTED_WEBSITE_RECIPES = KIOSK_WEBSITE_RECIPES.map((item) => {
   let stepsList = [];
   if (Array.isArray(item.steps)) {
@@ -65,8 +65,8 @@ const PENDING_RECIPES = [
   {
     id: 'rec-201',
     name: 'Spiced Cardamom Cloud',
-    description: 'Shared via Kiosk custom builder: Cardamom infused cold brew with aerated almond foam.',
-    author: 'Rohan Mehta (Indiranagar Kiosk)',
+    description: 'Shared via custom builder: Cardamom infused cold brew with aerated almond foam.',
+    author: 'Rohan Mehta (Indiranagar Store)',
     concentrate: 'Kappi',
     status: 'pending',
     mood: 'Spiced, Creamy & Artisanal',
@@ -84,8 +84,8 @@ const PENDING_RECIPES = [
   {
     id: 'rec-202',
     name: 'Salted Caramel Bold Splash',
-    description: 'Shared via Kiosk custom builder: Salted caramel syrup mixed with extra bold cold brew.',
-    author: 'Sneha Patel (Koramangala Kiosk)',
+    description: 'Shared via custom builder: Salted caramel syrup mixed with extra bold cold brew.',
+    author: 'Sneha Patel (Koramangala Store)',
     concentrate: 'Bold',
     status: 'pending',
     mood: 'Sweet & Salty, Bold Fuel',
@@ -103,8 +103,8 @@ const PENDING_RECIPES = [
   {
     id: 'rec-203',
     name: 'Hazelnut Cream Classic Float',
-    description: 'Shared via Kiosk custom builder: Classic cold brew concentrate with hazelnut drizzle and whipped cream.',
-    author: 'Vikram Singh (Whitefield Kiosk)',
+    description: 'Shared via custom builder: Classic cold brew concentrate with hazelnut drizzle and whipped cream.',
+    author: 'Vikram Singh (Whitefield Store)',
     concentrate: 'Classic',
     status: 'pending',
     mood: 'Rich, Indulgent & Dessert Coffee',
@@ -158,7 +158,7 @@ const Recipes = () => {
   const [commentInput, setCommentInput] = useState('');
   const [recipeComments, setRecipeComments] = useState(INITIAL_COMMENTS);
 
-  // Sync with kiosk website submitted recipes
+  // Sync with recipes submitted through the customer website
   React.useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'chilld_kiosk_recipes') {
@@ -257,7 +257,7 @@ const Recipes = () => {
                   className="btn-approve-kiosk"
                   onClick={() => handleApprove(selectedRecipe.id)}
                 >
-                  <Check size={16} /> Approve for Kiosk Menu
+                  <Check size={16} /> Approve for Store Menu
                 </button>
                 <button
                   className="btn-reject-kiosk"
@@ -451,7 +451,7 @@ const Recipes = () => {
         <div className="page-header-left">
           <h2>Recipes Catalog & Custom Formulations</h2>
           <p className="page-subtitle">
-            Catalog of kiosk recipes and guest custom formulations. Click any recipe card to view detailed recipe instructions.
+            Catalog of recipes and guest custom formulations. Click any recipe card to view detailed recipe instructions.
           </p>
         </div>
       </div>
@@ -506,7 +506,7 @@ const Recipes = () => {
         </div>
       </div>
 
-      {/* Kiosk Website-Style Recipe Cards Grid */}
+      {/* Customer website-style recipe cards grid */}
       {filteredRecipes.length === 0 ? (
         <div className="empty-state-card">
           <Coffee size={36} className="empty-icon" />
@@ -617,4 +617,3 @@ const Recipes = () => {
 };
 
 export default Recipes;
-

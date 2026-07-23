@@ -52,7 +52,7 @@ export const useAuthStore = create((set) => ({
     }
 
     if (email === 'counter@gmail.com' && password === '12345') {
-      const mockUser = { id: 'u-kiosk-1', name: 'Counter Kiosk', email: 'counter@gmail.com', role: 'kiosk' };
+      const mockUser = { id: 'u-kiosk-1', name: 'Store Counter', email: 'counter@gmail.com', role: 'kiosk' };
       localStorage.setItem('dc_token', 'mock-kiosk-token-12345');
       localStorage.setItem('dc_user', JSON.stringify(mockUser));
       localStorage.setItem('dc_role', 'kiosk');

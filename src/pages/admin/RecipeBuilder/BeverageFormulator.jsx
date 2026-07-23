@@ -254,7 +254,7 @@ const BeverageFormulator = ({ recipe, onRefresh, onClose }) => {
         <h4>Formulation: {recipe.name}</h4>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <label style={{ fontSize: '13px', fontWeight: 600, color: formData.isActive ? '#16A34A' : '#6B7280' }}>
-            {formData.isActive ? 'Active on D2C/Kiosk' : 'Inactive'}
+            {formData.isActive ? 'Active on D2C/Stores' : 'Inactive'}
           </label>
           <label className="toggle-switch">
             <input 

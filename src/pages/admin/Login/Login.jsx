@@ -103,7 +103,7 @@ const Login = () => {
 
     if (result.success) {
       const isProductiveAdmin = result.role === 'admin' || result.role === 'super_admin';
-      toast.success(`Successfully logged in as ${isProductiveAdmin ? 'Administrator' : result.role === 'barista' ? 'Kitchen Operator' : 'Kiosk Display'}!`, {
+      toast.success(`Successfully logged in as ${isProductiveAdmin ? 'Administrator' : result.role === 'barista' ? 'Kitchen Operator' : 'Store Display'}!`, {
         style: { background: '#157347', color: '#fff' }
       });
       

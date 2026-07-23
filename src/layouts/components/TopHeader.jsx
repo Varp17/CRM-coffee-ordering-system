@@ -16,6 +16,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import { storeService } from '../../services/stores';
 import { unwrapList } from '../../utils/apiResponse';
 import { ALL_MENU_ITEMS, findMenuItemByPath } from '../../constants/menuConfig';
+import { CRM_STORES } from '../../data/crmStores';
 import './TopHeader.css';
 
 // ── Breadcrumb auto-generation ───────────────────────────────
@@ -133,7 +134,10 @@ const TopHeader = () => {
   const [showNotif, setShowNotif] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [selectedStore, setSelectedStore] = useState('all');
-  const [stores, setStores] = useState([{ id: 'all', name: 'All Stores' }]);
+  const [stores, setStores] = useState([
+    { id: 'all', name: 'All Stores' },
+    ...CRM_STORES,
+  ]);
   const notifRef = useRef(null);
   const userRef = useRef(null);
 
@@ -157,7 +161,21 @@ const TopHeader = () => {
     storeService.getAll({ limit: 100 }).then((res) => {
       const list = unwrapList(res, []);
       if (list.length > 0) {
-        setStores([{ id: 'all', name: 'All Stores' }, ...list]);
+        const websiteStoreNames = new Set(CRM_STORES.map((store) => store.name.toLowerCase()));
+        const additionalStores = list
+          .map((store) => ({
+            ...store,
+            name: store.name || store.store_name || '',
+          }))
+          .filter((store) => {
+            const name = store.name.toLowerCase();
+            return name && !websiteStoreNames.has(name);
+          });
+        setStores([
+          { id: 'all', name: 'All Stores' },
+          ...CRM_STORES,
+          ...additionalStores,
+        ]);
       }
     }).catch(() => {});
   }, [fetchNotifications, fetchUnreadCount]);

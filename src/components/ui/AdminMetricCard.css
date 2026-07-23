@@ -70,8 +70,8 @@ button.admin-metric-card:focus-visible {
 
 .admin-metric-card__label {
   min-width: 0;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.2;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -91,8 +91,8 @@ button.admin-metric-card:focus-visible {
 
 .admin-metric-card__value {
   color: #FFFFFF;
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 30px;
+  font-weight: 400;
   line-height: 1.05;
   letter-spacing: -0.01em;
 }
@@ -103,7 +103,7 @@ button.admin-metric-card:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #FFFFFF;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
   line-height: 1.2;
   opacity: 0.9;

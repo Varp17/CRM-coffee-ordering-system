@@ -10,13 +10,13 @@ import { X, RefreshCw, Send, ChevronRight, ChevronDown } from 'lucide-react';
 const INITIAL_KIOSK_SUPPORT = [
   {
     id: 't-901',
-    subject: 'Bulk Corporate Order Inquiry for Tech Park Kiosk',
+    subject: 'Bulk Corporate Order Inquiry for Tech Park Store',
     customer_name: 'Vikram Roy',
     email: 'vikram.roy@innovate.co',
     phone: '+91 98765 43210',
     priority: 'high',
     status: 'open',
-    source: 'Kiosk Contact Form',
+    source: 'Website Contact Form',
     created_at: '2026-07-23T09:15:00Z',
     message: 'Hello Chilld Coffee Team, we would like to set up a monthly subscription of 500 cold brew bottles for our office in Whitefield.'
   },
@@ -28,9 +28,9 @@ const INITIAL_KIOSK_SUPPORT = [
     phone: '+91 98123 45678',
     priority: 'medium',
     status: 'in_progress',
-    source: 'Kiosk Contact Form',
+    source: 'Website Contact Form',
     created_at: '2026-07-22T14:30:00Z',
-    message: 'Hi! I created the Cardamom Vanilla Blend on your kiosk custom builder yesterday. Wanted to check if it will be featured on the community recipes page!'
+    message: 'Hi! I created the Cardamom Vanilla Blend in your custom builder yesterday. Wanted to check if it will be featured on the community recipes page!'
   },
   {
     id: 't-903',
@@ -40,9 +40,9 @@ const INITIAL_KIOSK_SUPPORT = [
     phone: '+91 99887 76655',
     priority: 'low',
     status: 'resolved',
-    source: 'Kiosk Contact Form',
+    source: 'Website Contact Form',
     created_at: '2026-07-21T16:45:00Z',
-    message: 'Loved the smooth taste of the Classic concentrate at the Indiranagar kiosk. Is this available for home delivery in 1L bottles?'
+    message: 'Loved the smooth taste of the Classic concentrate at the Indiranagar store. Is this available for home delivery in 1L bottles?'
   }
 ];
 
@@ -58,7 +58,7 @@ const getMergedSupport = () => {
         phone: m.phone || 'N/A',
         priority: 'medium',
         status: m.status || 'open',
-        source: 'Kiosk Contact Form',
+        source: 'Website Contact Form',
         created_at: m.createdAt || new Date().toISOString(),
         message: m.message,
       }));
@@ -81,7 +81,7 @@ const Support = () => {
   const [openStatusId, setOpenStatusId] = useState(null);
   const [openPriorityId, setOpenPriorityId] = useState(null);
 
-  // Sync with kiosk website contact submissions
+  // Sync with customer website contact submissions
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'chilld_kiosk_contacts') {

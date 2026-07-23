@@ -580,7 +580,7 @@ const Menu = () => {
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
                       <input type="checkbox" checked={formData.is_available_kiosk}
                         onChange={e => setFormData({...formData, is_available_kiosk: e.target.checked})} />
-                      Kiosk
+                      Store
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
                       <input type="checkbox" checked={formData.is_available_d2c}

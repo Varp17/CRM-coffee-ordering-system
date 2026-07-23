@@ -45,18 +45,19 @@ const PRODUCT_BREAKDOWN = [
   { name: 'Discovery Kit', value: 22338, percentage: '15%', color: '#7C3AED' },
 ];
 
-const KIOSK_TERMINALS = [
-  { id: 'T1', name: 'T1 - Tech Park Plaza', status: 'Online', ordersToday: 384, location: 'Building A Lobby' },
-  { id: 'T2', name: 'T2 - Museum Road Cafe', status: 'Online', ordersToday: 312, location: 'Main Entrance' },
-  { id: 'T3', name: 'T3 - Metro Station Express', status: 'Online', ordersToday: 298, location: 'Platform Level' },
-  { id: 'T4', name: 'T4 - Indiranagar Hub', status: 'Online', ordersToday: 254, location: '100ft Road' },
+const STORE_TERMINALS = [
+  { id: 'T1', name: 'T1 - Indiranagar', status: 'Online', ordersToday: 384, location: '100 Feet Road' },
+  { id: 'T2', name: 'T2 - Koramangala', status: 'Online', ordersToday: 312, location: '5th Block' },
+  { id: 'T3', name: 'T3 - HSR Layout', status: 'Online', ordersToday: 298, location: '27th Main' },
+  { id: 'T4', name: 'T4 - Whitefield', status: 'Online', ordersToday: 254, location: 'ITPL Main Road' },
+  { id: 'T5', name: 'T5 - MG Road', status: 'Online', ordersToday: 221, location: 'Trinity Circle' },
 ];
 
 const DUMMY_LIVE_ORDERS = [
   {
     id: 'ORD-8091',
     customer: 'Ananya Sharma',
-    terminal: 'T1 - Tech Park Plaza',
+    terminal: 'T1 - Indiranagar',
     products: 'Bold Concentrate (325ml) ×2',
     total: 780,
     status: 'in_progress',
@@ -65,7 +66,7 @@ const DUMMY_LIVE_ORDERS = [
   {
     id: 'ORD-8090',
     customer: 'Rohan Mehta',
-    terminal: 'T2 - Museum Road Cafe',
+    terminal: 'T2 - Koramangala',
     products: 'Discovery Kit (All 3 Concentrates) ×1',
     total: 590,
     status: 'ready',
@@ -74,7 +75,7 @@ const DUMMY_LIVE_ORDERS = [
   {
     id: 'ORD-8089',
     customer: 'Sneha Patel',
-    terminal: 'T3 - Metro Station',
+    terminal: 'T3 - HSR Layout',
     products: 'Kaapi Concentrate (325ml) ×1, Bold Cold Coffee ×1',
     total: 600,
     status: 'completed',
@@ -83,7 +84,7 @@ const DUMMY_LIVE_ORDERS = [
   {
     id: 'ORD-8088',
     customer: 'Vikram Roy',
-    terminal: 'Chilld Website Store',
+    terminal: 'T4 - Whitefield',
     products: 'Classic CB Concentrate (1L) ×1, Classic CB (325ml) ×1',
     total: 1370,
     status: 'completed',
@@ -92,7 +93,7 @@ const DUMMY_LIVE_ORDERS = [
   {
     id: 'ORD-8087',
     customer: 'Karan Verma',
-    terminal: 'T4 - Indiranagar Hub',
+    terminal: 'T5 - MG Road',
     products: 'Kaapi Filter Shake ×1, Bold Cold Coffee ×1',
     total: 430,
     status: 'completed',
@@ -103,9 +104,9 @@ const DUMMY_LIVE_ORDERS = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState(DUMMY_LIVE_ORDERS);
-  const [syncStatus, setSyncStatus] = useState('Connected to Kiosk (Local Sync)');
+  const [syncStatus, setSyncStatus] = useState('Connected to Store Network (Local Sync)');
 
-  // Local sync listener connecting Kiosk website and CRM
+  // Local sync listener connecting the ordering website and CRM
   useEffect(() => {
     const handleSync = (event) => {
       if (event.key === 'chilld_kiosk_orders') {
@@ -113,7 +114,7 @@ const Dashboard = () => {
           const syncedOrders = JSON.parse(event.newValue);
           if (Array.isArray(syncedOrders)) {
             setOrders([...syncedOrders, ...DUMMY_LIVE_ORDERS]);
-            setSyncStatus('New order synced from Kiosk!');
+            setSyncStatus('New order synced from Store Network!');
           }
         } catch (_) {}
       }
@@ -141,7 +142,7 @@ const Dashboard = () => {
       {/* Top Banner Header */}
       <div className="dashboard-header-row">
         <div>
-          <h2 className="dash-title">Chilld Coffee Kiosk Operations</h2>
+          <h2 className="dash-title">Chilld Coffee Operations</h2>
           <p className="dash-subtitle">
             Real-time sales, live terminal monitoring, and customer recipe approval hub.
           </p>
@@ -242,11 +243,11 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Kiosk Product Sales Breakdown */}
+        {/* Product Sales Breakdown */}
         <div className="chart-card flex-1 concentrate-mix-card">
           <div className="chart-card-header">
             <h3>Product Mix</h3>
-            <p className="chart-subtitle">Sales share across all kiosk products</p>
+            <p className="chart-subtitle">Sales share across all products</p>
           </div>
           <div className="chart-body concentrate-mix-body">
             <div className="concentrate-pie">
@@ -295,13 +296,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Section: Live Kiosk Orders & Terminal Status */}
+      {/* Bottom Section: Live Orders & Terminal Status */}
       <div className="dashboard-bottom-grid">
-        {/* Live Kiosk Orders Feed */}
+        {/* Live Orders Feed */}
         <div className="content-card flex-2">
           <div className="card-header-row">
             <div>
-              <h3>Recent Kiosk Orders</h3>
+              <h3>Recent Orders</h3>
               <p className="card-subtitle">Real-time incoming orders displaying items ordered</p>
             </div>
             <Link to="/admin/orders" className="btn-link">View All Orders →</Link>
@@ -338,17 +339,17 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Kiosk Terminals Status Card */}
+        {/* Store Terminals Status Card */}
         <div className="content-card flex-1">
           <div className="card-header-row">
             <div>
-              <h3>Kiosk Terminals</h3>
+              <h3>Store Terminals</h3>
               <p className="card-subtitle">Live hardware status</p>
             </div>
           </div>
 
           <div className="terminals-list">
-            {KIOSK_TERMINALS.map((term) => (
+            {STORE_TERMINALS.map((term) => (
               <div key={term.id} className="terminal-item">
                 <div className="term-info">
                   <span className="term-name">{term.name}</span>

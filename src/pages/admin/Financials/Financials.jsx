@@ -48,7 +48,7 @@ const Financials = () => {
 
   const salesLedger = [
     { code: 'LED-4010', name: 'D2C Retail Beverage Sales', debit: 0, credit: Math.round(grossSales * 0.62) },
-    { code: 'LED-4020', name: 'Kiosk Store Coffee Sales', debit: 0, credit: Math.round(grossSales * 0.38) },
+    { code: 'LED-4020', name: 'Retail Store Coffee Sales', debit: 0, credit: Math.round(grossSales * 0.38) },
     { code: 'LED-2050', name: 'CGST Liability Account (9%)', debit: 0, credit: cgstSGstSplit },
     { code: 'LED-2060', name: 'SGST Liability Account (9%)', debit: 0, credit: cgstSGstSplit },
     { code: 'LED-1010', name: 'UPI Gateway Clearing Ledger', debit: grossSales, credit: 0 },

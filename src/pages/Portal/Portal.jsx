@@ -60,7 +60,7 @@ const Portal = () => {
           <span className="badge-text">{t('portal.badgeText', 'CHILLD COFFEE • Authorised CRM Access')}</span>
         </div>
 
-        {/* Official Kiosk Website Chilld Logo & COFFEE */}
+        {/* Official Chilld website logo and COFFEE wordmark */}
         <div className="portal-logo-container">
           <div className="portal-brand-logo">
             <svg
@@ -106,7 +106,7 @@ const Portal = () => {
             </svg>
           </div>
           <span className="logo-text-coffee">COFFEE</span>
-          <p className="portal-brand-subtitle">{t('portal.subtitle', 'Enterprise Management & Kiosk Operations Hub')}</p>
+          <p className="portal-brand-subtitle">{t('portal.subtitle', 'Enterprise Management & Store Operations Hub')}</p>
         </div>
 
         <form className="portal-form" onSubmit={handleSubmit}>
@@ -187,10 +187,10 @@ const Portal = () => {
                     <td><code>12345</code></td>
                     <td><span className="role-tag tag-barista">Barista</span></td>
                   </tr>
-                  <tr onClick={() => handleAutofill('counter@gmail.com', '12345', 'Kiosk')}>
+                  <tr onClick={() => handleAutofill('counter@gmail.com', '12345', 'Store Display')}>
                     <td><code>counter@gmail.com</code></td>
                     <td><code>12345</code></td>
-                    <td><span className="role-tag tag-kiosk">Kiosk</span></td>
+                    <td><span className="role-tag tag-kiosk">Store Display</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -201,7 +201,7 @@ const Portal = () => {
           </div>
         </div>
 
-        {/* Secondary Navigation Link to Kiosk Website */}
+        {/* Secondary navigation link to the customer ordering website */}
         <div className="d2c-shortcut-container">
           <a
             href="https://coffee-ordering-kiosk.vercel.app"
@@ -209,7 +209,7 @@ const Portal = () => {
             rel="noopener noreferrer"
             className="back-btn-d2c"
           >
-            Access Coffee Ordering Kiosk
+            Access Coffee Ordering Website
             <span className="d2c-arrow">↗</span>
           </a>
         </div>
