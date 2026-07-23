@@ -10,20 +10,21 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   DollarSign, ShoppingBag, Users, Package,
   TrendingUp, ArrowUpRight, CheckCircle2,
-  Clock, Coffee, BookOpen, MessageSquare, Monitor,
+  Clock, Coffee, BookOpen, MessageSquare, Monitor, Globe,
   Sparkles, RefreshCw, Layers
 } from 'lucide-react';
 
-// Static/Dummy Kiosk Metrics Data
+// Static/Dummy Web Platform Metrics Data
 const DASHBOARD_METRICS = {
   totalRevenue: 148920,
   revenueGrowth: 14.2,
   totalOrders: 1248,
   ordersGrowth: 8.5,
   avgOrderValue: 119.3,
-  activeTerminals: 4,
+  webVisitors: '2.4k',
+  webVisitorsGrowth: 18.6,
   pendingRecipesCount: 3,
-  avgPrepTime: '3.2 mins',
+  avgSessionDuration: '4.2 mins',
   customerSatisfaction: '98.4%',
 };
 
@@ -182,11 +183,11 @@ const Dashboard = () => {
 
         <div className="vasify-card orange">
           <div className="vasify-card-top">
-            <span className="vasify-card-label">Active Terminals</span>
-            <div className="vasify-card-badge"><Monitor size={16} /></div>
+            <span className="vasify-card-label">Active Web Sessions</span>
+            <div className="vasify-card-badge"><Globe size={16} /></div>
           </div>
-          <h3 className="vasify-card-val">{DASHBOARD_METRICS.activeTerminals} Online</h3>
-          <span className="vasify-card-sub">avg prep {DASHBOARD_METRICS.avgPrepTime}</span>
+          <h3 className="vasify-card-val">{DASHBOARD_METRICS.webVisitors} Online</h3>
+          <span className="vasify-card-sub"><ArrowUpRight size={13} /> +{DASHBOARD_METRICS.webVisitorsGrowth}% web traffic</span>
         </div>
 
         <div className="vasify-card green">

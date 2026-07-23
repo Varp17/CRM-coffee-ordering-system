@@ -150,6 +150,24 @@
   border-color: var(--c-espresso);
 }
 
+@media (max-width: 768px) {
+  .cust-search-box {
+    flex: 1 0 100%;
+    max-width: none;
+  }
+
+  .cust-segment-tabs {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .cust-segment-tabs::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ── Table Card ── */
 .cust-table-card {
   background: #FFFFFF;
