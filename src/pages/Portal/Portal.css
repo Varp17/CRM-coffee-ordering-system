@@ -1,6 +1,6 @@
 /* ==========================================================================
-   UNIFIED HUB PORTAL STYLE — Coffee System
-   Premium Coffee Shop Aesthetics: Espresso, Cream & Warm Caramel Palette
+   UNIFIED HUB PORTAL STYLE — CHILLD COFFEE KIOSK CRM
+   Chilld Tech Blue (#007AFF), Deep Navy (#1F2A44) & Coffee Brown (#C67C4E)
    ========================================================================== */
 
 .portal-page {
@@ -9,10 +9,10 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 20%, #FAF6F0 0%, #F0E8DB 90%);
-  color: #2C1A0E;
+  background: radial-gradient(circle at 10% 20%, #F5F9FC 0%, #E6F4FF 90%);
+  color: #1F2A44;
   padding: 24px;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Author', 'Inter', system-ui, -apple-system, sans-serif;
   overflow: hidden;
 }
 
@@ -21,7 +21,7 @@
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(200, 133, 62, 0.1) 0%, rgba(200, 133, 62, 0) 70%);
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.12) 0%, rgba(0, 122, 255, 0) 70%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -34,30 +34,31 @@
   width: 100%;
   max-width: 440px;
   padding: 40px 32px 32px 32px;
-  background-color: rgba(255, 255, 255, 0.92);
+  background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid #E2D4C4;
-  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
   box-shadow: 
-    0 10px 25px -5px rgba(44, 26, 14, 0.1),
-    0 8px 16px -6px rgba(44, 26, 14, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 12px 32px -5px rgba(31, 42, 68, 0.08),
+    0 8px 16px -6px rgba(31, 42, 68, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   text-align: center;
   box-sizing: border-box;
   z-index: 1;
 }
 
-/* Header badge - Info Blue Style */
+/* Header badge - Tech Blue Style */
 .portal-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: rgba(37, 99, 235, 0.06);
-  border: 1px solid rgba(37, 99, 235, 0.18);
+  background-color: #E6F4FF;
+  border: 1px solid rgba(0, 122, 255, 0.2);
   padding: 6px 14px;
   border-radius: 20px;
   margin-bottom: 24px;
+  font-family: 'Author', 'Outfit', sans-serif;
 }
 
 .portal-badge .badge-icon {
@@ -66,31 +67,33 @@
 
 .portal-badge .badge-text {
   font-size: 11px;
-  font-weight: 600;
-  color: #2563EB;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  color: #007AFF;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-/* Text Logo - Coffee System */
+/* Text Logo - Chilld Coffee */
 .portal-logo-container {
   margin-bottom: 28px;
 }
 
 .portal-brand-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #2C1A0E; /* Deep Espresso */
+  font-family: 'Author', 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1F2A44; /* Deep Navy */
   margin: 0 0 6px 0;
   letter-spacing: -0.02em;
 }
 
 .portal-brand-title .brand-accent {
-  color: #C8853E; /* Warm Caramel Accent */
+  color: #007AFF; /* Tech Primary Blue */
   position: relative;
 }
 
 .portal-brand-subtitle {
-  color: #7A6050;
+  color: #4A5568;
   font-size: 0.875rem;
   margin: 0;
   font-weight: 500;
@@ -115,16 +118,16 @@
 .form-label {
   font-size: 12px;
   font-weight: 700;
-  color: #4A2E1A;
+  color: #1F2A44;
   letter-spacing: 0.02em;
 }
 
 .portal-input {
   background: #FFFFFF;
-  border: 1px solid #D4C4B0;
+  border: 1px solid #CBD5E1;
   padding: 12px 14px;
   border-radius: 8px;
-  color: #2C1A0E;
+  color: #1F2A44;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -134,24 +137,25 @@
 }
 
 .portal-input::placeholder {
-  color: #B8A090;
+  color: #94A3B8;
 }
 
 .portal-input:focus {
   outline: none;
-  border-color: #C8853E;
-  box-shadow: 0 0 0 4px rgba(200, 133, 62, 0.15);
+  border-color: #007AFF;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
   background-color: #FFFFFF;
 }
 
 /* Access Button with micro-animations */
 .portal-login-btn {
-  background-color: #2C1A0E; /* Deep Espresso brand primary */
+  background-color: #007AFF; /* Tech Primary Blue */
   color: #FFFFFF;
   border: none;
   padding: 0 24px;
   height: 46px;
-  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
@@ -162,13 +166,13 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(44, 26, 14, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
 }
 
 .portal-login-btn:hover {
-  background-color: #4A2E1A;
+  background-color: #0056B3;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(44, 26, 14, 0.18);
+  box-shadow: 0 6px 16px rgba(0, 122, 255, 0.35);
 }
 
 .portal-login-btn:active {
