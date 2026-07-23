@@ -126,8 +126,15 @@ export const DataTable = ({
                 <th
                   key={col.header}
                   onClick={() => col.sortable && handleSort(col.accessor)}
+                  style={col.sticky === 'right' ? {
+                    position: 'sticky',
+                    right: 0,
+                    backgroundColor: '#F8FAFC',
+                    zIndex: 20,
+                    boxShadow: '-4px 0 8px rgba(0,0,0,0.04)',
+                  } : {}}
                 >
-                  <div className="data-table-header-cell" style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: col.sortable ? 'pointer' : 'default', color: 'var(--color-text-muted)' }}>
+                  <div className="data-table-header-cell" style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: col.sortable ? 'pointer' : 'default', color: 'var(--color-text-muted)', justifyContent: col.sticky === 'right' ? 'flex-end' : undefined }}>
                     <span>{col.header}</span>
                     {col.sortable && (
                       <span style={{ display: 'flex', alignItems: 'center', color: sortConfig.key === col.accessor ? 'var(--color-text-primary)' : 'var(--color-text-muted)', opacity: sortConfig.key === col.accessor ? 1 : 0.5 }}>
@@ -163,7 +170,16 @@ export const DataTable = ({
                   className={onRowClick ? 'data-table-row-clickable' : ''}
                 >
                   {columns.map((col) => (
-                    <td key={col.header}>
+                    <td
+                      key={col.header}
+                      style={col.sticky === 'right' ? {
+                        position: 'sticky',
+                        right: 0,
+                        backgroundColor: '#FFFFFF',
+                        zIndex: 10,
+                        boxShadow: '-4px 0 8px rgba(0,0,0,0.04)',
+                      } : {}}
+                    >
                       {col.render
                         ? col.render(row)
                         : typeof col.accessor === 'function'

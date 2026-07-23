@@ -7,17 +7,48 @@ import { formatCurrency } from '../../../utils/formatters';
 import { orderService } from '../../../services/orders';
 import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
-import DataTable from '../../../components/ui/DataTable';
-import { X, ChevronRight, RefreshCw, AlertCircle, Search, MoreHorizontal, Play, CheckCircle, Eye, Printer } from 'lucide-react';
+import { X, RefreshCw, AlertCircle, Search, Play, CheckCircle, Eye, Printer, Download, ExternalLink, ChevronDown } from 'lucide-react';
+
+/* ─── Avatar Color Palette (from ICIT Leads) ─── */
+const AVATAR_COLORS = [
+  { bg: '#DBEAFE', text: '#1E40AF' },
+  { bg: '#EDE9FE', text: '#5B21B6' },
+  { bg: '#D1FAE5', text: '#065F46' },
+  { bg: '#FEF3C7', text: '#92400E' },
+  { bg: '#FCE7F3', text: '#9D174D' },
+  { bg: '#E0F2FE', text: '#0369A1' },
+  { bg: '#FEE2E2', text: '#991B1B' },
+  { bg: '#F3E8FF', text: '#6B21A8' },
+];
+
+const getAvatarColor = (name) => {
+  const hash = (name || '').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+};
+
+/* ─── Status Badge Styles (matching ICIT) ─── */
+const STATUS_STYLES = {
+  pending:       { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', dot: '#F59E0B' },
+  in_progress:   { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD', dot: '#3B82F6' },
+  ready:         { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD', dot: '#7C3AED' },
+  completed:     { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7', dot: '#10B981' },
+  cancelled:     { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', dot: '#EF4444' },
+  refunded:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#9CA3AF' },
+};
 
 const Orders = () => {
   const { orders: ordersList, fetchOrders, updateOrderStatus, refundOrder, isLoading } = useOrderStore();
   const [statusFilter, setStatusFilter] = useState('all');
-  const [sourceFilter, setSourceFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showDetailPanel, setShowDetailPanel] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [editingStatus, setEditingStatus] = useState(null);
+  const [editingStatusValue, setEditingStatusValue] = useState('');
+
+  const STATUS_OPTIONS = ['pending', 'in_progress', 'ready', 'completed', 'cancelled'];
 
   // WebSocket-driven real-time refresh
   const wsNotifications = useNotificationStore((s) => s.notifications);
@@ -27,7 +58,6 @@ const Orders = () => {
     fetchOrders();
   }, [fetchOrders]);
 
-  // Auto-refresh when a new notification arrives via WebSocket
   useEffect(() => {
     const currentCount = wsNotifications.length;
     if (prevNotifCountRef.current > 0 && currentCount > prevNotifCountRef.current) {
@@ -36,20 +66,25 @@ const Orders = () => {
     prevNotifCountRef.current = currentCount;
   }, [wsNotifications.length, fetchOrders]);
 
-  const statusOptions = ['all', 'pending', 'in_progress', 'ready', 'completed', 'cancelled', 'refunded'];
-  const sourceOptions = ['all', 'd2c_website', 'kiosk'];
-
   const filteredOrders = useMemo(() => {
     return (ordersList || []).filter(order => {
       const matchesStatus = statusFilter === 'all' || order.status?.toLowerCase() === statusFilter.toLowerCase();
-      const matchesSource = sourceFilter === 'all' || order.channel?.toLowerCase() === sourceFilter.toLowerCase();
       const matchesSearch = searchQuery === '' ||
         (order.order_number || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (order.customer_name || 'Guest').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (order.customer_email || '').toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesStatus && matchesSource && matchesSearch;
+      return matchesStatus && matchesSearch;
     });
-  }, [ordersList, statusFilter, sourceFilter, searchQuery]);
+  }, [ordersList, statusFilter, searchQuery]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const paginatedOrders = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredOrders.slice(start, start + itemsPerPage);
+  }, [filteredOrders, currentPage, itemsPerPage]);
+
+  useEffect(() => { setCurrentPage(1); }, [statusFilter, searchQuery]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     const res = await updateOrderStatus(orderId, newStatus);
@@ -68,7 +103,7 @@ const Orders = () => {
     if (res.success) {
       toast.success(`Refund initiated for ${orderId}.`, { icon: '💰' });
       setShowRefundModal(false);
-      setShowDetailModal(false);
+      setShowDetailPanel(false);
     } else {
       toast.error(`Refund failed: ${res.error}`);
     }
@@ -76,301 +111,310 @@ const Orders = () => {
 
   const openDetail = async (order) => {
     setSelectedOrder(order);
-    setShowDetailModal(true);
-    
+    setShowDetailPanel(true);
     try {
       const res = await orderService.getById(order.id);
       const detailed = unwrapObject(res);
-      if (detailed) {
-        setSelectedOrder(detailed);
-      }
-    } catch (err) {
-      toast.error('Failed to load full order details: ' + err.message);
-    }
-  };
-
-  const getStatusColor = (status) => {
-    const colors = {
-      'pending': 'status-pending',
-      'in_progress': 'status-progress',
-      'ready': 'status-ready',
-      'completed': 'status-completed',
-      'cancelled': 'status-cancelled',
-      'refunded': 'status-refunded',
-    };
-    return colors[status?.toLowerCase()] || '';
+      if (detailed) setSelectedOrder(detailed);
+    } catch (_) {}
   };
 
   const getNextStatus = (current) => {
-    const flow = { 'pending': 'in_progress', 'in_progress': 'ready', 'ready': 'completed' };
+    const flow = { pending: 'in_progress', in_progress: 'ready', ready: 'completed' };
     return flow[current?.toLowerCase()] || null;
   };
 
-  // Named action labels per status
   const getActionLabel = (status) => {
-    const labels = {
-      'pending': 'Start Order',
-      'in_progress': 'Mark Ready',
-      'ready': 'Complete Order',
-    };
+    const labels = { pending: 'Start Order', in_progress: 'Mark Ready', ready: 'Complete Order' };
     return labels[status?.toLowerCase()] || null;
   };
 
-  // Action button color per status
   const getActionColor = (status) => {
-    const colors = {
-      'pending': '#D97706',
-      'in_progress': '#1E40AF',
-      'ready': '#7C3AED',
-    };
-    return colors[status?.toLowerCase()] || 'var(--color-primary)';
+    const colors = { pending: '#D97706', in_progress: '#1E40AF', ready: '#7C3AED' };
+    return colors[status?.toLowerCase()] || '#007AFF';
   };
 
+  /* ─── Order Stats (ICIT Summary Bar Style) ─── */
   const orderStats = useMemo(() => ({
     total: (ordersList || []).length,
     pending: (ordersList || []).filter(o => o.status === 'pending').length,
     inProgress: (ordersList || []).filter(o => o.status === 'in_progress').length,
+    ready: (ordersList || []).filter(o => o.status === 'ready').length,
     completed: (ordersList || []).filter(o => o.status === 'completed').length,
+    cancelled: (ordersList || []).filter(o => o.status === 'cancelled').length,
     totalRevenue: (ordersList || []).reduce((s, o) => s + parseFloat(o.total_amount || 0), 0),
   }), [ordersList]);
 
-  // Define columns structure for the new virtualized DataTable component
-  const columns = useMemo(() => [
-    {
-      header: 'Order',
-      accessor: 'order_number',
-      sortable: true,
-      render: (row) => <strong style={{ color: '#111827', fontSize: '0.85rem' }}>{row.order_number || row.id}</strong>
-    },
-    {
-      header: 'Customer',
-      accessor: 'customer_name',
-      sortable: true,
-      render: (row) => (
-        <div className="customer-cell" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="customer-avatar" style={{
-            width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--color-primary-light)',
-            color: 'var(--color-primary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 'bold', fontSize: '0.85rem'
-          }}>
-            {(row.customer_name || 'G').charAt(0)}
-          </span>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="customer-name" style={{ fontWeight: '600', fontSize: '0.85rem' }}>{row.customer_name || 'Guest'}</span>
-            <span className="customer-email" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{row.customer_email || ''}</span>
-          </div>
-        </div>
-      )
-    },
-    {
-      header: 'Ordered Products',
-      accessor: 'items_summary',
-      sortable: true,
-      render: (row) => {
-        const itemsText = row.items_summary || (row.items && row.items.map(i => `${i.name || i.title} ×${i.quantity || 1}`).join(', ')) || '—';
-        return (
-          <span style={{ fontSize: '0.85rem', color: '#1F2A44', fontWeight: '600' }}>
-            {itemsText}
-          </span>
-        );
-      }
-    },
-    {
-      header: 'Status',
-      accessor: 'status',
-      sortable: true,
-      render: (row) => {
-        const STATUS_MAP = {
-          'pending':       { bg: '#FEF3C7', color: '#92400E', border: '#F59E0B' },
-          'in_progress':   { bg: '#DBEAFE', color: '#1E40AF', border: '#3B82F6' },
-          'ready':         { bg: '#EDE9FE', color: '#5B21B6', border: '#7C3AED' },
-          'completed':     { bg: '#D1FAE5', color: '#065F46', border: '#10B981' },
-          'cancelled':     { bg: '#FEE2E2', color: '#991B1B', border: '#EF4444' },
-          'refunded':      { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' },
-          'kot_generated': { bg: '#E0F2FE', color: '#0369A1', border: '#0284C7' },
-        };
-        const sm = STATUS_MAP[row.status?.toLowerCase()] || { bg: '#F3F4F6', color: '#374151', border: '#9CA3AF' };
-        const badgeStyle = {
-          display: 'inline-block',
-          whiteSpace: 'nowrap',
-          padding: '4px 12px',
-          borderRadius: '100px',
-          fontSize: '0.72rem',
-          fontWeight: '600',
-          color: sm.color,
-          backgroundColor: sm.bg,
-          border: `1px solid ${sm.border}`,
-          letterSpacing: '0.02em',
-        };
-        
-        return (
-          <span style={badgeStyle}>
-            {row.status ? row.status.charAt(0).toUpperCase() + row.status.slice(1).replace('_', ' ') : 'Unknown'}
-          </span>
-        );
-      }
-    },
-    {
-      header: 'Date',
-      accessor: 'created_at',
-      sortable: true,
-      render: (row) => <span style={{ fontSize: '0.85rem', color: '#374151' }}>{row.created_at ? new Date(row.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
-    },
-    {
-      header: 'Trend',
-      accessor: 'trend',
-      sortable: false,
-      render: (row) => {
-        // Mock SVG sparklines for the Zenith look
-        const color = row.status === 'cancelled' ? '#EF4444' : '#10B981';
-        return (
-          <svg width="40" height="15" viewBox="0 0 40 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d={row.status === 'cancelled' ? "M0 2L10 4L20 6L30 8L40 10" : "M0 12L10 10L20 12L30 8L40 6"} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        );
-      }
-    },
-    {
-      header: 'Amount',
-      accessor: (row) => parseFloat(row.total_amount || row.total || 0),
-      sortable: true,
-      render: (row) => <strong style={{ fontSize: '0.85rem', color: '#111827' }}>{formatCurrency(row.total_amount || row.total)}</strong>
-    },
-    {
-      header: 'Source',
-      accessor: 'channel',
-      sortable: true,
-      render: (row) => (
-        <span className={`source-badge source-${(row.channel || 'kiosk').toLowerCase()}`}>
-          {row.channel || 'kiosk'}
-        </span>
-      )
-    },
-    {
-      header: 'Time',
-      accessor: 'created_at',
-      sortable: true,
-      render: (row) => row.created_at ? new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''
-    },
-    {
-      header: 'Actions',
-      accessor: 'id',
-      sortable: false,
-      render: (row) => (
-        <div className="actions-cell" onClick={(e) => e.stopPropagation()} style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
-          {/* Status-dependent primary action */}
-          {getNextStatus(row.status) && (
-            <button
-              className="action-btn-sm primary"
-              onClick={() => handleStatusChange(row.id, getNextStatus(row.status))}
-              style={{
-                height: '28px', padding: '0 10px', fontSize: '0.75rem', fontWeight: 600,
-                backgroundColor: getActionColor(row.status), color: 'white',
-                borderRadius: '6px', border: 'none', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: '4px',
-                transition: 'opacity 0.2s', whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.85'}
-              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-            >
-              {row.status === 'pending' && <Play size={12} />}
-              {row.status === 'in_progress' && <CheckCircle size={12} />}
-              {row.status === 'ready' && <CheckCircle size={12} />}
-              {getActionLabel(row.status)}
-            </button>
-          )}
-
-          {/* Completed: Print button */}
-          {row.status === 'completed' && (
-            <button
-              className="action-btn-sm outline"
-              onClick={() => toast.success('Invoice generated for #' + (row.order_number || row.id))}
-              style={{
-                height: '28px', padding: '0 8px', fontSize: '0.75rem',
-                backgroundColor: 'transparent', border: '1px solid #D1D5DB',
-                borderRadius: '6px', cursor: 'pointer', color: '#374151',
-                display: 'flex', alignItems: 'center', gap: '4px',
-              }}
-            >
-              <Printer size={12} /> Print
-            </button>
-          )}
-
-          {/* View button (always visible) */}
-          <button 
-            className="action-btn-sm outline" 
-            onClick={() => openDetail(row)}
-            style={{
-              height: '28px', padding: '0 8px', fontSize: '0.75rem',
-              backgroundColor: 'transparent', border: '1px solid #D1D5DB',
-              borderRadius: '6px', cursor: 'pointer', color: '#374151',
-              display: 'flex', alignItems: 'center', gap: '4px',
-            }}
-          >
-            <Eye size={12} /> View
-          </button>
-        </div>
-      )
-    }
-  ], []);
+  /* ─── CSV Export ─── */
+  const handleExportCSV = () => {
+    const headers = 'Order,Customer,Email,Products,Status,Date,Amount';
+    const rows = filteredOrders.map(o => {
+      const items = (o.items || []).map(i => `${i.name} x${i.quantity}`).join('; ');
+      return `"${o.order_number || o.id}","${o.customer_name || 'Guest'}","${o.customer_email || ''}","${items}","${o.status}","${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}","${o.total_amount || 0}"`;
+    }).join('\n');
+    const csvContent = 'data:text/csv;charset=utf-8,' + headers + '\n' + rows;
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `orders-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Orders exported');
+  };
 
   if (isLoading && (ordersList || []).length === 0) {
     return (
-      <div className="orders-view flex-center" style={{ height: '70vh' }}>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Loading orders...</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '70vh' }}>
+        <p style={{ color: '#94A3B8' }}>Loading orders...</p>
       </div>
     );
   }
 
   return (
-    <div className="orders-view animate-fade-in" style={{ position: 'relative' }}>
-      {/* Zenith Page Header */}
-      <div className="zenith-page-header">
-        <div className="zenith-header-left">
-          <div className="zenith-breadcrumb">Dashboard &gt; Orders</div>
-          <h1 className="zenith-title">Orders</h1>
-          <p className="zenith-subtitle">Manage and track all customer orders.</p>
+    <div className="icit-orders-page">
+      {/* ─── ICIT-Style Header ─── */}
+      <div className="icit-header">
+        <div>
+          <h1 className="icit-title">Order Management</h1>
+          <div className="icit-header-stats">
+            <span className="icit-stat"><span className="icit-stat-dot" style={{ background: '#007AFF' }} /> Total: {orderStats.total}</span>
+            <span className="icit-stat"><span className="icit-stat-dot" style={{ background: '#10B981' }} /> Completed: {orderStats.completed}</span>
+            <span className="icit-stat"><span className="icit-stat-dot" style={{ background: '#F59E0B' }} /> Revenue: {formatCurrency(orderStats.totalRevenue)}</span>
+          </div>
+        </div>
+        <div className="icit-header-actions">
+          <button className="icit-icon-btn" onClick={() => fetchOrders()} title="Refresh">
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'icit-spin' : ''}`} />
+          </button>
+          <button className="icit-export-btn" onClick={handleExportCSV}>
+            <Download className="w-3.5 h-3.5" /> Export
+          </button>
         </div>
       </div>
 
-      {/* Filters & Search Row */}
-      <div className="orders-filters-search-row">
-        <div className="zenith-filters-row">
-          {['all', 'completed', 'in_progress', 'pending', 'cancelled'].map(tab => (
-            <button 
-              key={tab} 
-              className={`zenith-filter-pill ${statusFilter === tab ? 'active' : ''}`}
-              onClick={() => setStatusFilter(tab)}
-            >
-              {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1).replace('_', ' ')}
-            </button>
-          ))}
-        </div>
+      {/* ─── Summary Stat Cards (ICIT Style) ─── */}
+      <div className="icit-stats-bar">
+        {[
+          { label: 'Total', count: orderStats.total, color: '#007AFF', bg: 'rgba(0,122,255,0.08)', border: 'rgba(0,122,255,0.18)', click: () => setStatusFilter('all') },
+          { label: 'Pending', count: orderStats.pending, color: '#D97706', bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.18)', click: () => setStatusFilter('pending') },
+          { label: 'In Progress', count: orderStats.inProgress, color: '#1E40AF', bg: 'rgba(30,64,175,0.08)', border: 'rgba(30,64,175,0.18)', click: () => setStatusFilter('in_progress') },
+          { label: 'Ready', count: orderStats.ready, color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.18)', click: () => setStatusFilter('ready') },
+          { label: 'Completed', count: orderStats.completed, color: '#065F46', bg: 'rgba(6,95,70,0.08)', border: 'rgba(6,95,70,0.18)', click: () => setStatusFilter('completed') },
+          { label: 'Cancelled', count: orderStats.cancelled, color: '#991B1B', bg: 'rgba(153,27,27,0.08)', border: 'rgba(153,27,27,0.18)', click: () => setStatusFilter('cancelled') },
+        ].map(s => (
+          <button
+            key={s.label}
+            onClick={s.click}
+            className={`icit-stat-card ${statusFilter === s.label.toLowerCase().replace(' ', '_') || (s.label === 'Total' && statusFilter === 'all') ? 'icit-stat-card--active' : ''}`}
+            style={{ backgroundColor: s.bg, borderColor: s.border }}
+          >
+            <p className="icit-stat-card-label">{s.label}</p>
+            <p className="icit-stat-card-count" style={{ color: s.color }}>{s.count}</p>
+          </button>
+        ))}
+      </div>
 
-        <div className="zenith-search-box">
-          <Search className="w-4 h-4 text-muted" />
+      {/* ─── Search & Filter Bar (ICIT Style) ─── */}
+      <div className="icit-toolbar">
+        <div className="icit-search-box">
+          <Search className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
           <input
             type="text"
-            placeholder="Search orders..."
+            placeholder="Search orders by ID, customer name, email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+        <div className="icit-filter-pills">
+          {['all', 'completed', 'in_progress', 'pending', 'cancelled'].map(tab => (
+            <button
+              key={tab}
+              className={`icit-pill ${statusFilter === tab ? 'icit-pill--active' : ''}`}
+              onClick={() => setStatusFilter(tab)}
+            >
+              {tab === 'all' ? 'All Orders' : tab.charAt(0).toUpperCase() + tab.slice(1).replace('_', ' ')}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Orders DataTable */}
-      <div style={{ flexGrow: 1, overflowY: 'auto' }}>
-        <DataTable
-          columns={columns}
-          data={filteredOrders}
-          exportFileName="orders-report"
-        />
+      {/* ─── ICIT-Style Data Table ─── */}
+      <div className="icit-table-wrapper">
+        <div className="icit-table-scroll">
+          <table className="icit-table">
+            <thead>
+              <tr>
+                <th style={{ minWidth: '100px' }}>Order</th>
+                <th style={{ minWidth: '220px' }}>Customer</th>
+                <th style={{ minWidth: '240px' }}>Ordered Products</th>
+                <th style={{ minWidth: '110px' }}>Status</th>
+                <th style={{ minWidth: '100px' }}>Date</th>
+                <th style={{ minWidth: '100px' }}>Amount</th>
+                <th style={{ minWidth: '90px' }}>Time</th>
+                <th className="icit-th-sticky">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedOrders.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '48px 16px', color: '#94A3B8', fontSize: '14px', fontWeight: 600 }}>
+                    No orders found
+                  </td>
+                </tr>
+              ) : (
+                paginatedOrders.map(order => {
+                  const avatar = getAvatarColor(order.customer_name);
+                  const status = STATUS_STYLES[order.status?.toLowerCase()] || STATUS_STYLES.refunded;
+                  const itemsText = (order.items && order.items.map(i => `${i.name || i.title} ×${i.quantity || 1}`).join(', ')) || order.items_summary || '—';
+
+                  return (
+                    <tr key={order.id} className="icit-row">
+                      {/* Order # */}
+                      <td className="icit-td">
+                        <span className="icit-order-id">{order.order_number || order.id}</span>
+                      </td>
+
+                      {/* Customer (Avatar + Name + Email) */}
+                      <td className="icit-td" style={{ cursor: 'pointer' }} onClick={() => openDetail(order)}>
+                        <div className="icit-customer-cell">
+                          <div className="icit-avatar" style={{ backgroundColor: avatar.bg, color: avatar.text }}>
+                            {(order.customer_name || 'G').charAt(0).toUpperCase()}
+                          </div>
+                          <div className="icit-customer-info">
+                            <p className="icit-customer-name">{order.customer_name || 'Guest'}</p>
+                            <p className="icit-customer-email">{order.customer_email || ''}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Ordered Products */}
+                      <td className="icit-td">
+                        <span className="icit-products-text">{itemsText}</span>
+                      </td>
+
+                      {/* Status Badge (Inline Editable like ICIT Leads) */}
+                      <td className="icit-td">
+                        {editingStatus === order.id ? (
+                          <div className="icit-status-edit" onClick={(e) => e.stopPropagation()}>
+                            <select
+                              className="icit-status-select"
+                              value={editingStatusValue}
+                              autoFocus
+                              onChange={(e) => setEditingStatusValue(e.target.value)}
+                            >
+                              {STATUS_OPTIONS.map(s => (
+                                <option key={s} value={s}>
+                                  {s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="icit-status-edit-btns">
+                              <button
+                                className="icit-edit-save"
+                                onMouseDown={() => {
+                                  if (editingStatusValue !== order.status) {
+                                    handleStatusChange(order.id, editingStatusValue);
+                                  }
+                                  setEditingStatus(null);
+                                }}
+                              >Save</button>
+                              <button
+                                className="icit-edit-cancel"
+                                onMouseDown={() => setEditingStatus(null)}
+                              >Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            className="icit-status-badge icit-status-badge--clickable"
+                            style={{ backgroundColor: status.bg, color: status.text, borderColor: status.border }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingStatus(order.id);
+                              setEditingStatusValue(order.status || 'pending');
+                            }}
+                          >
+                            <span className="icit-status-dot" style={{ backgroundColor: status.dot }} />
+                            {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ') : 'Unknown'}
+                            <ChevronDown size={12} style={{ opacity: 0.5, marginLeft: '2px' }} />
+                          </button>
+                        )}
+                      </td>
+
+                      {/* Date */}
+                      <td className="icit-td">
+                        <span className="icit-date">{order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
+                      </td>
+
+                      {/* Amount */}
+                      <td className="icit-td">
+                        <span className="icit-amount">{formatCurrency(order.total_amount || order.total)}</span>
+                      </td>
+
+                      {/* Time */}
+                      <td className="icit-td">
+                        <span className="icit-time">{order.created_at ? new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                      </td>
+
+                      {/* Actions (sticky right) */}
+                      <td className="icit-td icit-td-sticky">
+                        <div className="icit-actions">
+                          {getNextStatus(order.status) && (
+                            <button
+                              className="icit-action-primary"
+                              onClick={(e) => { e.stopPropagation(); handleStatusChange(order.id, getNextStatus(order.status)); }}
+                              style={{ backgroundColor: getActionColor(order.status) }}
+                            >
+                              {order.status === 'pending' && <Play size={12} />}
+                              {(order.status === 'in_progress' || order.status === 'ready') && <CheckCircle size={12} />}
+                              {getActionLabel(order.status)}
+                            </button>
+                          )}
+                          {order.status === 'completed' && (
+                            <button
+                              className="icit-action-outline"
+                              onClick={(e) => { e.stopPropagation(); toast.success('Invoice generated for #' + (order.order_number || order.id)); }}
+                            >
+                              <Printer size={12} /> Print
+                            </button>
+                          )}
+                          <button
+                            className="icit-action-view"
+                            onClick={(e) => { e.stopPropagation(); openDetail(order); }}
+                          >
+                            <ExternalLink size={12} /> View
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Footer */}
+        <div className="icit-pagination">
+          <span className="icit-pagination-info">
+            Showing {filteredOrders.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of {filteredOrders.length} records
+          </span>
+          <div className="icit-pagination-btns">
+            <button disabled={currentPage <= 1} onClick={() => setCurrentPage(p => p - 1)}>← Prev</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button key={p} className={currentPage === p ? 'icit-page-active' : ''} onClick={() => setCurrentPage(p)}>
+                {p}
+              </button>
+            ))}
+            <button disabled={currentPage >= totalPages} onClick={() => setCurrentPage(p => p + 1)}>Next →</button>
+          </div>
+        </div>
       </div>
 
-      {/* Order Detail — Side Panel */}
-      {showDetailModal && selectedOrder && (
+      {/* ─── Side Panel Detail (ICIT Style) ─── */}
+      {showDetailPanel && selectedOrder && (
         <>
-          <div className="side-panel-overlay" onClick={() => setShowDetailModal(false)} />
+          <div className="icit-overlay" onClick={() => setShowDetailPanel(false)} />
           <div className="side-panel" role="dialog" aria-label="Order Details">
             <div className="side-panel-header">
               <div>
@@ -381,11 +425,7 @@ const Orders = () => {
                   {selectedOrder.customer_name || 'Guest'} · {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : ''}
                 </p>
               </div>
-              <button
-                className="panel-close-btn"
-                onClick={() => setShowDetailModal(false)}
-                aria-label="Close panel"
-              >
+              <button className="panel-close-btn" onClick={() => setShowDetailPanel(false)} aria-label="Close panel">
                 <X size={16} />
               </button>
             </div>
@@ -400,147 +440,32 @@ const Orders = () => {
 
                 <div className="detail-section">
                   <h4>Order Details</h4>
-                  <div className="detail-row"><span className="detail-label">Source</span><span className={`source-badge source-${(selectedOrder.channel || 'kiosk').toLowerCase()}`}>{selectedOrder.channel || 'kiosk'}</span></div>
-                  <div className="detail-row"><span className="detail-label">Status</span><span className={`status-badge ${getStatusColor(selectedOrder.status)}`}>{selectedOrder.status}</span></div>
+                  <div className="detail-row"><span className="detail-label">Status</span><span className={`status-badge status-${selectedOrder.status?.toLowerCase()}`}>{selectedOrder.status}</span></div>
                   <div className="detail-row"><span className="detail-label">Placed</span><span>{new Date(selectedOrder.created_at).toLocaleString('en-IN')}</span></div>
                 </div>
               </div>
 
               {/* Timeline Section */}
-              <div className="detail-section timeline-section" style={{ marginTop: '20px', padding: '16px', backgroundColor: 'var(--color-surface-hover)', borderRadius: '8px' }}>
-                <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🧭 Order Progress & Service Speed</h4>
-                
-                <div className="fulfillment-timeline" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  position: 'relative',
-                  padding: '10px 0'
-                }}>
-                  {/* Progress Line */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '20px',
-                    left: '5%',
-                    right: '5%',
-                    height: '2px',
-                    backgroundColor: 'var(--color-border)',
-                    zIndex: 1
-                  }}></div>
-
-                  {/* 1. Placed */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
-                    <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%',
-                      backgroundColor: 'var(--color-success)', color: 'white',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
-                    }}>✓</div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Placed</span>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                      {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
-                    </span>
-                  </div>
-
-                  {/* 2. Confirmed / Paid */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
-                    <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%',
-                      backgroundColor: (selectedOrder.timestamps?.confirmed_at || selectedOrder.confirmed_at) ? 'var(--color-success)' : 'var(--color-border)',
-                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
-                    }}>{(selectedOrder.timestamps?.confirmed_at || selectedOrder.confirmed_at) ? '✓' : '2'}</div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Paid</span>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                      {selectedOrder.timestamps?.confirmed_at ? new Date(selectedOrder.timestamps.confirmed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
-                    </span>
-                  </div>
-
-                  {/* 3. Preparing */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
-                    <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%',
-                      backgroundColor: (selectedOrder.timestamps?.in_progress_at || selectedOrder.in_progress_at) ? 'var(--color-primary)' : 'var(--color-border)',
-                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
-                    }}>{(selectedOrder.timestamps?.in_progress_at || selectedOrder.in_progress_at) ? '✓' : '3'}</div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Preparing</span>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                      {selectedOrder.timestamps?.in_progress_at ? new Date(selectedOrder.timestamps.in_progress_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Queued'}
-                    </span>
-                  </div>
-
-                  {/* 4. Ready */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
-                    <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%',
-                      backgroundColor: (selectedOrder.timestamps?.ready_at || selectedOrder.ready_at) ? 'var(--color-primary-light)' : 'var(--color-border)',
-                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
-                    }}>{(selectedOrder.timestamps?.ready_at || selectedOrder.ready_at) ? '✓' : '4'}</div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Ready</span>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                      {selectedOrder.timestamps?.ready_at ? new Date(selectedOrder.timestamps.ready_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
-                    </span>
-                  </div>
-
-                  {/* 5. Delivered */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
-                    <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%',
-                      backgroundColor: (selectedOrder.timestamps?.completed_at || selectedOrder.completed_at) ? 'var(--color-primary)' : 'var(--color-border)',
-                      color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
-                    }}>{(selectedOrder.timestamps?.completed_at || selectedOrder.completed_at) ? '✓' : '5'}</div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>Delivered</span>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                      {selectedOrder.timestamps?.completed_at ? new Date(selectedOrder.timestamps.completed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
-                    </span>
-                  </div>
+              <div className="detail-section timeline-section" style={{ marginTop: '20px', padding: '16px', backgroundColor: '#F8FAFC', borderRadius: '8px' }}>
+                <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🧭 Order Progress</h4>
+                <div className="fulfillment-timeline" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', padding: '10px 0' }}>
+                  <div style={{ position: 'absolute', top: '20px', left: '5%', right: '5%', height: '2px', backgroundColor: '#E2E8F0', zIndex: 1 }} />
+                  {['Placed', 'Paid', 'Preparing', 'Ready', 'Delivered'].map((step, i) => {
+                    const timestamps = selectedOrder.timestamps || {};
+                    const keys = [true, timestamps.confirmed_at, timestamps.in_progress_at, timestamps.ready_at, timestamps.completed_at];
+                    const done = !!keys[i];
+                    return (
+                      <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
+                        <div style={{
+                          width: '24px', height: '24px', borderRadius: '50%',
+                          backgroundColor: done ? '#007AFF' : '#E2E8F0', color: 'white',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem'
+                        }}>{done ? '✓' : i + 1}</div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>{step}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-
-                {/* Service Speeds Analytics Section */}
-                {selectedOrder.timestamps && (
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '16px',
-                    marginTop: '16px',
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(90, 60, 40, 0.05)',
-                    borderRadius: '6px',
-                    fontSize: '0.75rem',
-                    borderLeft: '3px solid var(--color-primary)'
-                  }}>
-                    {selectedOrder.timestamps.confirmed_at && (
-                      <div>
-                        <strong>⏱️ Payment Speed: </strong>
-                        <span>
-                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.confirmed_at) - new Date(selectedOrder.created_at)) / 1000))} sec
-                        </span>
-                      </div>
-                    )}
-                    {selectedOrder.timestamps.in_progress_at && selectedOrder.timestamps.confirmed_at && (
-                      <div>
-                        <strong>⏱️ Claim Time: </strong>
-                        <span>
-                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.in_progress_at) - new Date(selectedOrder.timestamps.confirmed_at)) / 1000 / 60))} min
-                        </span>
-                      </div>
-                    )}
-                    {selectedOrder.timestamps.ready_at && selectedOrder.timestamps.in_progress_at && (
-                      <div>
-                        <strong>⏱️ Prep Duration: </strong>
-                        <span>
-                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.ready_at) - new Date(selectedOrder.timestamps.in_progress_at)) / 1000 / 60))} min
-                        </span>
-                      </div>
-                    )}
-                    {selectedOrder.timestamps.completed_at && selectedOrder.timestamps.ready_at && (
-                      <div>
-                        <strong>⏱️ Pickup Delay: </strong>
-                        <span>
-                          {Math.max(0, Math.round((new Date(selectedOrder.timestamps.completed_at) - new Date(selectedOrder.timestamps.ready_at)) / 1000 / 60))} min
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
 
               {selectedOrder.items && (
@@ -561,7 +486,7 @@ const Orders = () => {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr><td colSpan="3" className="total-label" style={{textAlign: 'right', paddingRight: 'var(--space-16)'}}>Grand Total</td><td><strong>{formatCurrency(selectedOrder.total_amount || selectedOrder.total)}</strong></td></tr>
+                      <tr><td colSpan="3" style={{ textAlign: 'right', paddingRight: '16px' }}>Grand Total</td><td><strong>{formatCurrency(selectedOrder.total_amount || selectedOrder.total)}</strong></td></tr>
                     </tfoot>
                   </table>
                 </div>
