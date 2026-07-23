@@ -107,53 +107,11 @@
 }
 .icit-spin { animation: icit-spin-anim 1s linear infinite; }
 
-/* ─── Summary Stat Cards (ICIT Style) ─── */
+/* ─── Summary Stat Cards ─── */
 .icit-stats-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.icit-stat-card {
-  flex: 1 1 110px;
-  max-width: 190px;
-  min-width: 110px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.icit-stat-card:hover {
-  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-  transform: translateY(-1px);
-}
-
-.icit-stat-card--active {
-  box-shadow: 0 0 0 2px rgba(0,122,255,0.25);
-}
-
-.icit-stat-card-label {
-  font-size: 14px;
-  font-weight: 400;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 0 0 4px 0;
-}
-
-.icit-stat-card-count {
-  font-size: 30px;
-  font-weight: 500;
-  margin: 0;
-  letter-spacing: -0.01em;
-  transition: transform 0.2s;
-}
-
-.icit-stat-card:hover .icit-stat-card-count {
-  transform: scale(1.03);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
 }
 
 /* ─── Search & Filter Toolbar (ICIT Style) ─── */
@@ -624,16 +582,16 @@
 /* These are inherited from the existing Orders.css and global.css */
 
 /* ─── Responsive ─── */
+@media (max-width: 1100px) {
+  .icit-stats-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .icit-stats-bar {
-    gap: 6px;
-  }
-  .icit-stat-card {
-    min-width: 80px;
-    padding: 8px 10px;
-  }
-  .icit-stat-card-count {
-    font-size: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
   .icit-toolbar {
     flex-direction: column;
@@ -641,6 +599,12 @@
   .icit-filter-pills {
     overflow-x: auto;
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .icit-stats-bar {
+    grid-template-columns: 1fr;
   }
 }
 

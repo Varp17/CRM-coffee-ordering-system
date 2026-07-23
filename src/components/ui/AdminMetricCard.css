@@ -1,0 +1,116 @@
+.admin-metric-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 126px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 14px;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+  text-align: left;
+  font-family: 'Author', 'Inter', sans-serif;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button.admin-metric-card {
+  cursor: pointer;
+}
+
+button.admin-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.16);
+}
+
+button.admin-metric-card:focus-visible {
+  outline: 3px solid rgba(0, 122, 255, 0.28);
+  outline-offset: 3px;
+}
+
+.admin-metric-card--active {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.9),
+    0 0 0 6px rgba(0, 122, 255, 0.24),
+    0 8px 22px rgba(15, 23, 42, 0.14);
+}
+
+.admin-metric-card--purple {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+}
+
+.admin-metric-card--blue {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+}
+
+.admin-metric-card--cyan {
+  background: linear-gradient(135deg, #06B6D4 0%, #0369A1 100%);
+}
+
+.admin-metric-card--orange {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.admin-metric-card--green {
+  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+}
+
+.admin-metric-card--red {
+  background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+}
+
+.admin-metric-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-metric-card__label {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.94;
+}
+
+.admin-metric-card__icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-metric-card__value {
+  color: #FFFFFF;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.admin-metric-card__description {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-metric-card {
+    transition: none;
+  }
+}

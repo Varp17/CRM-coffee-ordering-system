@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Search, ChevronDown, ChevronUp, Download, Eye, Trash2, ArrowUpDown } from 'lucide-react';
+import ExportModal from './ExportModal';
 import './DataTable.css';
 
 export const DataTable = ({
@@ -10,12 +11,14 @@ export const DataTable = ({
   onRowView = null,
   onRowDelete = null,
   onRowClick = null,
-  exportFileName = 'data-export'
+  exportFileName = 'data-export',
+  exportTitle = 'Export Data',
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // Sorting Handler
   const handleSort = (key) => {
@@ -58,32 +61,23 @@ export const DataTable = ({
     return sortableItems;
   }, [filteredData, sortConfig]);
 
+  // Build export columns from DataTable column definitions
+  const exportColumns = useMemo(() => {
+    return columns
+      .filter((col) => col.accessor && typeof col.accessor === 'string')
+      .map((col, idx) => ({
+        key: col.accessor,
+        label: col.header,
+        required: idx === 0,
+      }));
+  }, [columns]);
+
   // 3. Pagination
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return sortedData.slice(start, start + itemsPerPage);
   }, [sortedData, currentPage, itemsPerPage]);
-
-  // CSV Export Utility
-  const handleExportCSV = () => {
-    const headers = columns.map((col) => `"${col.header}"`).join(',');
-    const rows = sortedData.map((row) =>
-      columns.map((col) => {
-        const val = typeof col.accessor === 'function' ? col.accessor(row) : row[col.accessor] ?? '';
-        return `"${String(val).replace(/"/g, '""')}"`;
-      }).join(',')
-    ).join('\n');
-
-    const csvContent = 'data:text/csv;charset=utf-8,' + headers + '\n' + rows;
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${exportFileName}-${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <div className="data-table-wrapper">
@@ -108,14 +102,24 @@ export const DataTable = ({
         )}
         <div>
           <button
-            onClick={handleExportCSV}
+            onClick={() => setShowExportModal(true)}
             className="data-table-export-btn btn"
           >
             <Download className="w-3.5 h-3.5" style={{ display: 'inline', marginRight: '4px' }} />
-            <span>Export CSV</span>
+            <span>Export</span>
           </button>
         </div>
       </div>
+
+      {/* ICIT-Style Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        title={exportTitle}
+        columns={exportColumns}
+        data={sortedData}
+        filenameBase={exportFileName}
+      />
 
       {/* Main Table Grid */}
       <div className="data-table-container">

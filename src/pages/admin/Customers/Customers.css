@@ -76,36 +76,11 @@
 .cust-kpi-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
 
 @media (max-width: 900px) { .cust-kpi-strip { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px) { .cust-kpi-strip { grid-template-columns: 1fr; } }
-
-.cust-kpi-item {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 16px;
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 2px 8px rgba(31, 42, 68, 0.04);
-}
-
-.cust-kpi-item strong {
-  font-family: 'Author', 'Outfit', sans-serif;
-  font-size: 34px;
-  font-weight: 600;
-  color: #1F2A44;
-  line-height: 1.1;
-}
-
-.cust-kpi-item span {
-  font-size: 14px;
-  color: #718096;
-  font-weight: 500;
-}
 
 /* ── Toolbar ── */
 .cust-toolbar {

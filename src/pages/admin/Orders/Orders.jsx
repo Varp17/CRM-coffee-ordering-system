@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import './Orders.css';
 import Button from '../../../components/Button/Button';
+import AdminMetricCard from '../../../components/ui/AdminMetricCard';
 import { useOrderStore } from '../../../store/useOrderStore';
 import { useNotificationStore } from '../../../store/useNotificationStore';
 import { formatCurrency } from '../../../utils/formatters';
 import { orderService } from '../../../services/orders';
 import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
-import { X, RefreshCw, AlertCircle, Search, Play, CheckCircle, Eye, Printer, Download, ExternalLink, ChevronDown } from 'lucide-react';
+import {
+  X, RefreshCw, AlertCircle, Search, Play, CheckCircle, Eye, Printer,
+  Download, ExternalLink, ChevronDown, ShoppingBag, Clock, Bell
+} from 'lucide-react';
 
 /* ─── Avatar Color Palette (from ICIT Leads) ─── */
 const AVATAR_COLORS = [
@@ -207,22 +211,23 @@ const Orders = () => {
       {/* ─── Summary Stat Cards (ICIT Style) ─── */}
       <div className="icit-stats-bar">
         {[
-          { label: 'Total', count: orderStats.total, color: '#007AFF', bg: 'rgba(0,122,255,0.08)', border: 'rgba(0,122,255,0.18)', click: () => setStatusFilter('all') },
-          { label: 'Pending', count: orderStats.pending, color: '#D97706', bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.18)', click: () => setStatusFilter('pending') },
-          { label: 'In Progress', count: orderStats.inProgress, color: '#1E40AF', bg: 'rgba(30,64,175,0.08)', border: 'rgba(30,64,175,0.18)', click: () => setStatusFilter('in_progress') },
-          { label: 'Ready', count: orderStats.ready, color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.18)', click: () => setStatusFilter('ready') },
-          { label: 'Completed', count: orderStats.completed, color: '#065F46', bg: 'rgba(6,95,70,0.08)', border: 'rgba(6,95,70,0.18)', click: () => setStatusFilter('completed') },
-          { label: 'Cancelled', count: orderStats.cancelled, color: '#991B1B', bg: 'rgba(153,27,27,0.08)', border: 'rgba(153,27,27,0.18)', click: () => setStatusFilter('cancelled') },
+          { label: 'Total', count: orderStats.total, description: 'all kiosk orders', tone: 'purple', icon: ShoppingBag, filter: 'all' },
+          { label: 'Pending', count: orderStats.pending, description: 'awaiting preparation', tone: 'orange', icon: Clock, filter: 'pending' },
+          { label: 'In Progress', count: orderStats.inProgress, description: 'currently brewing', tone: 'blue', icon: RefreshCw, filter: 'in_progress' },
+          { label: 'Ready', count: orderStats.ready, description: 'ready for pickup', tone: 'cyan', icon: Bell, filter: 'ready' },
+          { label: 'Completed', count: orderStats.completed, description: 'fulfilled orders', tone: 'green', icon: CheckCircle, filter: 'completed' },
+          { label: 'Cancelled', count: orderStats.cancelled, description: 'cancelled orders', tone: 'red', icon: X, filter: 'cancelled' },
         ].map(s => (
-          <button
+          <AdminMetricCard
             key={s.label}
-            onClick={s.click}
-            className={`icit-stat-card ${statusFilter === s.label.toLowerCase().replace(' ', '_') || (s.label === 'Total' && statusFilter === 'all') ? 'icit-stat-card--active' : ''}`}
-            style={{ backgroundColor: s.bg, borderColor: s.border }}
-          >
-            <p className="icit-stat-card-label">{s.label}</p>
-            <p className="icit-stat-card-count" style={{ color: s.color }}>{s.count}</p>
-          </button>
+            label={s.label}
+            value={s.count}
+            description={s.description}
+            tone={s.tone}
+            icon={s.icon}
+            active={statusFilter === s.filter}
+            onClick={() => setStatusFilter(s.filter)}
+          />
         ))}
       </div>
 
@@ -238,7 +243,7 @@ const Orders = () => {
           />
         </div>
         <div className="icit-filter-pills">
-          {['all', 'completed', 'in_progress', 'pending', 'cancelled'].map(tab => (
+          {['all', 'completed', 'in_progress', 'ready', 'pending', 'cancelled'].map(tab => (
             <button
               key={tab}
               className={`icit-pill ${statusFilter === tab ? 'icit-pill--active' : ''}`}

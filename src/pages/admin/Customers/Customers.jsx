@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './Customers.css';
+import AdminMetricCard from '../../../components/ui/AdminMetricCard';
 import { customerService } from '../../../services/customers';
 import { formatCurrency, formatDate, formatPhone } from '../../../utils/formatters';
 import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
@@ -7,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useConfirmation } from '../../../hooks/useConfirmation';
 import {
   Search, Download, RefreshCw, X, Mail, Phone, Star,
-  ShoppingBag, MessageCircle, UserCheck, UserX
+  ShoppingBag, MessageCircle, UserCheck, UserX, Users, DollarSign
 } from 'lucide-react';
 
 // ── Customer Detail Side Panel ──────────────────────────────────
@@ -371,18 +372,27 @@ const Customers = () => {
 
       {/* ── KPI Strip ── */}
       <div className="cust-kpi-strip">
-        <div className="cust-kpi-item">
-          <strong>{stats.total}</strong>
-          <span>Total Customers</span>
-        </div>
-        <div className="cust-kpi-item">
-          <strong>{stats.active}</strong>
-          <span>Active</span>
-        </div>
-        <div className="cust-kpi-item">
-          <strong>{formatCurrency(stats.ltv)}</strong>
-          <span>Total Revenue</span>
-        </div>
+        <AdminMetricCard
+          label="Total Customers"
+          value={stats.total}
+          description="customer database"
+          tone="purple"
+          icon={Users}
+        />
+        <AdminMetricCard
+          label="Active"
+          value={stats.active}
+          description="active customer accounts"
+          tone="blue"
+          icon={UserCheck}
+        />
+        <AdminMetricCard
+          label="Total Revenue"
+          value={formatCurrency(stats.ltv)}
+          description="lifetime customer value"
+          tone="cyan"
+          icon={DollarSign}
+        />
       </div>
 
       {/* ── Toolbar ── */}
