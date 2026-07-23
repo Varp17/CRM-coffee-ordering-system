@@ -43,7 +43,7 @@
 .login-prompt-card h2 {
   font-family: var(--font-heading);
   font-size: var(--font-size-h3);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
@@ -84,7 +84,7 @@
 .profile-title {
   font-family: var(--font-heading);
   font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
   letter-spacing: var(--letter-spacing-tight);
@@ -101,7 +101,7 @@
 }
 
 .profile-logout-btn {
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--font-size-caption);
   color: var(--color-danger);
   background-color: var(--color-danger-light);
@@ -165,7 +165,7 @@
 .metric-text h3 {
   font-family: var(--font-heading);
   font-size: var(--font-size-h3);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0 0 var(--space-4) 0;
   line-height: 1;
@@ -192,7 +192,7 @@
 .overview-section-panel h3 {
   font-family: var(--font-heading);
   font-size: var(--font-size-body-lg);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
@@ -379,7 +379,7 @@
 .favorite-drink-card h3 {
   font-family: var(--font-heading);
   font-size: var(--font-size-body-lg);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
@@ -416,7 +416,7 @@
 
 .address-badge-tag {
   font-size: var(--font-size-micro);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-primary);
   background-color: var(--color-primary-light);
   padding: var(--space-2) var(--space-8);
@@ -440,7 +440,7 @@
 
 .address-actions-lbl {
   font-size: var(--font-size-micro);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-success);
 }
 
@@ -469,3 +469,4 @@
     flex-direction: column;
   }
 }
+

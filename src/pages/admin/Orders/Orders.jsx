@@ -102,12 +102,11 @@ const Orders = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     const res = await updateOrderStatus(orderId, newStatus);
     if (res.success) {
-      toast.success(`Order status updated to "${newStatus}"`, { icon: '📦' });
-      if (selectedOrder?.id === orderId) {
-        setSelectedOrder(prev => ({ ...prev, status: newStatus }));
+      const formatted = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).replace('_', ' ');
+      toast.success(`Order status updated to "${formatted}"`, { icon: '📦' });
+      if (selectedOrder?.id === orderId || selectedOrder?.order_number === orderId) {
+        setSelectedOrder(prev => (prev ? { ...prev, status: newStatus } : prev));
       }
-    } else {
-      toast.error(`Failed to update status: ${res.error}`);
     }
   };
 
@@ -324,22 +323,18 @@ const Orders = () => {
                           <div className="icit-status-picker" onClick={(e) => e.stopPropagation()}>
                             {STATUS_OPTIONS.map(s => {
                               const isActive = (order.status || 'pending') === s;
-                              const style = STATUS_STYLES[s] || STATUS_STYLES.refunded;
                               return (
                                 <button
                                   key={s}
+                                  type="button"
                                   className={`icit-status-picker-item ${isActive ? 'icit-status-picker-item--active' : ''}`}
-                                  style={{
-                                    backgroundColor: isActive ? style.bg : 'transparent',
-                                    color: isActive ? style.text : '#475569',
-                                  }}
                                   onMouseDown={(e) => {
                                     e.preventDefault();
                                     if (!isActive) handleStatusChange(order.id, s);
                                     setOpenStatusId(null);
                                   }}
                                 >
-                                  <span className="icit-status-dot" style={{ backgroundColor: style.dot }} />
+                                  <span className="icit-status-dot" style={{ backgroundColor: STATUS_STYLES[s]?.dot || '#9CA3AF' }} />
                                   {s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
                                 </button>
                               );

@@ -43,7 +43,7 @@
   padding: 10px 14px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   background: var(--color-surface);
   color: var(--color-secondary);
   outline: none;
@@ -58,7 +58,7 @@
   padding: 10px 14px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   background: var(--color-surface);
   color: var(--color-secondary);
   outline: none;
@@ -134,7 +134,7 @@
 }
 
 .waste-logs-page .form-group label {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-secondary);
 }
@@ -145,7 +145,7 @@
   padding: 10px 12px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   background: var(--color-bg);
   color: var(--color-secondary);
   outline: none;
@@ -185,17 +185,17 @@
 
 .waste-logs-page .stat-card .stat-value {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-secondary);
 }
 
 .waste-logs-page .stat-card .stat-label {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
 }
 
 .waste-logs-page .stat-card .stat-sub {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
 }
 
@@ -204,3 +204,4 @@
   padding: 32px;
   color: var(--color-text-muted);
 }
+

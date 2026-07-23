@@ -149,7 +149,7 @@
   justify-content: center;
   align-items: center;
   font-weight: 500;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-family: 'SF Mono', monospace;
 }
 
@@ -165,10 +165,11 @@
   align-items: center;
   height: 100%;
   font-family: 'SF Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #bbb;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   border: 1px dashed rgba(0, 0, 0, 0.08);
   border-radius: 8px;
 }
+

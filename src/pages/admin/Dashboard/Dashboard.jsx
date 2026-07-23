@@ -37,10 +37,11 @@ const WEEKLY_SALES = [
   { day: 'Sun', revenue: 29800, orders: 238, classic: 12500, bold: 10400, kappi: 6900 },
 ];
 
-const CONCENTRATE_BREAKDOWN = [
-  { name: 'Classic Cold Brew', value: 62546, percentage: '42%', color: '#007AFF' },
-  { name: 'Bold Roast Concentrate', value: 52122, percentage: '35%', color: '#1F2A44' },
-  { name: 'South Indian Kappi', value: 34252, percentage: '23%', color: '#C67C4E' },
+const PRODUCT_BREAKDOWN = [
+  { name: 'Bold Concentrate', value: 47654, percentage: '32%', color: '#1F2A44' },
+  { name: 'Classic CB Concentrate', value: 43187, percentage: '29%', color: '#007AFF' },
+  { name: 'Kaapi Concentrate', value: 35741, percentage: '24%', color: '#C67C4E' },
+  { name: 'Discovery Kit', value: 22338, percentage: '15%', color: '#7C3AED' },
 ];
 
 const KIOSK_TERMINALS = [
@@ -150,56 +151,51 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* KPI Cards Row */}
-      <div className="kpi-grid">
-        <div className="kpi-card blue-card">
-          <div className="kpi-icon-wrap">
-            <DollarSign size={20} />
+      {/* KPI Cards Row (VasifyTech CRM Structure) */}
+      <div className="vasify-kpi-grid">
+        <div className="vasify-card purple">
+          <div className="vasify-card-top">
+            <span className="vasify-card-label">Total Revenue</span>
+            <div className="vasify-card-badge"><DollarSign size={16} /></div>
           </div>
-          <div className="kpi-data">
-            <span className="kpi-label">Total Kiosk Revenue</span>
-            <h3 className="kpi-value">{formatCurrency(DASHBOARD_METRICS.totalRevenue)}</h3>
-            <span className="kpi-trend positive">
-              <ArrowUpRight size={14} /> +{DASHBOARD_METRICS.revenueGrowth}% vs last week
-            </span>
-          </div>
+          <h3 className="vasify-card-val">{formatCurrency(DASHBOARD_METRICS.totalRevenue)}</h3>
+          <span className="vasify-card-sub"><ArrowUpRight size={13} /> +{DASHBOARD_METRICS.revenueGrowth}% vs last week</span>
         </div>
 
-        <div className="kpi-card navy-card">
-          <div className="kpi-icon-wrap">
-            <ShoppingBag size={20} />
+        <div className="vasify-card blue">
+          <div className="vasify-card-top">
+            <span className="vasify-card-label">Total Orders</span>
+            <div className="vasify-card-badge"><ShoppingBag size={16} /></div>
           </div>
-          <div className="kpi-data">
-            <span className="kpi-label">Total Orders Handled</span>
-            <h3 className="kpi-value">{DASHBOARD_METRICS.totalOrders.toLocaleString()}</h3>
-            <span className="kpi-trend positive">
-              <ArrowUpRight size={14} /> +{DASHBOARD_METRICS.ordersGrowth}% growth
-            </span>
-          </div>
+          <h3 className="vasify-card-val">{DASHBOARD_METRICS.totalOrders.toLocaleString()}</h3>
+          <span className="vasify-card-sub"><ArrowUpRight size={13} /> +{DASHBOARD_METRICS.ordersGrowth}% growth</span>
         </div>
 
-        <div className="kpi-card coffee-card">
-          <div className="kpi-icon-wrap">
-            <Monitor size={20} />
+        <div className="vasify-card cyan">
+          <div className="vasify-card-top">
+            <span className="vasify-card-label">Pipeline Volume</span>
+            <div className="vasify-card-badge"><TrendingUp size={16} /></div>
           </div>
-          <div className="kpi-data">
-            <span className="kpi-label">Active Terminals</span>
-            <h3 className="kpi-value">{DASHBOARD_METRICS.activeTerminals} Online</h3>
-            <span className="kpi-subtext">Avg Prep: {DASHBOARD_METRICS.avgPrepTime}</span>
-          </div>
+          <h3 className="vasify-card-val">₹1.5L</h3>
+          <span className="vasify-card-sub">concentrate & beverage sales</span>
         </div>
 
-        <div className="kpi-card warning-card">
-          <div className="kpi-icon-wrap">
-            <BookOpen size={20} />
+        <div className="vasify-card orange">
+          <div className="vasify-card-top">
+            <span className="vasify-card-label">Active Terminals</span>
+            <div className="vasify-card-badge"><Monitor size={16} /></div>
           </div>
-          <div className="kpi-data">
-            <span className="kpi-label">Pending Custom Recipes</span>
-            <h3 className="kpi-value">{DASHBOARD_METRICS.pendingRecipesCount} Pending</h3>
-            <Link to="/admin/recipes" className="kpi-link">
-              Review & Approve →
-            </Link>
+          <h3 className="vasify-card-val">{DASHBOARD_METRICS.activeTerminals} Online</h3>
+          <span className="vasify-card-sub">avg prep {DASHBOARD_METRICS.avgPrepTime}</span>
+        </div>
+
+        <div className="vasify-card green">
+          <div className="vasify-card-top">
+            <span className="vasify-card-label">Satisfaction</span>
+            <div className="vasify-card-badge"><CheckCircle2 size={16} /></div>
           </div>
+          <h3 className="vasify-card-val">{DASHBOARD_METRICS.customerSatisfaction}</h3>
+          <span className="vasify-card-sub">customer rating</span>
         </div>
       </div>
 
@@ -245,46 +241,48 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Concentrate Usage Breakdown Pie */}
-        <div className="chart-card flex-1">
+        {/* Kiosk Product Sales Breakdown */}
+        <div className="chart-card flex-1 concentrate-mix-card">
           <div className="chart-card-header">
-            <h3>Concentrate Mix</h3>
-            <p className="chart-subtitle">Sales share by concentrate base</p>
+            <h3>Product Mix</h3>
+            <p className="chart-subtitle">Sales share across all kiosk products</p>
           </div>
-          <div className="chart-body flex-center" style={{ height: 280 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={CONCENTRATE_BREAKDOWN}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={85}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {CONCENTRATE_BREAKDOWN.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(val) => [formatCurrency(val), 'Sales']}
-                  contentStyle={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '10px',
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 4px 14px rgba(31, 42, 68, 0.10)',
-                    padding: '8px 12px',
-                    fontFamily: "'Author', sans-serif",
-                    fontSize: '13px',
-                  }}
-                  labelStyle={{ color: '#1F2A44', fontWeight: 700, marginBottom: '2px' }}
-                  itemStyle={{ color: '#007AFF', fontWeight: 600 }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="chart-body concentrate-mix-body">
+            <div className="concentrate-pie">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={PRODUCT_BREAKDOWN}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="58%"
+                    outerRadius="88%"
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {PRODUCT_BREAKDOWN.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(val) => [formatCurrency(val), 'Sales']}
+                    contentStyle={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '10px',
+                      border: '1px solid #E2E8F0',
+                      boxShadow: '0 4px 14px rgba(31, 42, 68, 0.10)',
+                      padding: '8px 12px',
+                      fontFamily: "'Author', sans-serif",
+                      fontSize: '13px',
+                    }}
+                    labelStyle={{ color: '#1F2A44', fontWeight: 700, marginBottom: '2px' }}
+                    itemStyle={{ color: '#007AFF', fontWeight: 600 }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
             <div className="pie-legend-list">
-              {CONCENTRATE_BREAKDOWN.map((item) => (
+              {PRODUCT_BREAKDOWN.map((item) => (
                 <div key={item.name} className="legend-item">
                   <span className="legend-dot" style={{ backgroundColor: item.color }}></span>
                   <span className="legend-name">{item.name}</span>

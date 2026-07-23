@@ -23,13 +23,13 @@
 .empty-state-title {
   font-family: var(--font-heading);
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-secondary);
   margin: 0 0 0.5rem 0;
 }
 
 .empty-state-desc {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   line-height: 1.5;
   margin: 0 0 1.5rem 0;
@@ -49,3 +49,4 @@
     transform: translateY(-8px);
   }
 }
+

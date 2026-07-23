@@ -97,7 +97,7 @@
 
 .card-tag {
   font-size: 0.5625rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-caps);
   padding: var(--space-4) var(--space-8);
@@ -137,7 +137,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
   text-transform: uppercase;
@@ -161,7 +161,7 @@
 .card-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   line-height: var(--line-height-snug);
   margin: 0;
@@ -191,7 +191,7 @@
 .card-price {
   font-family: var(--font-heading);
   font-size: var(--font-size-body-lg);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
 }
 
@@ -267,4 +267,5 @@
   top: 0;
   left: 0;
 }
+
 

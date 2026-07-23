@@ -32,13 +32,13 @@
 .portal-card {
   position: relative;
   width: 100%;
-  max-width: 440px;
-  padding: 40px 32px 32px 32px;
+  max-width: 420px;
+  padding: 24px 28px 20px 28px;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid #E2E8F0;
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: 
     0 12px 32px -5px rgba(31, 42, 68, 0.08),
     0 8px 16px -6px rgba(31, 42, 68, 0.04),
@@ -55,69 +55,96 @@
   gap: 6px;
   background-color: #E6F4FF;
   border: 1px solid rgba(0, 122, 255, 0.2);
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: 20px;
-  margin-bottom: 24px;
-  font-family: 'Author', 'Outfit', sans-serif;
+  margin-bottom: 14px;
+  font-family: 'Author', 'Inter', sans-serif;
 }
 
 .portal-badge .badge-icon {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .portal-badge .badge-text {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: #007AFF;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
-/* Text Logo - Chilld Coffee */
+/* Website Logo Mark & Wordmark */
 .portal-logo-container {
-  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 14px;
 }
 
-.portal-brand-title {
-  font-family: 'Author', 'Outfit', sans-serif;
-  font-size: 2.5rem;
+.portal-brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logo-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #E6F4FF;
+  border: 1px solid rgba(0, 122, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text-chilld {
+  font-family: 'Author', 'Inter', sans-serif;
+  font-size: 32px;
   font-weight: 700;
-  color: #1F2A44; /* Deep Navy */
-  margin: 0 0 6px 0;
+  color: #007AFF;
   letter-spacing: -0.02em;
+  line-height: 1;
 }
 
-.portal-brand-title .brand-accent {
-  color: #007AFF; /* Tech Primary Blue */
-  position: relative;
+.logo-text-coffee {
+  font-family: 'Author', 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1F2A44;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  margin-bottom: 4px;
 }
 
 .portal-brand-subtitle {
   color: #4A5568;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   margin: 0;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 /* Form Styles */
 .portal-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   text-align: left;
 }
 
 .form-label {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13.5px;
+  font-weight: 600;
   color: #1F2A44;
   letter-spacing: 0.02em;
 }
@@ -125,7 +152,7 @@
 .portal-input {
   background: #FFFFFF;
   border: 1px solid #CBD5E1;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 8px;
   color: #1F2A44;
   font-size: 14px;
@@ -133,7 +160,7 @@
   transition: all 0.2s ease;
   width: 100%;
   box-sizing: border-box;
-  height: 44px;
+  height: 40px;
 }
 
 .portal-input::placeholder {
@@ -152,15 +179,15 @@
   background-color: #007AFF; /* Tech Primary Blue */
   color: #FFFFFF;
   border: none;
-  padding: 0 24px;
-  height: 46px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
+  padding: 0 20px;
+  height: 42px;
+  font-family: 'Author', 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 8px;
+  margin-top: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -212,10 +239,10 @@
 
 /* Disclaimer text */
 .portal-disclaimer {
-  font-size: 12px;
+  font-size: 13.5px;
   color: #6B7280;
   line-height: 1.4;
-  margin: 16px 0 8px 0;
+  margin: 10px 0 4px 0;
   font-weight: 500;
 }
 
@@ -224,15 +251,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin: 8px 0 20px 0;
+  gap: 6px;
+  margin: 4px 0 10px 0;
 }
 
 .partner-circle {
   position: relative;
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border: 2px solid #0d9488;
   border-radius: 50%;
   box-sizing: border-box;
@@ -243,15 +270,15 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 4px;
-  height: 4px;
+  width: 3.5px;
+  height: 3.5px;
   background-color: #0d9488;
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
 
 .partner-text {
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #0d9488;
   letter-spacing: 0.01em;
@@ -259,9 +286,9 @@
 
 /* Collapsible Login Credentials Section */
 .login-credentials-drawer {
-  border-top: 1px solid #FAF6F0;
-  padding-top: 16px;
-  margin-top: 16px;
+  border-top: 1px solid #E2E8F0;
+  padding-top: 10px;
+  margin-top: 10px;
 }
 
 .credentials-toggle-btn {
@@ -271,7 +298,7 @@
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -316,7 +343,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 11px;
+  font-size: 15px;
 }
 
 .credentials-table th,
@@ -326,7 +353,7 @@
 }
 
 .credentials-table th {
-  font-weight: 700;
+  font-weight: 600;
   color: #6B4C35;
   background-color: #FAF6F0;
   font-size: 10px;
@@ -351,7 +378,7 @@
 
 .credentials-table code {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -360,7 +387,7 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -397,29 +424,30 @@
 .back-btn-d2c {
   background: none;
   border: none;
-  color: #C8853E;
+  color: #1844ab;
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 15px;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
+  text-decoration: none;
 }
 
 .back-btn-d2c:hover {
-  color: #A0692A;
+  color: #113388;
   text-decoration: underline;
 }
 
 .d2c-arrow {
-  font-size: 12px;
+  font-size: 15px;
   transition: transform 0.2s ease;
 }
 
 .back-btn-d2c:hover .d2c-arrow {
-  transform: scale(1.15) rotate(-5deg);
+  transform: translate(2px, -2px);
 }
 
 /* Mobile responsive constraints from SPEC.md */
@@ -433,4 +461,5 @@
     font-size: 1.8rem;
   }
 }
+
 

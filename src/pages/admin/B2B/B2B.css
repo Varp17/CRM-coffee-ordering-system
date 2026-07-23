@@ -196,7 +196,7 @@
 }
 
 .b2b-empty-text {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #bbb;
   font-style: italic;
 }
@@ -219,7 +219,7 @@
 
 .b2b-inner-table td {
   padding: 6px 8px;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #444;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
 }
@@ -328,3 +328,4 @@
     grid-template-columns: 1fr;
   }
 }
+

@@ -43,7 +43,7 @@
   background-color: var(--color-surface-alt) !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-md) !important;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .data-table-export-btn {
@@ -57,7 +57,7 @@
   color: var(--color-text-secondary);
   font-weight: 600;
   transition: all 0.2s ease;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .data-table-export-btn:hover {
@@ -80,7 +80,7 @@
   background-color: var(--color-surface-alt);
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-secondary);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   font-size: 0.72rem;
   letter-spacing: 0.5px;
@@ -102,7 +102,7 @@
 .data-table td {
   padding: 6px 10px !important;
   border-bottom: 1px solid var(--color-border-subtle);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
   vertical-align: middle;
 }
@@ -119,7 +119,7 @@
   gap: var(--space-12);
   flex-wrap: wrap;
   padding-top: var(--space-8);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
 }
 
@@ -131,7 +131,7 @@
 
 .data-table-pg-btn {
   padding: 4px 10px !important;
-  font-size: 0.8rem !important;
+  font-size: 0.95rem !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-sm) !important;
   background-color: var(--color-surface) !important;
@@ -164,3 +164,4 @@
 .data-table-row-clickable:hover td {
   background-color: var(--color-surface-hover, #f8fafc) !important;
 }
+

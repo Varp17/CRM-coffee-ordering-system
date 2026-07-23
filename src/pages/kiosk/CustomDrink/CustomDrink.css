@@ -302,9 +302,9 @@
 .preview-step-card strong {
   display: block;
   margin-top: 2px;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #a8845c;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .live-price-tag {
@@ -316,7 +316,7 @@
   text-align: center;
   font-family: 'JetBrains Mono', monospace;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #ffffff;
   background: linear-gradient(135deg, #c8a97e, #b39268);
   padding: 0.5rem 1.5rem;
@@ -350,7 +350,7 @@
 
 .naming-section label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: rgba(46, 31, 22, 0.55);
 }
 
@@ -363,7 +363,7 @@
   color: #2e1f16;
   padding: 0 1rem !important;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem !important;
+  font-size: 0.95rem !important;
   outline: none;
 }
 
@@ -386,7 +386,7 @@
   color: rgba(46, 31, 22, 0.6);
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
-  font-size: 0.75rem !important;
+  font-size: 0.95rem !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -444,7 +444,7 @@
   justify-content: center !important;
   gap: 8px !important;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem !important;
+  font-size: 0.95rem !important;
   cursor: pointer !important;
   transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease !important;
   transform-style: preserve-3d;
@@ -526,7 +526,7 @@
   align-items: center;
   justify-content: space-between;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: rgba(46, 31, 22, 0.65);
 }
 
@@ -557,7 +557,7 @@
   background: #ffffff !important;
   color: #2e1f16 !important;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem !important;
+  font-size: 0.95rem !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   display: inline-flex !important;
@@ -599,7 +599,7 @@
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.95rem;
   color: #a8845c;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .add-order-btn {
@@ -609,8 +609,8 @@
   background: linear-gradient(135deg, #c8a97e, #b39268) !important;
   color: #ffffff !important;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
   letter-spacing: 0.05em;
   cursor: pointer !important;
   display: inline-flex !important;
@@ -681,7 +681,7 @@
   background: #ffffff !important;
   color: #2e1f16 !important;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem !important;
+  font-size: 0.95rem !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   display: inline-flex !important;
@@ -698,3 +698,4 @@
 .discard-btn:active {
   transform: scale(0.98);
 }
+

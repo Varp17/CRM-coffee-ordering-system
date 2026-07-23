@@ -16,7 +16,7 @@
 .badge-curated {
   display: inline-block;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
   padding: 0.5rem 1rem;
@@ -33,7 +33,7 @@
   font-size: 3rem;
   color: var(--color-text);
   margin-bottom: 1rem;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .collections-desc {
@@ -93,8 +93,8 @@
   background: var(--color-surface);
   color: var(--color-text);
   padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   border-radius: 50px;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -109,7 +109,7 @@
 .coll-card-title {
   font-family: 'Outfit', sans-serif;
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin-bottom: 1rem;
 }
@@ -129,8 +129,8 @@
 }
 
 .coll-items-preview h4 {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   text-transform: uppercase;
   color: var(--color-text-muted);
   letter-spacing: 0.5px;
@@ -167,8 +167,8 @@
 }
 
 .price-label {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   text-transform: uppercase;
   color: var(--color-text-muted);
   letter-spacing: 0.5px;
@@ -182,7 +182,7 @@
 
 .current-price {
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-primary);
   font-family: 'Outfit', sans-serif;
 }
@@ -217,4 +217,5 @@
     font-size: 2.25rem;
   }
 }
+
 

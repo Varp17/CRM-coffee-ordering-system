@@ -21,7 +21,7 @@
 .sensory-title {
   font-family: var(--font-display);
   font-size: var(--font-size-h2);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   line-height: var(--line-height-tight);
 }
@@ -51,7 +51,7 @@
   cursor: pointer;
   text-align: left;
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.05rem;
   color: var(--color-text-secondary);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
@@ -124,7 +124,7 @@
 .chart-header {
   display: block;
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-muted);
   letter-spacing: var(--letter-spacing-caps);
   margin-bottom: var(--space-16);
@@ -146,7 +146,7 @@
   display: flex;
   justify-content: space-between;
   font-size: var(--font-size-micro);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-muted);
 }
 
@@ -199,7 +199,7 @@
   background: var(--color-primary);
   color: white;
   font-size: 0.6rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: var(--space-6) var(--space-12);
   border-radius: var(--radius-full);
   letter-spacing: var(--letter-spacing-wide);
@@ -222,7 +222,7 @@
 .match-product-name {
   font-family: var(--font-heading);
   font-size: 1.15rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin-bottom: var(--space-4);
 }
@@ -241,7 +241,7 @@
   padding: var(--space-4) var(--space-8);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-caption);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-primary);
 }
 
@@ -260,7 +260,7 @@
 
 .match-pill {
   font-size: 0.6rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
   padding: var(--space-4) var(--space-10);
@@ -290,7 +290,7 @@
 .price-amt {
   font-family: var(--font-display);
   font-size: var(--font-size-h3);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
 }
 
@@ -304,7 +304,7 @@
   align-items: center;
   gap: var(--space-8);
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--font-size-caption);
   cursor: pointer;
   transition: all var(--transition-normal);
@@ -314,3 +314,4 @@
   background: #8b6347;
   transform: translateY(-2px);
 }
+

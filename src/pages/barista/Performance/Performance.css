@@ -53,13 +53,13 @@
 
 .metric-val {
   font-size: 1.8rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
   line-height: 1.2;
 }
 
 .metric-label {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -93,7 +93,7 @@
 }
 
 .chart-subtitle {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   margin: 0 0 24px 0;
 }
@@ -130,7 +130,7 @@
 }
 
 .waste-reason {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-error);
 }
 
@@ -142,13 +142,13 @@
 }
 
 .waste-qty {
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.95rem;
   color: var(--color-text);
 }
 
 .waste-time {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
 }
 
@@ -169,3 +169,4 @@
   background-color: rgba(198, 124, 78, 0.05);
   transform: translateY(-1px);
 }
+

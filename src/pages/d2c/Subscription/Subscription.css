@@ -18,7 +18,7 @@
 .badge-promo {
   display: inline-block;
   font-size: var(--font-size-caption);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
   padding: var(--space-8) var(--space-16);
@@ -34,7 +34,7 @@
   font-size: var(--font-size-h1);
   color: var(--color-text);
   margin-bottom: var(--space-16);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: var(--letter-spacing-tight);
 }
 
@@ -118,7 +118,7 @@
   padding: var(--space-6) var(--space-16);
   border-radius: var(--radius-full);
   font-size: var(--font-size-micro);
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: var(--glow-primary);
 }
 
@@ -127,7 +127,7 @@
   font-size: var(--font-size-h3);
   color: var(--color-text);
   margin-bottom: var(--space-12);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .plan-price-row {
@@ -138,7 +138,7 @@
 
 .price-num {
   font-size: var(--font-size-h1);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   font-family: var(--font-heading);
 }
@@ -204,7 +204,7 @@
   font-size: var(--font-size-h3);
   margin-bottom: var(--space-32);
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .builder-group {
@@ -214,7 +214,7 @@
 .builder-group label {
   display: block;
   font-size: var(--font-size-caption);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
@@ -260,7 +260,7 @@
   color: white;
   padding: var(--space-2) var(--space-6);
   border-radius: var(--radius-xs);
-  font-weight: 700;
+  font-weight: 600;
   margin-left: var(--space-4);
 }
 
@@ -272,7 +272,7 @@
 }
 
 .builder-qty-label {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-primary);
 }
 
@@ -320,7 +320,7 @@
   font-size: var(--font-size-h3);
   margin-bottom: var(--space-24);
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .preview-card {
@@ -347,7 +347,7 @@
 
 .preview-item .text-free {
   color: var(--color-success);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .preview-card hr {
@@ -365,13 +365,13 @@
 
 .preview-total-row span {
   font-size: var(--font-size-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
 }
 
 .subscription-page .total-val {
   font-size: var(--font-size-h2);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-primary);
   font-family: var(--font-heading);
 }
@@ -415,7 +415,7 @@
   font-size: var(--font-size-h2);
   margin-bottom: var(--space-12);
   color: var(--color-text);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .success-sub-card p {
@@ -478,3 +478,4 @@
     gap: var(--space-16);
   }
 }
+

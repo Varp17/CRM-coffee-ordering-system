@@ -71,7 +71,7 @@
 
 .kpi-value {
   font-size: var(--font-size-h1);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   line-height: 1;
 }
@@ -81,7 +81,7 @@
   align-items: center;
   gap: var(--space-4);
   font-size: var(--font-size-caption);
-  font-weight: 700;
+  font-weight: 600;
   padding: var(--space-4) var(--space-8);
   border-radius: var(--radius-full);
   width: fit-content;
@@ -158,3 +158,4 @@
   background-size: 1000px 100%;
   animation: shimmer 1.5s infinite linear forwards;
 }
+

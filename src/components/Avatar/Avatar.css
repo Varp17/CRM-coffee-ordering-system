@@ -6,7 +6,7 @@
   position: relative;
   user-select: none;
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   overflow: visible;
   flex-shrink: 0;
@@ -39,7 +39,7 @@
 .avatar-size-small {
   width: 32px;
   height: 32px;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
 }
 .avatar-size-medium {
   width: 44px;
@@ -119,3 +119,4 @@
 .badge-status-idle {
   background-color: var(--color-warning);
 }
+

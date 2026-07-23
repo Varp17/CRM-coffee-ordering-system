@@ -25,7 +25,7 @@
   font-size: 1.6rem;
   color: var(--color-text);
   margin: 0 0 4px 0;
-  font-weight: 800;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: var(--space-8);
@@ -34,16 +34,16 @@
 .kds-prep-header-row p {
   color: var(--color-text-muted);
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .live-counter-bubble {
   background-color: var(--color-primary-light);
   color: var(--color-primary);
-  font-weight: 800;
+  font-weight: 600;
   padding: 6px 14px;
   border-radius: var(--radius-full);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   border: 1px solid rgba(198, 124, 78, 0.2);
   box-shadow: 0 2px 10px rgba(198, 124, 78, 0.1);
   letter-spacing: 0.5px;
@@ -146,12 +146,12 @@
 .tile-main-row strong {
   color: var(--color-text);
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .priority-tag {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   padding: 2px 8px;
   border-radius: var(--radius-xs);
@@ -178,7 +178,7 @@
 
 .tile-items-snippet {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
   font-weight: 500;
   white-space: nowrap;
@@ -204,7 +204,7 @@
 }
 
 .tile-progress-text {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   font-weight: 600;
 }
@@ -232,9 +232,9 @@
 }
 
 .token-id {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-primary);
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
@@ -243,11 +243,11 @@
   margin: 4px 0 0 0;
   font-size: 1.6rem;
   color: var(--color-text);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .checklist-header button {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
   border-radius: var(--radius-md) !important;
   box-shadow: 0 4px 12px rgba(56, 217, 169, 0.15);
@@ -277,7 +277,7 @@
   color: var(--color-error);
   padding: var(--space-10) var(--space-12);
   border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.4;
   font-weight: 500;
   border-top-right-radius: var(--radius-md);
@@ -291,12 +291,12 @@
 }
 
 .checklist-sub-section h4 {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .prep-ingredients-row {
@@ -310,9 +310,9 @@
   border: 1px solid var(--color-border);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -356,11 +356,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--color-success);
   transition: all 0.15s ease;
   background-color: var(--color-surface);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .interactive-step-row.completed .step-checkbox {
@@ -386,3 +386,4 @@ hr {
   border-top: 1px solid var(--color-border);
   margin: 0;
 }
+

@@ -39,7 +39,7 @@
 
 .promo-action-btn.primary.small {
   padding: 4px 10px;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
 }
 
 .promo-action-btn.ghost {
@@ -222,7 +222,7 @@
 }
 
 .promo-empty-text {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #bbb;
   font-style: italic;
   padding: 12px 0;
@@ -246,7 +246,7 @@
 
 .promo-inner-table td {
   padding: 6px 8px;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #444;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
 }
@@ -425,3 +425,4 @@
     flex-wrap: wrap;
   }
 }
+

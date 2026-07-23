@@ -104,7 +104,7 @@
 .btn-accent {
   background: linear-gradient(135deg, var(--color-accent) 0%, #D4B896 100%);
   color: var(--color-espresso);
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: 0 2px 8px rgba(200, 169, 126, 0.25);
 }
 
@@ -161,3 +161,4 @@
 .btn-text {
   white-space: nowrap;
 }
+

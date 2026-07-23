@@ -14,13 +14,13 @@
 
 .subs-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text, #111);
   margin: 0;
 }
 
 .subs-sub {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--color-text-muted, #888);
   margin: 3px 0 0;
 }
@@ -37,7 +37,7 @@
   height: 30px;
   padding: 0 12px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   border: none;
@@ -82,7 +82,7 @@
 
 .subs-tab {
   padding: 8px 16px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text-muted, #888);
   background: transparent;
@@ -107,7 +107,7 @@
   justify-content: center;
   padding: 60px 0;
   color: var(--color-text-muted, #888);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .subs-modal {
@@ -129,8 +129,8 @@
 }
 
 .form-group label {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--color-text-muted, #888);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -142,7 +142,7 @@
   padding: 0 10px;
   border: 1px solid var(--color-border, rgba(0,0,0,0.10));
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 15px;
   background: #fff;
   color: var(--color-text, #111);
   outline: none;
@@ -162,7 +162,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px !important;
+  font-size: 15px !important;
   text-transform: none !important;
   color: var(--color-text, #111) !important;
   cursor: pointer;
@@ -178,7 +178,7 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -216,7 +216,7 @@
   height: 26px;
   padding: 0 10px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -251,3 +251,4 @@
 .action-btn-sm.danger:hover {
   opacity: 0.85;
 }
+

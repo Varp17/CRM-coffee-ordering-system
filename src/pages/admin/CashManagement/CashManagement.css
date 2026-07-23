@@ -140,7 +140,7 @@
 }
 
 .cash-session-picker label {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #888;
   font-weight: 500;
 }
@@ -276,3 +276,4 @@
   display: flex;
   gap: 6px;
 }
+

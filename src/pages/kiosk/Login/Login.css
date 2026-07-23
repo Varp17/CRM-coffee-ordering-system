@@ -43,7 +43,7 @@
 
 .login-card p {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: rgba(46, 31, 22, 0.55);
   margin: 0;
 }
@@ -54,7 +54,7 @@
   padding: 1rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 2px;
   color: #a8845c;
   border-radius: 12px;
@@ -112,3 +112,4 @@
   border-top: none;
   padding-top: 0;
 }
+

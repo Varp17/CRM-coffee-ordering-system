@@ -59,7 +59,7 @@
 
 .roles-header-banner h1 {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0 0 4px 0;
   letter-spacing: -0.02em;
 }
@@ -78,7 +78,7 @@
   background-color: #ffffff !important;
   color: #0f172a !important;
   font-weight: 600 !important;
-  font-size: 0.8rem !important;
+  font-size: 0.95rem !important;
   padding: 10px 18px !important;
   border-radius: 10px !important;
   border: none !important;
@@ -130,7 +130,7 @@
 
 .column-header h3 {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   margin: 0;
   text-transform: uppercase;
@@ -176,7 +176,7 @@
   padding: 10px 12px 10px 36px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
   background-color: #f8fafc;
   outline: none;
@@ -236,7 +236,7 @@
 }
 
 .role-item-title h4 {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 7500;
   color: #0f172a;
   margin: 0;
@@ -246,7 +246,7 @@
   background-color: #f8fafc;
   color: #0f172a;
   font-size: 0.625rem;
-  font-weight: 700;
+  font-weight: 600;
   border: 1px solid #cbd5e1;
   padding: 1px 6px;
   border-radius: 4px;
@@ -254,7 +254,7 @@
 }
 
 .role-item-desc {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: #64748b;
   margin: 0;
   line-height: 1.4;
@@ -443,8 +443,8 @@ input:checked + .slider:before {
 }
 
 .module-title-group h4 {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #0f172a;
   margin: 0;
 }
@@ -459,7 +459,7 @@ input:checked + .slider:before {
 }
 
 .module-info-cell p {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: #64748b;
   margin: 0;
 }
@@ -510,7 +510,7 @@ input:checked + .slider:before {
 
 .form-field label {
   font-size: 0.725rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -521,7 +521,7 @@ input:checked + .slider:before {
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
   background-color: #ffffff;
   outline: none;
@@ -538,7 +538,7 @@ input:checked + .slider:before {
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
   background-color: #ffffff;
   outline: none;
@@ -587,7 +587,7 @@ input:checked + .slider:before {
   justify-content: center;
   gap: 8px;
   font-weight: 600 !important;
-  font-size: 0.8rem !important;
+  font-size: 0.95rem !important;
   padding: 11px 20px !important;
   border-radius: 10px !important;
   box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
@@ -600,7 +600,7 @@ input:checked + .slider:before {
   justify-content: center;
   gap: 8px;
   font-weight: 600 !important;
-  font-size: 0.8rem !important;
+  font-size: 0.95rem !important;
   padding: 11px 20px !important;
   border-radius: 10px !important;
 }
@@ -613,7 +613,7 @@ input:checked + .slider:before {
   justify-content: center;
   gap: 16px;
   color: #64748b;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .spinner {
@@ -629,3 +629,4 @@ input:checked + .slider:before {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+

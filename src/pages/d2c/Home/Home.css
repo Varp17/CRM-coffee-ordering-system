@@ -30,7 +30,7 @@
 .section-header h2 {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
   margin: 0 0 14px;
   line-height: 1.2;
@@ -52,7 +52,7 @@
   border: 1.5px solid var(--c-espresso, #2C1A0E);
   border-radius: 999px;
   color: var(--c-espresso, #2C1A0E);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -153,8 +153,8 @@
   border: 1px solid rgba(200, 133, 62, 0.35);
   border-radius: 999px;
   color: var(--c-caramel-light, #E8A86A);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -162,7 +162,7 @@
 .hero-title {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(3rem, 6vw, 5rem);
-  font-weight: 800;
+  font-weight: 600;
   color: #FFFFFF;
   line-height: 1.05;
   margin: 0;
@@ -202,7 +202,7 @@
   color: #FFFFFF;
   border-radius: 999px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
@@ -224,7 +224,7 @@
   color: rgba(240, 232, 219, 0.90);
   border: 1.5px solid rgba(240, 232, 219, 0.35);
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -251,13 +251,13 @@
 
 .hero-stat strong {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   line-height: 1;
 }
 
 .hero-stat span {
-  font-size: 11px;
+  font-size: 15px;
   color: rgba(240, 232, 219, 0.60);
   font-weight: 500;
 }
@@ -473,7 +473,7 @@
   align-items: center;
   gap: 8px;
   color: rgba(240, 232, 219, 0.80);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -593,14 +593,14 @@
 
 .pc-name {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
   margin: 0;
   line-height: 1.3;
 }
 
 .pc-desc {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--c-text-muted, #9B8070);
   line-height: 1.55;
   margin: 0;
@@ -620,14 +620,14 @@
 }
 
 .pc-original {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--c-text-muted, #9B8070);
   text-decoration: line-through;
 }
 
 .pc-current {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
 }
 
@@ -637,8 +637,8 @@
   background: var(--c-espresso, #2C1A0E);
   color: #FFFFFF;
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -703,7 +703,7 @@
 .story-text-col h2 {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
   margin: 0;
   line-height: 1.25;
@@ -741,13 +741,13 @@
 
 .story-pillar strong {
   display: block;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
 }
 
 .story-pillar span {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--c-text-muted, #9B8070);
 }
 
@@ -788,7 +788,7 @@
 .sub-card-text h2 {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(1.5rem, 3vw, 2.25rem);
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   margin: 0;
   line-height: 1.2;
@@ -811,7 +811,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   color: rgba(240, 232, 219, 0.80);
   font-weight: 500;
 }
@@ -887,13 +887,13 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .testi-author strong {
   display: block;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
 }
 
@@ -948,7 +948,7 @@
 .mission-inner h2 {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   margin: 0;
   line-height: 1.2;
@@ -979,13 +979,13 @@
 
 .mission-stat strong {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-caramel-light, #E8A86A);
   line-height: 1;
 }
 
 .mission-stat span {
-  font-size: 12px;
+  font-size: 15px;
   color: rgba(240, 232, 219, 0.50);
   font-weight: 500;
 }
@@ -1023,7 +1023,7 @@
 .newsletter-block h2 {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-espresso, #2C1A0E);
   margin: 0;
 }
@@ -1049,7 +1049,7 @@
   border-radius: 999px !important;
   background: #FFFFFF !important;
   color: var(--c-espresso, #2C1A0E) !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   outline: none;
   transition: border-color 0.2s ease;
   min-height: auto !important;
@@ -1069,8 +1069,8 @@
   background: var(--c-espresso, #2C1A0E) !important;
   color: #FFFFFF !important;
   border-radius: 999px !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
   border: none;
   cursor: pointer;
   display: inline-flex;
@@ -1086,7 +1086,7 @@
 }
 
 .newsletter-note {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--c-text-muted, #9B8070);
 }
 
@@ -1115,7 +1115,7 @@
   padding: 10px 24px;
   border-radius: 999px;
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1270,7 +1270,7 @@
   border: 1px solid rgba(200, 133, 62, 0.35);
   color: var(--c-caramel-light, #E8A86A);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -1279,7 +1279,7 @@
 .vsc-name {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   margin: 0 0 4px;
   line-height: 1.25;
@@ -1287,7 +1287,7 @@
 
 .vsc-price {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-caramel-light, #E8A86A);
   display: block;
   margin-bottom: 14px;
@@ -1305,8 +1305,8 @@
   color: #FFFFFF;
   border: none;
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -1324,7 +1324,7 @@
   color: rgba(240, 232, 219, 0.80);
   border: 1px solid rgba(240, 232, 219, 0.20);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -1378,7 +1378,7 @@
 .concentrate-text-col h2 {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: clamp(2rem, 3.5vw, 2.75rem);
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   margin: 0;
   line-height: 1.2;
@@ -1407,7 +1407,7 @@
 .perk-num {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-size: 2.2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-caramel-light, #E8A86A);
   line-height: 1;
   min-width: 70px;
@@ -1416,13 +1416,13 @@
 .perk-item strong {
   display: block;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #FFFFFF;
   margin-bottom: 4px;
 }
 
 .perk-item span {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: rgba(240, 232, 219, 0.65);
   line-height: 1.5;
 }
@@ -1525,8 +1525,8 @@
 }
 
 .badge-info strong {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #FFFFFF;
   line-height: 1.1;
 }
@@ -1569,3 +1569,4 @@
   .concentrate-floating-badge.badge-bottom-left { top: 122%; left: 0%; width: 47%; }
   .concentrate-floating-badge.badge-bottom-right { top: 122%; right: 0%; width: 47%; }
 }
+

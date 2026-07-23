@@ -43,7 +43,7 @@
 .success-check-icon {
   font-size: 2.5rem;
   color: var(--color-success);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 @keyframes scale-up {
@@ -58,7 +58,7 @@
 .success-title {
   font-family: 'Outfit', sans-serif;
   font-size: clamp(1.75rem, 5vw, 2.25rem);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
   margin: 0;
   letter-spacing: -0.02em;
@@ -97,8 +97,8 @@
 
 .brief-label {
   font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -107,7 +107,7 @@
 .brief-val {
   font-family: 'Outfit', sans-serif;
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
 }
 
@@ -128,7 +128,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-family: 'Inter', sans-serif;
   color: var(--color-success);
 }
@@ -168,7 +168,7 @@
 .success-timeline-section h3 {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
   margin: 0;
   letter-spacing: -0.01em;
@@ -200,3 +200,4 @@
     gap: 0.75rem;
   }
 }
+

@@ -26,12 +26,12 @@
   font-size: 1.6rem;
   color: var(--color-text);
   margin: 0 0 var(--space-4) 0;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .kds-queue-header p {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   margin: 0;
 }
 
@@ -45,8 +45,8 @@
   border: 1px solid var(--color-border);
   padding: var(--space-8) var(--space-16);
   border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--color-text-secondary);
   display: inline-flex;
   align-items: center;
@@ -108,7 +108,7 @@
 
 .column-header h3 {
   font-size: 1.1rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
   text-transform: uppercase;
@@ -120,8 +120,8 @@
   color: var(--color-text-secondary);
   padding: 3px 10px;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  font-weight: 800;
+  font-size: 0.95rem;
+  font-weight: 600;
   border: 1px solid var(--color-border);
 }
 
@@ -149,7 +149,7 @@
 .empty-column-msg {
   text-align: center;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   padding: var(--space-40) 0;
   font-weight: 500;
 }
@@ -193,23 +193,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .order-id {
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1.3rem;
   color: var(--color-text);
 }
 
 .order-time {
   color: var(--color-text-muted);
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .customer-name {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.1rem;
   color: var(--color-text);
   margin: 0;
@@ -248,7 +248,7 @@
   flex: 1;
   min-height: 44px !important;
   font-size: 0.95rem !important;
-  font-weight: 800 !important;
+  font-weight: 600 !important;
   border-radius: var(--radius-md) !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -265,7 +265,7 @@
   padding: var(--space-8) var(--space-12);
   border-radius: var(--radius-md);
   font-size: 0.95rem;
-  font-weight: 800;
+  font-weight: 600;
   text-align: center;
   width: 100%;
   border: 1px solid rgba(56, 217, 169, 0.2);
@@ -284,5 +284,6 @@
   font-size: 1.1rem;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: var(--space-8);
-  font-weight: 800;
+  font-weight: 600;
 }
+

@@ -14,13 +14,13 @@
 
 .support-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text, #111);
   margin: 0;
 }
 
 .support-sub {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--color-text-muted, #888);
   margin: 3px 0 0;
 }
@@ -37,7 +37,7 @@
   height: 30px;
   padding: 0 12px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   border: none;
@@ -94,7 +94,7 @@
   justify-content: center;
   padding: 60px 0;
   color: var(--color-text-muted, #888);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .support-ticket-meta {
@@ -113,7 +113,7 @@
   padding: 0 8px;
   border: 1px solid var(--color-border, rgba(0,0,0,0.10));
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 15px;
   background: #fff;
   color: var(--color-text, #111);
   outline: none;
@@ -132,7 +132,7 @@
 .support-no-msgs {
   text-align: center;
   color: var(--color-text-muted, #999);
-  font-size: 12px;
+  font-size: 15px;
   padding: 24px;
 }
 
@@ -152,7 +152,7 @@
   max-width: 75%;
   padding: 10px 14px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.4;
 }
 
@@ -188,7 +188,7 @@
   padding: 0 12px;
   border: 1px solid var(--color-border, rgba(0,0,0,0.10));
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 15px;
   outline: none;
   background: #fff;
   color: var(--color-text, #111);
@@ -218,7 +218,7 @@
 
 .support-priority {
   font-weight: 600;
-  font-size: 12px;
+  font-size: 15px;
   text-transform: uppercase;
 }
 
@@ -226,7 +226,7 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -264,7 +264,7 @@
   height: 26px;
   padding: 0 10px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -290,3 +290,4 @@
 .action-btn-sm.primary:hover {
   opacity: 0.9;
 }
+

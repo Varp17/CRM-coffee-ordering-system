@@ -20,7 +20,7 @@
 .checkout-title {
   font-family: 'Outfit', sans-serif;
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
   margin: 0;
   letter-spacing: -0.02em;
@@ -54,7 +54,7 @@
 .checkout-section-panel h2 {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
   margin: 0;
   border-bottom: 1px solid var(--color-border);
@@ -92,8 +92,8 @@
   flex: 1;
   min-width: 130px;
   font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-weight: 600;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   background-color: var(--color-surface-alt);
   border: 2px solid transparent;
@@ -168,7 +168,7 @@
 }
 
 .upi-disclaimer {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
 }
 
@@ -253,7 +253,7 @@
 
 .qr-hint {
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   text-align: center;
   line-height: 1.4;
@@ -266,7 +266,7 @@
 
 .cod-container p {
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--color-text);
   margin: 0;
   line-height: 1.5;
@@ -291,7 +291,7 @@
 .checkout-summary-panel h3 {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-secondary);
   margin: 0;
 }
@@ -320,12 +320,12 @@
 }
 
 .qty-tag {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-primary);
   background-color: var(--color-primary-light);
   padding: 0.1rem 0.4rem;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
 }
 
 .item-name {
@@ -338,14 +338,14 @@
 
 .checkout-summary-items .item-price {
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-secondary);
 }
 
 .trust-indicator-box {
   background-color: var(--color-surface-alt);
   font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   text-align: center;
   padding: 0.75rem;
@@ -359,3 +359,4 @@
     gap: 2rem;
   }
 }
+

@@ -63,7 +63,7 @@
 .wizard-title {
   font-family: var(--font-display);
   font-size: clamp(2.4rem, 4.5vw, 3.8rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.15;
   color: var(--color-espresso);
   margin-top: var(--space-12);
@@ -96,7 +96,7 @@
 
 .selector-label {
   font-size: var(--font-size-micro);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: var(--letter-spacing-caps);
   color: var(--color-text-muted);
 }
@@ -115,8 +115,8 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-weight: 700;
-  font-size: 12px !important;
+  font-weight: 600;
+  font-size: 15px !important;
   border-radius: var(--radius-md) !important;
   color: var(--color-text-secondary);
   transition: all var(--transition-bounce);
@@ -169,13 +169,13 @@
 
 .insight-text strong {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--color-espresso);
   margin-bottom: var(--space-4);
 }
 
 .insight-text p {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--color-text-secondary);
   line-height: var(--line-height-base);
   margin: 0;
@@ -243,7 +243,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .avatar-welcome {
@@ -256,7 +256,7 @@
 
 .avatar-name {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: var(--color-espresso);
 }
 
@@ -310,7 +310,7 @@
   background: rgba(26, 14, 10, 0.8);
   color: #FFFFFF;
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 2px 8px;
   border-radius: var(--radius-full);
 }
@@ -324,7 +324,7 @@
 
 .recipe-name {
   font-size: 15px !important;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-espresso);
   line-height: 1.2;
 }
@@ -348,7 +348,7 @@
 }
 
 .recipe-rating strong {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--color-espresso);
 }
 
@@ -370,9 +370,9 @@
 
 .attr-val {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: var(--color-espresso);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .attr-flex {
@@ -399,8 +399,8 @@
 
 .recipe-description-box h4,
 .ingredients-box h4 {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   text-transform: uppercase;
   color: var(--color-espresso);
   margin-bottom: var(--space-6);
@@ -408,7 +408,7 @@
 }
 
 .recipe-description-box p {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--color-text-secondary);
   line-height: 1.5;
 }
@@ -432,7 +432,7 @@
 
 .ing-name {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-espresso);
 }
@@ -444,9 +444,9 @@
 }
 
 .ing-amount {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--color-primary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* Screen Sticky Footer */
@@ -467,8 +467,8 @@
   background: #FFFFFF !important;
   border-radius: var(--radius-md) !important;
   color: var(--color-espresso) !important;
-  font-weight: 700 !important;
-  font-size: 11px !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -483,9 +483,9 @@
   height: 38px !important;
   background: linear-gradient(135deg, var(--color-accent), #D4B896) !important;
   color: var(--color-espresso) !important;
-  font-weight: 800 !important;
+  font-weight: 600 !important;
   border-radius: var(--radius-md) !important;
-  font-size: 11px !important;
+  font-size: 15px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -529,7 +529,7 @@
 }
 
 .local-modal-card .modal-header h3 {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--color-espresso);
 }
 
@@ -588,7 +588,7 @@
 }
 
 .local-modal-card .modal-footer p {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--color-text-secondary);
   line-height: 1.5;
   margin: 0;
@@ -616,3 +616,4 @@
     margin-right: auto;
   }
 }
+

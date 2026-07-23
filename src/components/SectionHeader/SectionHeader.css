@@ -18,7 +18,7 @@
 .section-eyebrow {
   font-family: var(--font-body);
   font-size: var(--font-size-micro);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-caps);
   color: var(--color-primary);
@@ -31,7 +31,7 @@
 .section-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-h2);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   letter-spacing: var(--letter-spacing-tight);
   line-height: var(--line-height-tight);
@@ -73,3 +73,4 @@
 .section-header-wrap.dark .section-cta {
   color: var(--color-accent);
 }
+

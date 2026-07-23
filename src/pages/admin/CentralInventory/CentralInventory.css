@@ -34,7 +34,7 @@
 }
 
 .metric-label {
-  font-size: 14px;
+  font-size: 15px;
   color: #6B7280;
   margin: 0 0 4px 0;
   font-weight: 500;
@@ -42,7 +42,7 @@
 
 .metric-value {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   color: #111827;
   margin: 0;
 }
@@ -120,7 +120,7 @@
 }
 
 .ci-timeline-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: #111827;
   margin: 0 0 4px 0;
@@ -131,7 +131,8 @@
 }
 
 .ci-timeline-meta {
-  font-size: 12px;
+  font-size: 15px;
   color: #6B7280;
   margin: 0;
 }
+

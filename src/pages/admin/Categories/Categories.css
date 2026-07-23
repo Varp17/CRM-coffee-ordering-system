@@ -1,15 +1,15 @@
 .page-container { padding: 24px; }
 .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
 .page-header h2 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
-.page-subtitle { margin: 0; color: #666; font-size: 14px; }
+.page-subtitle { margin: 0; color: #666; font-size: 15px; }
 .page-actions { display: flex; gap: 8px; }
 .table-toolbar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
-.search-input { padding: 8px 12px; border: 1px solid #d0d5dd; border-radius: 6px; font-size: 14px; min-width: 280px; }
+.search-input { padding: 8px 12px; border: 1px solid #d0d5dd; border-radius: 6px; font-size: 15px; min-width: 280px; }
 .table-actions { display: flex; gap: 4px; }
-.btn-icon { background: none; border: 1px solid transparent; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 14px; }
+.btn-icon { background: none; border: 1px solid transparent; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 15px; }
 .btn-icon:hover { background: #f5f5f5; border-color: #d0d5dd; }
 .text-danger { color: #dc2626; }
-.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 15px; font-weight: 500; }
 .badge-success { background: #d1fae5; color: #065f46; }
 .badge-secondary { background: #f3f4f6; color: #6b7280; }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; }
@@ -20,8 +20,8 @@
 .modal-body { padding: 16px 24px; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid #e5e7eb; }
 .form-group { margin-bottom: 16px; }
-.form-group label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 500; color: #374151; }
-.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #d0d5dd; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+.form-group label { display: block; margin-bottom: 4px; font-size: 15px; font-weight: 500; color: #374151; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #d0d5dd; border-radius: 6px; font-size: 15px; box-sizing: border-box; }
 .form-group textarea { resize: vertical; }
 .form-row { display: flex; gap: 16px; }
 .form-row .form-group { flex: 1; }
@@ -42,7 +42,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #6B7280;
   cursor: pointer;
@@ -60,8 +60,8 @@
 
 /* ── Details Modal Typography ── */
 .detail-tag {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   text-transform: uppercase;
   color: #C8853E;
   letter-spacing: 0.05em;
@@ -75,4 +75,5 @@
   border-left: 3px solid #FAF6F0;
   padding-left: 10px;
 }
+
 

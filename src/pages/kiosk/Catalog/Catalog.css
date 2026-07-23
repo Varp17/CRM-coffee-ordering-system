@@ -43,7 +43,7 @@
   padding: 0.8rem 1.2rem;
   text-align: left;
   font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   border-radius: 12px;
@@ -148,15 +148,15 @@
 .product-details .price {
   font-family: 'Inter', sans-serif;
   color: #a8845c;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
 }
 
 .product-details .btn {
   height: 42px !important;
   font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   letter-spacing: 0.05em;
   border-radius: 21px;
   text-transform: uppercase;
@@ -231,7 +231,7 @@
 
 .cart-item-name {
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #2e1f16;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -243,7 +243,7 @@
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   color: #a8845c;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .empty-msg {
@@ -251,7 +251,7 @@
   font-family: 'Inter', sans-serif;
   text-align: center;
   margin-top: 3rem;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .cart-total {
@@ -268,15 +268,15 @@
 
 .cart-total span:last-child {
   font-family: 'Inter', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   color: #a8845c;
 }
 
 .catalog-cart-summary .btn-large {
   height: 52px !important;
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 26px;
@@ -325,3 +325,4 @@
     border-bottom: 1px solid rgba(179, 146, 104, 0.15);
   }
 }
+

@@ -49,7 +49,7 @@
   font-size: 1.8rem;
   font-family: var(--font-heading);
   color: #2e1f16;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .qr-card p {
@@ -86,3 +86,4 @@
   color: rgba(46, 31, 22, 0.65);
   font-weight: 500;
 }
+

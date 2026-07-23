@@ -86,19 +86,19 @@
 .timeline-item-title {
   font-family: 'Outfit', sans-serif;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
 
 .timeline-item-time {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-muted);
 }
 
 .timeline-item-description {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   line-height: 1.4;
   margin: 0;
@@ -169,3 +169,4 @@
     box-shadow: 0 0 0 0 rgba(198, 124, 78, 0);
   }
 }
+

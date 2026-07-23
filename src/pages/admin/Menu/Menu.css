@@ -7,20 +7,20 @@
 }
 
 .zenith-breadcrumb {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--c-text-secondary);
   margin-bottom: 8px;
 }
 
 .zenith-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 600;
   color: var(--c-espresso);
   margin: 0 0 4px 0;
 }
 
 .zenith-subtitle {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--c-text-muted);
   margin: 0;
 }
@@ -32,8 +32,8 @@
   color: #ffffff;
   padding: 8px 16px;
   border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 400;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s, opacity 0.2s;
@@ -56,8 +56,8 @@
 
 .zenith-filter-pill {
   padding: 6px 16px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 400;
   color: var(--c-text-secondary);
   background: transparent;
   border: none;
@@ -101,7 +101,7 @@
   border: none;
   outline: none;
   width: 100%;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--c-espresso);
   background: transparent;
 }
@@ -131,8 +131,8 @@
 
 .zenith-select {
   padding: 8px 16px 8px 36px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: var(--c-espresso);
   background-color: #ffffff;
   border: 1px solid var(--c-cream-border);
@@ -149,8 +149,8 @@
   color: var(--c-espresso);
   padding: 8px 16px;
   border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 400;
   border: 1px solid var(--c-cream-border);
   cursor: pointer;
   transition: background-color 0.2s;
@@ -241,13 +241,14 @@
 }
 
 .product-name {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--c-espresso);
 }
 
 .product-desc {
-  font-size: 0.875rem;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--c-text-secondary);
   max-width: 320px;
   white-space: nowrap;
@@ -258,10 +259,10 @@
 /* ── Badges & Details ── */
 .zenith-category-badge {
   display: inline-flex;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
   color: var(--c-espresso);
   background-color: var(--c-cream-dark);
   border: 1px solid var(--c-cream-border);
@@ -269,9 +270,9 @@
 
 .zenith-status-pill {
   display: inline-flex;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 100px;
-  font-size: 0.75rem;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -286,14 +287,15 @@
 }
 
 .product-stock-count {
-  font-size: 0.875rem;
+  font-size: 15px;
+  font-weight: 400;
   color: var(--c-text-secondary);
 }
 
 .product-price-value {
-  font-size: 0.875rem;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--c-espresso);
+  color: #16A34A !important;
 }
 
 .product-date {

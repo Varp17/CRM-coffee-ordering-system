@@ -16,7 +16,7 @@
 .page-title {
   margin: 0;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   font-family: var(--font-display);
 }
@@ -62,7 +62,7 @@
   background-color: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 15px;
   transition: all 0.2s ease;
 }
 
@@ -80,7 +80,7 @@
   background-color: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -116,7 +116,7 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 12px;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -141,13 +141,13 @@
 .recipe-title {
   margin: 0 0 8px 0;
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
 }
 
 .recipe-description {
   margin: 0 0 16px 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   line-height: 1.4;
   display: -webkit-box;
@@ -163,7 +163,7 @@
   background-color: var(--color-surface-hover);
   padding: 4px 10px;
   border-radius: var(--radius-sm, 4px);
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-primary);
   margin-bottom: 16px;
@@ -196,8 +196,8 @@
 }
 
 .metric-value {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--color-text);
 }
 
@@ -222,7 +222,7 @@
 
 .cost-value {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
 }
 
@@ -287,7 +287,7 @@
 .pane-section-title {
   margin: 0 0 10px 0;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   border-bottom: 2px solid var(--color-primary);
   padding-bottom: 6px;
@@ -313,7 +313,7 @@
 }
 
 .field-lbl {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-secondary);
 }
@@ -325,7 +325,7 @@
   background-color: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .builder-input-field.textarea {
@@ -346,7 +346,7 @@
 }
 
 .checkbox-lbl {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text);
   cursor: pointer;
 }
@@ -391,7 +391,7 @@
   border: 1px solid #cbd5e1;
   background-color: #ffffff;
   color: #0f172a;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
@@ -459,8 +459,8 @@
 }
 
 .live-cost-header {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   text-transform: uppercase;
   color: var(--color-text-muted);
   display: flex;
@@ -485,13 +485,13 @@
 }
 
 .live-cost-lbl {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
 }
 
 .live-cost-val {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--color-text);
 }
 
@@ -534,14 +534,14 @@
 }
 
 .spec-card .lbl {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
   margin-bottom: 4px;
 }
 
 .spec-card .val {
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
 }
 
@@ -559,7 +559,7 @@
 }
 
 .lbl-sm {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
   text-transform: uppercase;
   font-weight: 600;
@@ -567,7 +567,7 @@
 
 .val-big {
   font-size: 1.4rem;
-  font-weight: 800;
+  font-weight: 600;
   margin: 4px 0 0 0;
   color: var(--color-text);
 }
@@ -577,13 +577,13 @@
 }
 
 .raw-materials-table th {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
 .raw-materials-table td {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   vertical-align: middle;
 }
 
@@ -607,3 +607,4 @@
     border-bottom: 1px solid var(--color-border);
   }
 }
+

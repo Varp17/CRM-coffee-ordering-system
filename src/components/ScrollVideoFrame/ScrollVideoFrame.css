@@ -85,7 +85,7 @@
   right: 24px;
   z-index: 20;
   font-family: 'JetBrains Mono', 'SF Mono', monospace;
-  font-size: 14px;
+  font-size: 15px;
   color: rgba(255, 255, 255, 0.6);
   background: rgba(0, 0, 0, 0.5);
   padding: 4px 12px;
@@ -98,3 +98,4 @@
   margin: 0 4px;
   opacity: 0.4;
 }
+

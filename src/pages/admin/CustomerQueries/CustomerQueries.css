@@ -71,7 +71,7 @@
   align-items: center;
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
 }
 
@@ -208,3 +208,4 @@
     transform: scale(1) translateY(0);
   }
 }
+

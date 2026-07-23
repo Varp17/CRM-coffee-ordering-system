@@ -103,8 +103,8 @@
 }
 
 .sb-brand-name {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--sb-text-primary);
   line-height: 1.2;
@@ -170,7 +170,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .sb-search-trigger:hover {
@@ -286,8 +286,8 @@
   border: none;
   cursor: pointer;
   color: #000000;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
   transition: color 0.15s ease;
@@ -446,7 +446,7 @@
   color: #fff;
   border-radius: 999px;
   font-size: 8.5px;
-  font-weight: 800;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -495,7 +495,7 @@
   background: #111827;
   border: 1px solid #374151;
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   padding: 5px 10px;
   border-radius: 7px;
@@ -526,7 +526,7 @@
   color: #fff;
   border-radius: 999px;
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 1px 5px;
 }
 
@@ -570,8 +570,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -583,7 +583,7 @@
 
 .sb-user-name {
   display: block;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--sb-text-primary);
   white-space: nowrap;
@@ -749,7 +749,7 @@
 }
 
 .sb-search-result-group {
-  font-size: 11px;
+  font-size: 15px;
   color: var(--sb-text-muted);
 }
 
@@ -757,7 +757,7 @@
   padding: 24px 16px;
   text-align: center;
   color: var(--sb-text-muted);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .sb-search-hint {
@@ -774,4 +774,5 @@
 .sb-sidebar.collapsed .sb-single-item-wrap {
   padding: 0 4px;
 }
+
 

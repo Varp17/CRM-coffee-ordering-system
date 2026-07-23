@@ -169,7 +169,7 @@
   background-color: var(--color-primary-light);
   color: var(--color-primary);
   font-size: var(--font-size-micro);
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   padding: var(--space-4) var(--space-10);
   border-radius: var(--radius-full);
@@ -180,7 +180,7 @@
 .product-detail-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-h1);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
   letter-spacing: var(--letter-spacing-tight);
@@ -216,7 +216,7 @@
 
 .price-value {
   font-size: var(--font-size-h1);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-primary);
 }
 
@@ -237,7 +237,7 @@
 .variants-section h3 {
   font-family: var(--font-heading);
   font-size: var(--font-size-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
@@ -274,7 +274,7 @@
 }
 
 .variant-option-btn .v-name {
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--font-size-body);
   color: var(--color-text);
 }
@@ -326,7 +326,7 @@
 .quantity-selector span {
   padding: 0 var(--space-12);
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--font-size-body);
   color: var(--color-text);
   min-width: 24px;
@@ -355,7 +355,7 @@
 .related-section h2 {
   font-family: var(--font-heading);
   font-size: var(--font-size-h2);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
   letter-spacing: var(--letter-spacing-tight);
@@ -410,7 +410,7 @@
 .related-card-info h4 {
   font-family: var(--font-heading);
   font-size: var(--font-size-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
@@ -418,7 +418,7 @@
 .related-price {
   font-family: var(--font-heading);
   font-size: var(--font-size-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-primary);
 }
 
@@ -471,3 +471,4 @@
     gap: var(--space-12);
   }
 }
+

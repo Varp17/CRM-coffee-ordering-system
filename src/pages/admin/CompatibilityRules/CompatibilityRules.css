@@ -8,7 +8,7 @@
   justify-content: center;
   padding: 60px 20px;
   color: var(--al-text-muted);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .spin {
@@ -29,7 +29,7 @@
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--al-accent-light, #f3f4f6);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -42,7 +42,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--al-text-secondary);
 }
 
@@ -52,7 +52,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--al-text-secondary);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .comp-icon-btn {
@@ -96,7 +96,7 @@
   gap: 6px;
   padding: 9px 18px;
   border-radius: var(--al-radius-sm);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -106,7 +106,7 @@
 
 .comp-form-hint {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: var(--al-text-muted);
   margin-top: 4px;
   font-family: monospace;
@@ -121,7 +121,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--al-danger);
   margin-top: 4px;
 }
@@ -180,3 +180,4 @@
   background: rgba(5, 150, 105, 0.15);
   color: #6ee7b7;
 }
+

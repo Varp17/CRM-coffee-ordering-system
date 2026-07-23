@@ -180,7 +180,7 @@
 .kiosk-eyebrow {
   display: block;
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #ffd700; /* Warm Gold */
   text-transform: uppercase;
@@ -303,7 +303,7 @@
   height: 52px;
   border-radius: 26px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -391,3 +391,4 @@
   50% { transform: scale(1.4); opacity: 0.3; }
   100% { transform: scale(1); opacity: 0.8; }
 }
+

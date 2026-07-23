@@ -37,7 +37,7 @@
   border: none;
   background: transparent;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   border-radius: 8px;
@@ -67,7 +67,7 @@
   padding: 10px 14px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   background: var(--color-surface);
   color: var(--color-secondary);
   outline: none;
@@ -83,7 +83,7 @@
   display: inline-flex;
   padding: 2px 10px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
 }
 
@@ -120,7 +120,7 @@
 .food-safety-page .allergen-table th {
   font-weight: 600;
   color: var(--color-text-muted);
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -135,7 +135,7 @@
   padding: 6px 10px;
   border: 1px solid var(--color-border);
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   background: var(--color-bg);
   color: var(--color-secondary);
   outline: none;
@@ -150,7 +150,7 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .food-safety-page .icon-btn {
@@ -198,7 +198,7 @@
 }
 
 .food-safety-page .form-group label {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-secondary);
 }
@@ -208,7 +208,7 @@
   padding: 10px 12px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   background: var(--color-bg);
   color: var(--color-secondary);
   outline: none;
@@ -255,3 +255,4 @@
   padding-top: 16px;
   border-top: 1px solid var(--color-border);
 }
+

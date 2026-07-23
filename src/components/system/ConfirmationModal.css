@@ -57,7 +57,7 @@
 
 .system-confirm-body {
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.8);
   display: flex;
@@ -70,7 +70,7 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 1rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.7);
   display: flex;
   flex-direction: column;
@@ -81,7 +81,7 @@
   border-left: 2px solid rgba(255, 255, 255, 0.3);
   padding-left: 10px;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .system-confirm-warning.destructive {
@@ -110,7 +110,7 @@
   height: 40px;
   padding: 0 10px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   outline: none;
   border-radius: 4px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -124,7 +124,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
 }
@@ -145,7 +145,7 @@
   height: 44px;
   padding: 0 1.5rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
@@ -192,3 +192,4 @@
   background-color: rgba(196, 64, 64, 0.08);
   border-color: rgba(196, 64, 64, 0.6);
 }
+

@@ -29,7 +29,7 @@
   color: #fff;
   padding: 8px 16px;
   border-radius: 30px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
   box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
 }
@@ -89,17 +89,17 @@
 }
 
 .ticket-id-tag {
-  font-weight: 800;
+  font-weight: 600;
   color: var(--color-error);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   letter-spacing: 0.5px;
 }
 
 .time-breached-badge {
   background-color: var(--color-error);
   color: #ffffff;
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: 0.95rem;
+  font-weight: 600;
   padding: 4px 8px;
   border-radius: var(--radius-xs);
 }
@@ -116,7 +116,7 @@
   margin: 0;
   font-size: 1.25rem;
   color: var(--color-text);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .items-box p {
@@ -135,9 +135,9 @@
 .bar-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .sla-progress-bar-fill {
@@ -165,7 +165,7 @@
   border-left: 3px solid var(--color-error);
   padding: 10px 14px;
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-error);
   font-weight: 500;
 }
@@ -181,3 +181,4 @@
 .card-footer button {
   flex: 1;
 }
+

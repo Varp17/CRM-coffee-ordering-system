@@ -246,7 +246,7 @@
 }
 
 .sync-text-desc {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #888;
   line-height: 1.5;
 }
@@ -262,3 +262,4 @@
     grid-template-columns: 1fr;
   }
 }
+

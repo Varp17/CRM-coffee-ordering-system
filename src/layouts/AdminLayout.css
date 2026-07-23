@@ -181,14 +181,14 @@ html, body, #root {
 .page-header-left h1 {
   font-family: 'Author', 'Outfit', sans-serif;
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--al-text);
   margin: 0 0 4px;
   letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--al-text-secondary);
   margin: 0;
 }
@@ -226,14 +226,14 @@ html, body, #root {
 
 .stat-value {
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--al-text);
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--al-text-secondary);
   font-weight: 500;
 }
@@ -254,7 +254,7 @@ html, body, #root {
   padding: 0 12px !important;
   border: 1px solid var(--al-border) !important;
   border-radius: var(--al-radius-sm) !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   color: var(--al-text) !important;
   background: var(--al-bg-card) !important;
   outline: none !important;
@@ -342,7 +342,7 @@ html, body, #root {
 
 .modal-content h3 {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--al-text);
   margin: 0 0 18px;
 }
@@ -382,7 +382,7 @@ html, body, #root {
 }
 
 .form-group label {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--al-text-secondary);
   text-transform: uppercase;
@@ -445,7 +445,7 @@ html, body, #root {
   align-items: center;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -490,7 +490,7 @@ html, body, #root {
 }
 
 .section-subtitle {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--al-text-muted);
   margin: 0 0 20px;
 }
@@ -500,7 +500,7 @@ html, body, #root {
   text-align: center;
   color: var(--al-text-muted);
   padding: 40px !important;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 /* ── Loading state ── */
@@ -510,7 +510,7 @@ html, body, #root {
   justify-content: center;
   min-height: 120px;
   color: var(--al-text-muted);
-  font-size: 13px;
+  font-size: 15px;
   gap: 8px;
 }
 
@@ -561,7 +561,7 @@ html, body, #root {
 .cms-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .cms-table thead tr {
@@ -576,7 +576,7 @@ html, body, #root {
 .cms-table th {
   padding: 16px 24px;
   text-align: left;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--al-text-secondary);
   white-space: nowrap;
@@ -584,7 +584,7 @@ html, body, #root {
 
 .cms-table td {
   padding: 16px 24px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--al-text);
   border-bottom: 1px solid var(--al-border);
   vertical-align: middle;
@@ -614,7 +614,7 @@ html, body, #root {
 
 /* ── Action button in tables ── */
 .action-btn-update {
-  font-size: 12px !important;
+  font-size: 15px !important;
   padding: 4px 10px !important;
   height: 28px !important;
 }
@@ -677,3 +677,4 @@ html, body, #root {
 .packaging-page .modal-content.modal-wide {
   max-width: 920px !important;
 }
+
