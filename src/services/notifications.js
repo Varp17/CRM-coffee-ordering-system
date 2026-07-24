@@ -20,7 +20,7 @@ export const notificationService = {
 
   // ── Active Notifications ──
   getNotifications: async (query = {}) => {
-    return api.get('/notifications', { params: query });
+    return api.get('/notifications', query);
   },
 
   getUnreadCount: async () => {

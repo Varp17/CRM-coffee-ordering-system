@@ -21,10 +21,15 @@ export const useWebSocket = (roleParam) => {
 
     // 2. Real WebSocket connection for staff roles
     let isMounted = true;
-    const ALLOWED_ROLES = ['barista', 'store_manager', 'admin', 'super_admin'];
+    const ALLOWED_ROLES = ['barista', 'store_manager', 'manager', 'store_admin', 'admin', 'super_admin', 'staff', 'kiosk'];
     const token = localStorage.getItem('dc_token');
 
-    if (token && ALLOWED_ROLES.includes(role)) {
+    const isMockToken = token && (token.startsWith('mock-') || token.includes('mock'));
+    if (isMockToken) {
+      console.log('[WS] Mock session token detected. Skipping real WebSocket connection.');
+    }
+
+    if (token && !isMockToken && ALLOWED_ROLES.includes(role)) {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const storeId = localStorage.getItem('dc_store_id') || '1';
       const wsHost = window.location.hostname.includes('vercel.app')

@@ -212,7 +212,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="chart-body" style={{ height: 280 }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <AreaChart data={WEEKLY_SALES} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
@@ -251,7 +251,7 @@ const Dashboard = () => {
           </div>
           <div className="chart-body concentrate-mix-body">
             <div className="concentrate-pie">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <PieChart>
                   <Pie
                     data={PRODUCT_BREAKDOWN}

@@ -133,9 +133,13 @@ class ApiClient {
 
   // HTTP Method wrappers
   get(endpoint, params = {}) {
+    const rawParams = (params && typeof params === 'object' && params.params && typeof params.params === 'object')
+      ? params.params
+      : params;
     const query = new URLSearchParams();
-    for (const [key, val] of Object.entries(params)) {
+    for (const [key, val] of Object.entries(rawParams || {})) {
       if (val !== undefined && val !== null && val !== '') {
+        if (typeof val === 'object') continue;
         query.append(key, val);
       }
     }
