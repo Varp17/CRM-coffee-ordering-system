@@ -10,7 +10,7 @@ import { unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import {
   X, RefreshCw, Search, Play, CheckCircle, Eye, Printer,
-  Download, ExternalLink, ChevronDown, ShoppingBag, Clock, Bell
+  Download, ExternalLink, ChevronDown, ShoppingBag, Clock, Bell, Check
 } from 'lucide-react';
 
 /* ─── Avatar Color Palette (from ICIT Leads) ─── */
@@ -41,6 +41,11 @@ const STATUS_STYLES = {
 };
 
 const STATUS_OPTIONS = ['pending', 'in_progress', 'ready', 'completed', 'cancelled'];
+const formatStatusLabel = (status = 'unknown') => (
+  status
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase())
+);
 
 const Orders = () => {
   const { orders: ordersList, fetchOrders, updateOrderStatus, isLoading } = useOrderStore();
@@ -315,42 +320,53 @@ const Orders = () => {
                       </td>
 
                       {/* Status Badge (smooth inline picker) */}
-                      <td className="icit-td" style={{ position: 'relative' }}>
-                        <button
-                          className="icit-status-badge icit-status-badge--clickable"
-                          style={{ backgroundColor: status.bg, color: status.text, borderColor: status.border }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenStatusId(openStatusId === order.id ? null : order.id);
-                          }}
-                        >
-                          <span className="icit-status-dot" style={{ backgroundColor: status.dot }} />
-                          {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ') : 'Unknown'}
-                          <ChevronDown size={12} style={{ opacity: 0.5, marginLeft: '2px' }} />
-                        </button>
+                      <td className="icit-td">
+                        <div className={`icit-status-control ${openStatusId === order.id ? 'icit-status-control--open' : ''}`}>
+                          <button
+                            type="button"
+                            className="icit-status-badge icit-status-badge--clickable"
+                            style={{ backgroundColor: status.bg, color: status.text }}
+                            aria-haspopup="menu"
+                            aria-expanded={openStatusId === order.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenStatusId(openStatusId === order.id ? null : order.id);
+                            }}
+                          >
+                            <span className="icit-status-accent-dot" style={{ backgroundColor: status.dot }} />
+                            <span className="icit-status-dot" style={{ backgroundColor: status.dot }} />
+                            <span className="icit-status-label">
+                              {formatStatusLabel(order.status)}
+                            </span>
+                            <ChevronDown className="icit-status-chevron" size={14} strokeWidth={1.8} />
+                          </button>
 
-                        {openStatusId === order.id && (
-                          <div className="icit-status-picker" onClick={(e) => e.stopPropagation()}>
-                            {STATUS_OPTIONS.map(s => {
-                              const isActive = (order.status || 'pending') === s;
-                              return (
-                                <button
-                                  key={s}
-                                  type="button"
-                                  className={`icit-status-picker-item ${isActive ? 'icit-status-picker-item--active' : ''}`}
-                                  onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    if (!isActive) handleStatusChange(order.id, s);
-                                    setOpenStatusId(null);
-                                  }}
-                                >
-                                  <span className="icit-status-dot" style={{ backgroundColor: STATUS_STYLES[s]?.dot || '#9CA3AF' }} />
-                                  {s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
+                          {openStatusId === order.id && (
+                            <div className="icit-status-picker" role="menu" onClick={(e) => e.stopPropagation()}>
+                              {STATUS_OPTIONS.map(s => {
+                                const isActive = (order.status || 'pending') === s;
+                                return (
+                                  <button
+                                    key={s}
+                                    type="button"
+                                    role="menuitemradio"
+                                    aria-checked={isActive}
+                                    className={`icit-status-picker-item ${isActive ? 'icit-status-picker-item--active' : ''}`}
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      if (!isActive) handleStatusChange(order.id, s);
+                                      setOpenStatusId(null);
+                                    }}
+                                  >
+                                    <span className="icit-status-dot" style={{ backgroundColor: STATUS_STYLES[s]?.dot || '#9CA3AF' }} />
+                                    <span>{formatStatusLabel(s)}</span>
+                                    {isActive && <Check className="icit-status-check" size={15} strokeWidth={2} />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       </td>
 
                       {/* Date */}

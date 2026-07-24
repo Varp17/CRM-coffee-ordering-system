@@ -172,14 +172,16 @@
 
 .chart-card-header h3, .card-header-row h3 {
   font-family: 'Author', 'Outfit', sans-serif;
-  font-size: 19px;
-  font-weight: 600;
+  font-size: 21px;
+  font-weight: 500;
   color: #1F2A44;
   margin: 0;
 }
 
 .chart-subtitle, .card-subtitle {
-  font-size: 12.5px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
   color: #718096;
   margin: 2px 0 0;
 }
@@ -204,8 +206,8 @@
 }
 
 .btn-link {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   color: #007AFF;
   text-decoration: none;
 }
@@ -226,8 +228,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12.5px;
-  padding: 4px 8px;
+  font-size: 14.5px;
+  line-height: 1.35;
+  padding: 5px 9px;
   border-radius: 6px;
   background: #F5F9FC;
 }
@@ -241,13 +244,13 @@
 
 .legend-name {
   color: #1F2A44;
-  font-weight: 600;
+  font-weight: 400;
   flex: 1;
 }
 
 .legend-pct {
   color: #007AFF;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 @container (max-width: 380px) {
@@ -284,7 +287,8 @@
 .dash-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 .dash-table th {
@@ -292,9 +296,9 @@
   padding: 10px 14px;
   background: #F5F9FC;
   color: #4A5568;
-  font-weight: 700;
+  font-weight: 500;
   border-bottom: 1px solid #E2E8F0;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .dash-table td {
@@ -302,14 +306,20 @@
   border-bottom: 1px solid #F1F5F9;
   color: #1F2A44;
   vertical-align: middle;
+  font-weight: 400;
+}
+
+.dash-table td strong {
+  font-weight: 500;
 }
 
 .terminal-badge {
-  padding: 3px 8px;
+  padding: 4px 8px;
   background: #E6F4FF;
   color: #007AFF;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.35;
   border-radius: 6px;
 }
 
@@ -317,7 +327,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .cell-icon {
@@ -326,10 +336,11 @@
 }
 
 .status-pill {
-  padding: 4px 10px;
+  padding: 5px 11px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
   display: inline-block;
 }
 
@@ -371,13 +382,16 @@
 }
 
 .term-name {
-  font-weight: 700;
+  font-weight: 500;
   color: #1F2A44;
-  font-size: 13px;
+  font-size: 15px;
+  line-height: 1.35;
 }
 
 .term-loc {
-  font-size: 11.5px;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.35;
   color: #718096;
 }
 
@@ -389,13 +403,13 @@
 }
 
 .term-orders {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 500;
   color: #007AFF;
 }
 
 .status-dot-online {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
   color: #10B981;
 }

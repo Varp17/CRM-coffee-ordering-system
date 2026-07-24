@@ -10,7 +10,7 @@
 
 **Name:** Digital Coffee / CHILLD Coffee Ordering System  
 **Type:** Full-stack QSR (Quick Service Restaurant) ordering ecosystem  
-**Surfaces:** D2C Storefront, Admin Command Center, Barista KDS, Kiosk Terminal  
+**Surfaces:** Customer Ordering Website, Admin Command Center (CRM), and Barista KDS
 **Purpose:** Unified platform for customer ordering, kitchen operations, inventory management,
 supply chain, analytics, and enterprise admin workflows.
 
@@ -99,8 +99,9 @@ F:\Projects\coffee-ordering-system\
 │   │   └── menuConfig.js            # Admin sidebar navigation config
 │   ├── data/
 │   │   ├── mockData.js              # Legacy mock data
-│   │   ├── kioskProducts.js         # Kiosk product catalog
-│   │   └── kioskRecipes.js          # Kiosk recipe definitions
+│   │   ├── kioskProducts.js         # Ordering-site concentrate catalog mirror
+│   │   ├── kioskRecipes.js          # Ordering-site recipe definitions
+│   │   └── crmStores.js             # Ordering-site locations used by the CRM store selector
 │   ├── design-system/
 │   │   └── tokens/
 │   │       ├── colors.js            # Brand color tokens (unused in active code)
@@ -283,7 +284,7 @@ F:\Projects\coffee-ordering-system\
 | `/store/*` | D2CLayout | Customer-facing storefront |
 | `/admin/*` | AdminLayout | Enterprise admin command center |
 | `/barista/*` | BaristaLayout | Kitchen Display System (KDS) |
-| `/kiosk/*` | Redirects to external GitLab Pages app | Self-service terminal |
+| `/kiosk/*` | Redirects to the external Vercel ordering website | Legacy internal route retained for compatibility |
 | `*` | Redirect to `/` | Catch-all |
 
 ### 4.2 Layouts
@@ -293,7 +294,7 @@ F:\Projects\coffee-ordering-system\
 | **AdminLayout** | `src/layouts/AdminLayout.jsx` | Sidebar + sticky top header + scrollable content area. Responsive: expanded (>=1200px), collapsed (>=900px), mobile drawer (<900px). Contains AdminPageErrorBoundary for route-level error handling. |
 | **BaristaLayout** | `src/layouts/BaristaLayout.jsx` | KDS-optimized layout with large touch targets and fluid typography. |
 | **D2CLayout** | `src/layouts/D2CLayout.jsx` | Customer storefront layout with navigation, cart summary, and footer. |
-| **KioskLayout** | `src/layouts/KioskLayout.jsx` | Kiosk terminal layout (currently unused—kiosk is external). |
+| **KioskLayout** | `src/layouts/KioskLayout.jsx` | Legacy internal ordering layout (currently unused; the customer ordering website is external). |
 
 ---
 
@@ -374,18 +375,19 @@ Base client: `src/services/api.js`
 **Route:** `/`  
 **Functionality:**
 - Email/password login form with role-based redirect after auth.
-- Collapsible credential drawer with demo accounts (Admin, Barista, Kiosk) for quick access.
+- Collapsible credential drawer with demo accounts (Admin, Barista, Store Display) for quick access.
 - Auto-fill on credential row click.
-- D2C shortcut button to `/store`.
+- Shortcut to the external coffee ordering website.
+- Visible CRM copy uses “Store” or “Ordering Website”; legacy `kiosk` role/route/storage identifiers remain internal for compatibility.
 - Error handling with toast notifications.
 
 ### 7.2 Admin Command Center (~35 modules)
 
 | Module | Path | Functionality |
 |---|---|---|
-| **Dashboard** | `src/pages/admin/Dashboard/Dashboard.jsx` | KPI cards (revenue, orders, terminals, avg prep time), Recharts area/bar/pie charts, live order feed synced via storage events, weekly sales data, concentrate breakdown, kiosk terminal status. |
-| **Orders** | `src/pages/admin/Orders/Orders.jsx` | Order management table with client-side pagination, inline status picker (click badge → select status, no save/cancel), avatar colors, CSV export, detail side panel with timeline, refund modal, action buttons (start/ready/complete/print/view). |
-| **Menu** | `src/pages/admin/Menu/Menu.jsx` | Product/menu item management with add/edit forms, image uploads, category filtering. |
+| **Dashboard** | `src/pages/admin/Dashboard/Dashboard.jsx` | Responsive KPI cards, weekly revenue area chart, four-product sales-mix donut, recent orders table, and store-terminal status for the five ordering-site locations. |
+| **Orders** | `src/pages/admin/Orders/Orders.jsx` | Order management table with pagination, CSV export, Ready-aware status filtering, compact inline status menu, and a centered View modal with order timeline/items/invoice actions. Refund UI has been removed. |
+| **Menu / Products** | `src/pages/admin/Menu/Menu.jsx` | Displays only the four approved ordering-site concentrate products. Production API rows are reconciled against the approved catalog so unrelated backend products cannot replace the local list. Matching records retain backend ID, stock, and active/draft state. |
 | **Recipes** | `src/pages/admin/Recipes/Recipes.jsx` | Recipe management with tabs (Menu, Engine, Customer, Brew), compatibility rules, ingredient mapping. |
 | **Inventory** | `src/pages/admin/Inventory/Inventory.jsx` | Inventory tracking with timeline, cards, stock levels, search/filter. |
 | **Ingredients** | `src/pages/admin/Ingredients/Ingredients.jsx` | Ingredient master data management. |
@@ -452,7 +454,9 @@ Base client: `src/services/api.js`
 | **About** | `src/pages/d2c/About/About.jsx` | About page. |
 | **Contact** | `src/pages/d2c/Contact/Contact.jsx` | Contact page. |
 
-### 7.5 Kiosk (External)
+### 7.5 Customer Ordering Website (External)
+
+The customer ordering website is maintained in `F:\Projects\coffee-ordering-kiosk` and is live on Vercel. The legacy `src/pages/kiosk/` implementation and `/kiosk` identifiers remain in this repository for compatibility, but the CRM UI does not expose “Kiosk” terminology.
 
 | Module | Path | Functionality |
 |---|---|---|
@@ -531,7 +535,7 @@ Base client: `src/services/api.js`
 - **Motion:** Keyframes (fadeIn, slideInRight, scaleIn, shimmer, pulse, spin) + transition tokens.
 - **Elevation:** `--elevation-0` through `--elevation-float`.
 - **Z-Index Scale:** Base to max (`--z-modal`, `--z-drawer`, `--z-overlay`, etc.).
-- **Admin Overrides:** `.admin-layout-new` class scopes white-canvas tokens (surface, border, text, sidebar) so D2C/Kiosk/Barista remain unaffected.
+- **Admin Shell:** `.al-root`, `.al-main-panel`, and `.al-content` scope the current sidebar/header/content layout. Legacy `.admin-layout-new` overrides still exist in `global.css` but are not the active root class.
 - **KDS Rules:** Fluid type and large touch targets for barista displays.
 - **Responsive Breakpoints:** 768px (mobile), 1024px (tablet), 1920px+ (large screens).
 
@@ -550,9 +554,11 @@ Config file: `wrangler.jsonc`
 - Observability enabled.
 
 ### Production URLs
-- **Frontend:** Deployed on Cloudflare Workers (production URL redacted).
+- **CRM frontend:** Live on Vercel (production URL not recorded in this document).
 - **Backend API:** Separate REST + WebSocket service deployed on a third-party host (URL redacted).
-- **Kiosk:** External app deployed to GitLab Pages.
+- **Customer ordering website:** Live on Vercel at `https://coffee-ordering-kiosk.vercel.app`.
+
+The repository still includes Cloudflare Workers configuration (`wrangler.jsonc`) as an alternative deployment target.
 
 ### Environment Variables
 - `VITE_API_URL` — API base URL override. If unset, auto-detects based on hostname (localhost → local dev; Vercel/Render domain → production API).
@@ -566,7 +572,7 @@ Config file: `wrangler.jsonc`
 |---|---|---|
 | Super Admin | `[REDACTED]` | `[REDACTED]` |
 | Barista | `[REDACTED]` | `[REDACTED]` |
-| Kiosk | `[REDACTED]` | `[REDACTED]` |
+| Store Display (internal role: `kiosk`) | `[REDACTED]` | `[REDACTED]` |
 
 **Note:** These are hardcoded in `src/store/useAuthStore.js` with localStorage token fallbacks.
 Remove or gate behind environment flags before production.
@@ -574,6 +580,7 @@ Remove or gate behind environment flags before production.
 ### Dummy Data Fallbacks
 - `useOrderStore.js` — 5 hardcoded DUMMY_ORDERS used when API returns empty.
 - `Dashboard.jsx` — Separate `DUMMY_LIVE_ORDERS` and `DASHBOARD_METRICS` constants.
+- `Menu.jsx` — Starts from the four-product approved ordering-site catalog and reconciles matching production API metadata without admitting unrelated products.
 - Purpose: Graceful degradation for demos when backend is unavailable.
 
 ---
@@ -591,12 +598,13 @@ Remove or gate behind environment flags before production.
 ## 14. Key Functional Flows
 
 ### Order Lifecycle
-1. Customer places order via D2C or Kiosk → `POST /orders`.
+1. Customer places an order through the customer ordering website → `POST /orders`.
 2. Order appears in Admin Orders + Barista KDS via WebSocket `NEW_ORDER`.
 3. Barista advances status: pending → in_progress → ready → completed via KDS actions.
 4. Admin can also update status inline from Orders table (badge picker).
 5. Completed orders can be printed/invoiced.
-6. Refunds initiated from Admin detail panel.
+
+Refund services remain in the API/store layer for compatibility, but the CRM Orders interface no longer exposes a Refund button or refund modal.
 
 ### Inventory Flow
 - Central inventory → store transfers → store-level inventory.
@@ -616,7 +624,8 @@ Remove or gate behind environment flags before production.
 - **Multiple Token Systems:** CSS variables in `global.css`, unused JS tokens in `design-system/tokens/`, and hardcoded hex values in components.
 - **API Response Unwrap:** `apiResponse.js` normalizes inconsistent backend response shapes.
 - **Error Boundaries:** `AdminPageErrorBoundary` wraps admin route outlets.
-- **Side Panel vs Modal:** Orders page uses slide-over side panel instead of center modal for detail view.
+- **Orders View Modal:** Orders open in a centered, screen-level modal with backdrop and Escape/close handling rather than the former right-side slide-over.
+- **Approved Product Catalog:** The Products page treats the external ordering-site concentrate catalog as the display allowlist. A successful production API response can enrich matching products but cannot inject unrelated rows.
 - **Commented-Out Code:** Kiosk routes in `App.jsx` and legacy sidebar code in `Sidebar.jsx` remain but are inactive.
 
 ---
@@ -637,7 +646,137 @@ Remove or gate behind environment flags before production.
 
 ---
 
-## 17. Confidential Information (Redacted)
+## 17. Current CRM Alignment (July 24, 2026)
+
+This section records the completed CRM alignment work that supersedes older UI screenshots or descriptions.
+
+### 17.1 Visible Terminology
+
+- The CRM no longer displays the word “Kiosk” in user-facing admin/portal copy.
+- Visible replacements use **Store**, **Store Display**, **Store Network**, or **Coffee Ordering Website**, depending on context.
+- Updated surfaces include Portal/Login, Dashboard, Products, Recipes, Recipe Builder, Financials, Support, and recipe approval/menu copy.
+- Internal identifiers such as `/kiosk`, `useKioskStore`, `is_available_kiosk`, `chilld_kiosk_*`, CSS class names, and source filenames are intentionally retained to avoid breaking routing, persisted data, API contracts, or ordering-site synchronization.
+
+### 17.2 Dashboard
+
+- Header: **Chilld Coffee Operations**.
+- KPI cards:
+  - Total Revenue
+  - Total Orders
+  - Pipeline Volume
+  - Active Web Sessions
+  - Satisfaction
+- The chart section contains:
+  - **Weekly Sales & Revenue Trend**
+  - **Product Mix** donut chart
+- Product Mix covers the complete approved catalog:
+
+| Product | Sales Share |
+|---|---:|
+| Bold Concentrate | 32% |
+| Classic CB Concentrate | 29% |
+| Kaapi Concentrate | 24% |
+| Discovery Kit | 15% |
+
+- The Product Mix panel uses a responsive two-column donut/legend layout and stacks internally when its container is narrow, preventing cropping when the sidebar is expanded.
+- Lower panels are **Recent Orders** and **Store Terminals**.
+- Dashboard panel typography was enlarged without heavy bold styling:
+
+| Element | Size | Weight |
+|---|---:|---:|
+| Section headings | 21px | 500 |
+| Section subtitles | 15px | 400 |
+| Product Mix labels | 14.5px | 400 |
+| Product Mix percentages | 14.5px | 500 |
+| Recent Orders headers | 14px | 500 |
+| Recent Orders cells | 15px | 400 |
+| Store terminal names | 15px | 500 |
+| Store terminal locations | 13.5px | 400 |
+
+### 17.3 Store Selector and Store-Terminal Data
+
+`src/data/crmStores.js` mirrors the public locations from `F:\Projects\coffee-ordering-kiosk\src\data\locations.js`.
+
+The **All Stores** selector always contains:
+
+1. Indiranagar
+2. Koramangala
+3. HSR Layout
+4. Whitefield
+5. MG Road
+
+`TopHeader.jsx` preloads these locations and then de-duplicates any additional API stores by normalized store name. Dashboard terminal names and addresses use the same five locations.
+
+### 17.4 Orders
+
+- Summary cards use the shared dashboard metric-card visual language.
+- Metric-card typography uses larger regular-weight text:
+  - Label: 14px / 400
+  - Value: 30px / 400
+  - Description: 15px / 400
+- Search/filter controls include **All Orders**, **Completed**, **In Progress**, **Pending**, **Ready**, and **Cancelled**.
+- Clicking **View** opens a centered modal over a backdrop. It supports the close button, backdrop dismissal, and Escape.
+- The modal shows customer information, order details, progress timeline, ordered items, totals, status actions, and invoice access.
+- The Refund button and refund confirmation UI were removed.
+- The inline status changer follows the compact reference design:
+  - 136×36px colored trigger pill
+  - Two colored dots and a chevron
+  - White 150px floating menu with 7px radius and soft shadow
+  - 32px menu rows
+  - Colored status dots
+  - Neutral highlighted active row with a right-aligned checkmark
+- Status options remain domain-specific: Pending, In Progress, Ready, Completed, and Cancelled.
+- Selecting a status updates local state immediately and then attempts backend synchronization.
+
+### 17.5 Approved Products and Production Reconciliation
+
+The CRM catalog source `src/data/kioskProducts.js` is byte-for-byte identical to the ordering website source `F:\Projects\coffee-ordering-kiosk\src\data\products.js` as of July 24, 2026.
+
+Only these products may appear in the CRM Products table:
+
+1. Bold Concentrate
+2. Classic CB Concentrate
+3. Kaapi Concentrate
+4. Discovery Kit
+
+Production behavior:
+
+- `Menu.jsx` always begins with the four approved catalog products.
+- A successful `/products` response is reconciled by normalized product ID, slug, SKU, or name.
+- Matching API products may contribute backend ID, category ID, recipe/concentrate links, stock quantity, created date, and active/draft state.
+- The ordering-site name, description, price, image, and concentrate category remain the displayed catalog values.
+- Unrelated backend products are discarded instead of replacing the approved list.
+- Product category filters are derived only from the four displayed products, preventing unrelated API categories from appearing in the filter.
+
+Optimized ordering-site thumbnails included in the CRM:
+
+- `public/images/products/BoldConcentrate325.png`
+- `public/images/products/ClassicCBConc325.png`
+- `public/images/products/KappiConcentrate325.png`
+- `public/3inone.jpeg`
+
+These files total roughly 395 KB and replace the need to copy approximately 16 MB of full-resolution product assets.
+
+### 17.6 Verification and Deployment Notes
+
+Completed verification:
+
+- `npm run build` passes with Vite 8.
+- Browser QA confirmed the Dashboard, Orders status interaction, centered order modal, store selector, larger typography, and approved Products table.
+- A production-like test injected a successful API response containing Cappuccino, Cafe Latte, and Chocolate Shake. The CRM still displayed exactly the four approved products and no unrelated rows.
+- Product category filtering was exercised (Bold → one result → All → four results).
+- No React page errors or framework error overlays were observed.
+
+Known environment notes:
+
+- Local API/WebSocket connection warnings are expected when the backend at `localhost:3000` is offline; the CRM uses local fallback data in that condition.
+- A transient Recharts container-size warning may appear during route/viewport transitions without causing a visible layout failure.
+- The Codex in-app browser helper is currently blocked by the user-level `C:\Users\HP\package.json` setting `"type": "module"`; standalone Playwright was used for rendered verification.
+- Neither repository contains `.vercel/project.json`, and the currently connected Vercel account does not expose the CRM or ordering-site projects. Source changes must be committed/pushed or deployed from the Vercel account/project that owns the live sites.
+
+---
+
+## 18. Confidential Information (Redacted)
 
 The following categories of data have been omitted from this document for security:
 - API keys, service account keys, and signing secrets

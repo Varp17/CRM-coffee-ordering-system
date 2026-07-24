@@ -15,27 +15,83 @@ import Inventory from '../Inventory/Inventory';
 import { Search, Plus, MoreHorizontal, Download, Columns, SlidersHorizontal, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 
-import { PRODUCTS as KIOSK_PRODUCTS, CATEGORIES as KIOSK_CATEGORIES } from '../../../data/kioskProducts';
+import { PRODUCTS as ORDERING_SITE_PRODUCTS } from '../../../data/kioskProducts';
 
-const DUMMY_KIOSK_PRODUCTS = KIOSK_PRODUCTS.map((item) => ({
+const PRODUCT_THUMBNAILS = {
+  'coffee-50-50-concentrate': '/images/products/BoldConcentrate325.png',
+  'classic-cb-concentrate': '/images/products/ClassicCBConc325.png',
+  'sif-concentrate': '/images/products/KappiConcentrate325.png',
+  'sampler-concentrate': '/3inone.jpeg',
+};
+
+const APPROVED_CATALOG_PRODUCTS = ORDERING_SITE_PRODUCTS.map((item) => ({
   id: item.id,
   name: item.name,
   description: item.description || item.tagline,
   base_price: item.basePrice || 390,
   category_name: item.concentrateType || 'Concentrate',
+  category: {
+    slug: item.category,
+    name: item.concentrateType || 'Concentrate',
+  },
   product_type: 'beverage',
   is_active: true,
   is_available_kiosk: true,
-  image_url: item.image,
+  image_url: PRODUCT_THUMBNAILS[item.id] || item.cardImage || item.image,
   roast: item.roast || 'Medium Dark',
   caffeine: item.caffeine || 'High',
   rating: item.reviews?.rating || 4.8,
 }));
 
+const normalizeCatalogKey = (value) => (
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '')
+);
+
+const reconcileWithApprovedCatalog = (apiProducts = []) => {
+  const backendProducts = Array.isArray(apiProducts) ? apiProducts : [];
+
+  return APPROVED_CATALOG_PRODUCTS.map((catalogProduct) => {
+    const approvedKeys = new Set([
+      normalizeCatalogKey(catalogProduct.id),
+      normalizeCatalogKey(catalogProduct.name),
+    ]);
+    const backendProduct = backendProducts.find((product) => (
+      [product.id, product.slug, product.sku, product.name]
+        .map(normalizeCatalogKey)
+        .some((key) => approvedKeys.has(key))
+    ));
+
+    if (!backendProduct) return catalogProduct;
+
+    return {
+      ...backendProduct,
+      ...catalogProduct,
+      id: backendProduct.id ?? catalogProduct.id,
+      category_id: backendProduct.category_id ?? backendProduct.category?.id ?? null,
+      category: {
+        ...(backendProduct.category && typeof backendProduct.category === 'object' ? backendProduct.category : {}),
+        name: catalogProduct.category_name,
+      },
+      recipe_id: backendProduct.recipe_id ?? null,
+      concentrate_type_id: backendProduct.concentrate_type_id ?? null,
+      stock_quantity: backendProduct.stock_quantity ?? catalogProduct.stock_quantity,
+      created_at: backendProduct.created_at ?? catalogProduct.created_at,
+      is_active: backendProduct.is_active ?? catalogProduct.is_active,
+    };
+  });
+};
+
+const getProductCategoryName = (product) => (
+  product.category?.name || product.category_name || 'Uncategorized'
+);
+
 const Menu = () => {
   const userRole = useAuthStore((state) => state.role);
   const [activeTab, setActiveTab] = useState('products');
-  const [productsList, setProductsList] = useState(DUMMY_KIOSK_PRODUCTS);
+  const [productsList, setProductsList] = useState(APPROVED_CATALOG_PRODUCTS);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -72,16 +128,8 @@ const Menu = () => {
     const rPromise = menuRecipeService.list().catch(() => null);
     const ctPromise = api.get('/production/concentrate-types?limit=50').catch(() => null);
     const [pRes, cRes, rRes, ctRes] = await Promise.all([pPromise, cPromise, rPromise, ctPromise]);
-    if (pRes) {
-      const products = unwrapList(pRes);
-      if (Array.isArray(products) && products.length > 0) {
-        setProductsList(products);
-      } else {
-        setProductsList(DUMMY_KIOSK_PRODUCTS);
-      }
-    } else {
-      setProductsList(DUMMY_KIOSK_PRODUCTS);
-    }
+    const apiProducts = pRes ? unwrapList(pRes) : [];
+    setProductsList(reconcileWithApprovedCatalog(apiProducts));
     if (cRes) setCategoriesList(unwrapList(cRes));
     if (rRes) setRecipesList(unwrapList(rRes));
     if (ctRes) setConcentrateTypes(unwrapList(ctRes));
@@ -107,14 +155,14 @@ const Menu = () => {
   }, []);
 
   const categories = useMemo(() => {
-    return ['all', ...new Set(categoriesList.map(c => c.name))];
-  }, [categoriesList]);
+    return ['all', ...new Set(productsList.map(getProductCategoryName))];
+  }, [productsList]);
 
   const filteredProducts = useMemo(() => {
     return productsList.filter(p => {
       const matchesSearch = (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                             (p.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = categoryFilter === 'all' || (p.category?.name || 'Uncategorized') === categoryFilter;
+      const matchesCategory = categoryFilter === 'all' || getProductCategoryName(p) === categoryFilter;
       
       let matchesStatus = true;
       if (productStatusFilter === 'active') {
@@ -283,9 +331,6 @@ const Menu = () => {
     );
   }
 
-  console.log('productsList state:', productsList.length);
-  console.log('filteredProducts state:', filteredProducts.length);
-
   return (
     <div className="menu-view animate-fade-in">
       <div className="settings-tabs" style={{ marginBottom: '16px' }}>
@@ -431,7 +476,7 @@ const Menu = () => {
                       </td>
                       <td>
                         <span className="zenith-category-badge">
-                          {product.category?.name || 'Uncategorized'}
+                          {getProductCategoryName(product)}
                         </span>
                       </td>
                       <td>
