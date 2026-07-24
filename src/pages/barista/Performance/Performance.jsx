@@ -104,7 +104,7 @@ const Performance = () => {
           <h3>Hourly Productivity & Prep Speeds</h3>
           <p className="chart-subtitle">Tracks total orders completed against average prep minutes per hour segment</p>
           <div className="barista-chart-container" style={{ width: '100%', height: 260 }}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <ResponsiveContainer width="100%" height={260} minWidth={0} minHeight={0}>
               <BarChart data={speedTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                 <XAxis dataKey="hour" stroke="#8B8680" fontSize={11} tickLine={false} />

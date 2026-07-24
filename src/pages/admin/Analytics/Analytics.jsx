@@ -330,7 +330,7 @@ const Analytics = () => {
             <motion.div className="chart-container" variants={itemVariants}>
               <h3>📈 Net Sales Revenue Curve</h3>
               <div className="chart-viewport">
-                <ResponsiveContainer width="99%" height="100%" minWidth={0} minHeight={0} key={`${timeRange}-${weeklyChartData.length}-${monthlyChartData.length}`}>
+                <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0} key={`${timeRange}-${weeklyChartData.length}-${monthlyChartData.length}`}>
                   {timeRange === 'weekly' ? (
                     <AreaChart data={timeRange === 'daily' ? weeklyChartData.slice(-7) : timeRange === 'yearly' ? monthlyChartData : weeklyChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                       <defs>
@@ -368,7 +368,7 @@ const Analytics = () => {
             <motion.div className="chart-container" variants={itemVariants}>
               <h3>⚡ Peak Hours Preparation Heatmap</h3>
               <div className="chart-viewport">
-                <ResponsiveContainer width="99%" height="100%" minWidth={0} minHeight={0} key={hourlyChartData.length}>
+                <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0} key={hourlyChartData.length}>
                   <BarChart data={hourlyChartData}>
                     <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />
                     <YAxis stroke="var(--color-text-secondary)" fontSize={11} tickLine={false} />

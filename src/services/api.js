@@ -83,6 +83,12 @@ class ApiClient {
 
       // Handle 401 — auto logout
       if (response.status === 401) {
+        const isMockToken = token && (token.startsWith('mock-') || token.includes('mock'));
+        if (isMockToken) {
+          console.warn(`[API] 401 received for mock token on ${endpoint}. Suppressing auto-logout in demo mode.`);
+          return { success: true, data: [], count: 0, items: [] };
+        }
+
         if (!hasRetriedAuth) {
           const newToken = await this.refreshAccessToken();
           if (newToken) {
