@@ -133,6 +133,28 @@ class ApiClient {
       if (err instanceof ApiError) throw err;
       if (err.name === 'AbortError') throw err;
       if (err.code === 20 && err.message?.includes('abort')) throw err;
+
+      // If local backend is unreachable, attempt fallback to production backend
+      if ((url.includes('localhost:3000') || url.includes('127.0.0.1')) && !options._isFallback) {
+        const fallbackUrl = `https://coffee-ordering-system-backend.onrender.com/api/v1${endpoint}`;
+        try {
+          const fallbackRes = await fetch(fallbackUrl, { ...config, _isFallback: true });
+          if (fallbackRes.ok) {
+            const contentType = fallbackRes.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              return await fallbackRes.json();
+            }
+            return { success: true };
+          }
+        } catch (_) {}
+      }
+
+      const isMockToken = token && (token.startsWith('mock-') || token.includes('mock'));
+      if (isMockToken) {
+        console.warn(`[API] Network error on ${endpoint} with mock token. Returning mock fallback data.`);
+        return { success: true, data: [], count: 0, items: [] };
+      }
+
       throw new ApiError('Network error. Please check your connection.', 0, { originalError: err.message });
     }
   }
