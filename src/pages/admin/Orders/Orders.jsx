@@ -210,10 +210,10 @@ const Orders = () => {
         </div>
         <div className="icit-header-actions">
           <button className="icit-icon-btn" onClick={() => fetchOrders()} title="Refresh">
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'icit-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'icit-spin' : ''}`} />
           </button>
           <button className="icit-export-btn" onClick={handleExportCSV}>
-            <Download className="w-3.5 h-3.5" /> Export
+            <Download className="w-4 h-4" /> Export
           </button>
         </div>
       </div>
@@ -244,7 +244,7 @@ const Orders = () => {
       {/* ─── Search & Filter Bar (ICIT Style) ─── */}
       <div className="icit-toolbar">
         <div className="icit-search-box">
-          <Search className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+          <Search className="w-4 h-4" style={{ color: '#64748B' }} />
           <input
             type="text"
             placeholder="Search orders by ID, customer name, email..."
@@ -284,7 +284,7 @@ const Orders = () => {
             <tbody>
               {paginatedOrders.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '48px 16px', color: '#94A3B8', fontSize: '14px', fontWeight: 600 }}>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '48px 16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
                     No orders found
                   </td>
                 </tr>
@@ -333,12 +333,11 @@ const Orders = () => {
                               setOpenStatusId(openStatusId === order.id ? null : order.id);
                             }}
                           >
-                            <span className="icit-status-accent-dot" style={{ backgroundColor: status.dot }} />
                             <span className="icit-status-dot" style={{ backgroundColor: status.dot }} />
                             <span className="icit-status-label">
                               {formatStatusLabel(order.status)}
                             </span>
-                            <ChevronDown className="icit-status-chevron" size={14} strokeWidth={1.8} />
+                            <ChevronDown className="icit-status-chevron" size={15} strokeWidth={2} />
                           </button>
 
                           {openStatusId === order.id && (
@@ -393,8 +392,8 @@ const Orders = () => {
                               onClick={(e) => { e.stopPropagation(); handleStatusChange(order.id, getNextStatus(order.status)); }}
                               style={{ backgroundColor: getActionColor(order.status) }}
                             >
-                              {order.status === 'pending' && <Play size={12} />}
-                              {(order.status === 'in_progress' || order.status === 'ready') && <CheckCircle size={12} />}
+                              {order.status === 'pending' && <Play size={15} />}
+                              {(order.status === 'in_progress' || order.status === 'ready') && <CheckCircle size={15} />}
                               {getActionLabel(order.status)}
                             </button>
                           )}
@@ -403,14 +402,14 @@ const Orders = () => {
                               className="icit-action-outline"
                               onClick={(e) => { e.stopPropagation(); toast.success('Invoice generated for #' + (order.order_number || order.id)); }}
                             >
-                              <Printer size={12} /> Print
+                              <Printer size={15} /> Print
                             </button>
                           )}
                           <button
                             className="icit-action-view"
                             onClick={(e) => { e.stopPropagation(); openDetail(order); }}
                           >
-                            <ExternalLink size={12} /> View
+                            <ExternalLink size={15} /> View
                           </button>
                         </div>
                       </td>
