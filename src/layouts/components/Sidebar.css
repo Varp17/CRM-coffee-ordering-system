@@ -361,9 +361,9 @@
 .sb-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 12px;
-  height: 40px;
+  gap: 12px;
+  padding: 0 14px;
+  height: 44px;
   border-radius: 8px;
   color: var(--sb-text-secondary);
   text-decoration: none;
@@ -371,9 +371,9 @@
   position: relative;
   white-space: nowrap;
   overflow: hidden;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   cursor: pointer;
 }
 

@@ -22,7 +22,7 @@ const AdminMetricCard = ({
         <span className="admin-metric-card__label">{label}</span>
         {Icon && (
           <span className="admin-metric-card__icon" aria-hidden="true">
-            <Icon size={16} />
+            <Icon size={20} />
           </span>
         )}
       </span>

@@ -59,7 +59,7 @@ const SidebarItem = React.memo(({ item, collapsed, onNavigate }) => {
       aria-label={item.label}
     >
       <span className="sb-item-icon">
-        <item.icon size={16} strokeWidth={1.8} />
+        <item.icon size={20} strokeWidth={2} />
         {badge > 0 && <span className="sb-badge">{badge > 99 ? '99+' : badge}</span>}
       </span>
       {!collapsed && (
