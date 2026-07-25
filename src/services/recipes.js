@@ -5,6 +5,22 @@ export const recipeService = {
     return api.get('/ingredients');
   },
 
+  getCommunityRecipes: async () => {
+    return api.get('/recipes/admin/all');
+  },
+
+  updateReviewStatus: async (id, status) => {
+    return api.patch(`/recipes/admin/${id}/status`, { status });
+  },
+
+  deactivateRecipe: async (id) => {
+    return api.delete(`/recipes/admin/${id}`);
+  },
+
+  permanentDelete: async (id) => {
+    return api.delete(`/recipes/admin/${id}/permanent`);
+  },
+
   getIngredientGroups: async () => {
     return api.get('/ingredient-groups');
   },
@@ -59,5 +75,17 @@ export const recipeService = {
 
   setRawMaterialMappings: async (ingredientId, mappings) => {
     return api.put(`/ingredients/${ingredientId}/raw-materials`, { mappings });
+  },
+
+  toggleLike: async (recipeId) => {
+    return api.post(`/recipes/${recipeId}/like`);
+  },
+
+  getComments: async (recipeId) => {
+    return api.get(`/recipes/${recipeId}/comments`);
+  },
+
+  addComment: async (recipeId, body) => {
+    return api.post(`/recipes/${recipeId}/comments`, { body });
   },
 };

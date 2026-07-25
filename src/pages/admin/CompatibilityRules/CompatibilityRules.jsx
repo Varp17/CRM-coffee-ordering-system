@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { recipeService } from '../../../services/recipes';
 import { INGREDIENT_ID_TO_NAME } from '../../../utils/compatibility';
 import toast from 'react-hot-toast';
@@ -7,11 +7,10 @@ import Button from '../../../components/Button/Button';
 import './CompatibilityRules.css';
 
 const PRODUCTS = [
-  { id: 27, name: '50:50 Base' },
-  { id: 28, name: '70:30 Base' },
-  { id: 29, name: '100% Arabica Base' },
-  { id: 30, name: 'SIF Base' },
-  { id: 31, name: 'Cascara Base' },
+  { id: 'coffee-50-50-concentrate', name: 'Bold Concentrate' },
+  { id: 'classic-cb-concentrate', name: 'Classic CB Concentrate' },
+  { id: 'sif-concentrate', name: 'Kappi Concentrate' },
+  { id: 'sampler-concentrate', name: 'Discovery Kit' },
 ];
 
 const RULE_TYPES = ['excludes', 'requires', 'conditional', 'size_lock', 'max_count'];
@@ -89,7 +88,7 @@ function resolveIngredientNames(jsonStr) {
 }
 
 const CompatibilityRules = () => {
-  const [selectedProduct, setSelectedProduct] = useState(27);
+  const [selectedProduct, setSelectedProduct] = useState(PRODUCTS[0].id);
   const [rules, setRules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);

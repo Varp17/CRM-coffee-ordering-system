@@ -14,9 +14,11 @@ const Login = () => {
   const verifyOtp = useAuthStore((state) => state.verifyOtp);
   const isLoading = useAuthStore((state) => state.isLoading);
 
-
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginMethod, setLoginMethod] = useState('otp'); // 'otp' | 'password'
+  
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -30,18 +32,22 @@ const Login = () => {
       return;
     }
 
+    if (authMode === 'signup' && (!name || name.trim().length < 2)) {
+      toast.error('Please enter your name for registration.');
+      return;
+    }
+
     try {
-      const res = await sendOtp(phoneNumber);
+      const res = await sendOtp(phoneNumber, authMode);
       if (res.success) {
         setOtpStep(true);
         if (res.otp) {
           setSimulatedOtp(res.otp);
-          // Alert user about simulated OTP in development
-          toast.success(`[SIMULATED SMS] Your Digital Coffee OTP code is: ${res.otp}`, {
-            duration: 10000,
+          toast.success(`[WhatsApp Notification] OTP code generated: ${res.otp}`, {
+            duration: 8000,
           });
         } else {
-          toast.success('OTP sent successfully. Please check your SMS or console logs.');
+          toast.success('OTP sent successfully via WhatsApp.');
         }
       } else {
         toast.error(res.error || 'Failed to send OTP.');
@@ -52,8 +58,8 @@ const Login = () => {
   };
 
   const handleOtpKeyPress = (num) => {
-    if (otpCode.length < 4) {
-      setOtpCode(otpCode + num);
+    if (otpCode.length < 6) {
+      setOtpCode((prev) => prev + num);
     }
   };
 
@@ -61,24 +67,34 @@ const Login = () => {
     setOtpCode('');
   };
 
-  const handleVerifyOtp = async (e) => {
-    if (e) e.preventDefault();
-    if (simulatedOtp && otpCode !== simulatedOtp) {
-      toast.error('Invalid OTP. Please check the simulated notification toast.');
+  const executeOtpVerification = async (codeToVerify) => {
+    const targetCode = codeToVerify || otpCode;
+    if (!targetCode || targetCode.length < 4) {
+      toast.error('Please enter the full verification code.');
       return;
     }
 
     try {
-      const res = await verifyOtp(phoneNumber, otpCode);
+      const res = await verifyOtp(phoneNumber, targetCode, authMode, { name, email });
       if (res.success) {
-        toast.success(`Welcome back, ${useAuthStore.getState().user?.name || 'Customer'}! ☕`);
+        toast.success(`Welcome to Digital Coffee, ${res.user?.name || 'Coffee Lover'}! ☕`);
         navigate('/store/profile');
       } else {
-        toast.error(res.error || 'Authentication failed.');
+        toast.error(res.error || 'Verification failed. Please check the code.');
       }
     } catch (err) {
-      toast.error('Something went wrong during login.');
+      toast.error('Something went wrong during verification.');
     }
+  };
+
+  const handleVerifyOtpSubmit = (e) => {
+    if (e) e.preventDefault();
+    executeOtpVerification();
+  };
+
+  const handleAutoFillAndSubmit = (code) => {
+    setOtpCode(code);
+    executeOtpVerification(code);
   };
 
   const handlePasswordLogin = async (e) => {
@@ -91,7 +107,7 @@ const Login = () => {
     try {
       const res = await login(email, password);
       if (res.success) {
-        toast.success(`Welcome back, ${useAuthStore.getState().user?.name || 'Customer'}! ☕`);
+        toast.success(`Welcome back, ${useAuthStore.getState().user?.name || 'User'}! ☕`);
         navigate('/store/profile');
       } else {
         toast.error(res.error || 'Authentication failed.');
@@ -111,20 +127,20 @@ const Login = () => {
           <p className="brand-tagline">{t('login.tagline', 'Freshly Brewed D2C Commerce Ecosystem')}</p>
         </div>
 
-        {/* Tab Selection */}
+        {/* Auth Mode Toggle (Login vs Create Account) */}
         {!otpStep && (
           <div className="login-tab-bar">
             <button
-              className={`login-tab-btn ${loginMethod === 'otp' ? 'active' : ''}`}
-              onClick={() => setLoginMethod('otp')}
+              className={`login-tab-btn ${authMode === 'login' ? 'active' : ''}`}
+              onClick={() => setAuthMode('login')}
             >
-              {t('login.otpTab', 'Secure OTP Login')}
+              Log In
             </button>
             <button
-              className={`login-tab-btn ${loginMethod === 'password' ? 'active' : ''}`}
-              onClick={() => setLoginMethod('password')}
+              className={`login-tab-btn ${authMode === 'signup' ? 'active' : ''}`}
+              onClick={() => setAuthMode('signup')}
             >
-              {t('login.passwordTab', 'Email & Password')}
+              Create Account
             </button>
           </div>
         )}
@@ -133,11 +149,29 @@ const Login = () => {
         {otpStep ? (
           /* OTP Entry Step */
           <div className="otp-entry-section animate-scale-in">
-            <h3>{t('login.otpTitle', 'Enter 4-Digit OTP Code')}</h3>
-            <p className="otp-sent-to-info">{t('login.otpSentTo', 'We sent an verification code to')} <strong>+91 {phoneNumber}</strong></p>
+            <h3>Enter 6-Digit OTP Code</h3>
+            <p className="otp-sent-to-info">
+              {t('login.otpSentTo', 'Verification code sent to')} <strong>+91 {phoneNumber}</strong>
+            </p>
+
+            {/* On-Site Notification Banner for Dev Simulated OTP */}
+            {simulatedOtp && (
+              <div className="simulated-otp-banner">
+                <span className="banner-text">
+                  💬 <strong>Notification:</strong> Code is <strong>{simulatedOtp}</strong>
+                </span>
+                <button
+                  type="button"
+                  className="autofill-btn"
+                  onClick={() => handleAutoFillAndSubmit(simulatedOtp)}
+                >
+                  ⚡ Auto-Fill & Continue
+                </button>
+              </div>
+            )}
 
             <div className="otp-digit-boxes-row">
-              {[0, 1, 2, 3].map((idx) => {
+              {[0, 1, 2, 3, 4, 5].map((idx) => {
                 const digit = String(otpCode).charAt(idx);
                 return (
                   <div key={idx} className={`otp-digit-box ${digit ? 'filled' : ''}`}>
@@ -163,7 +197,7 @@ const Login = () => {
               <button 
                 type="button" 
                 className="numpad-submit" 
-                onClick={handleVerifyOtp}
+                onClick={handleVerifyOtpSubmit}
                 disabled={otpCode.length < 4 || isLoading}
               >
                 {t('login.go', 'Go ➜')}
@@ -173,14 +207,38 @@ const Login = () => {
             <button 
               type="button" 
               className="otp-back-link-btn" 
-              onClick={() => { setOtpStep(false); setOtpCode(''); }}
+              onClick={() => { setOtpStep(false); setOtpCode(''); setSimulatedOtp(''); }}
             >
-              ← Back to login details
+              ← Back to mobile details
             </button>
           </div>
         ) : loginMethod === 'otp' ? (
           /* Mobile OTP entry form */
           <form className="login-form-fields animate-slide-up" onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }}>
+            {authMode === 'signup' && (
+              <>
+                <div className="form-group">
+                  <Input
+                    label="Full Name"
+                    placeholder="Enter your name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <Input
+                    label="Email Address (Optional)"
+                    placeholder="name@example.com"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
             <div className="form-group">
               <label className="form-label-txt">{t('login.mobileLabel', 'Enter Indian Mobile Number')}</label>
               <div className="phone-prefix-input-wrap">
@@ -204,11 +262,18 @@ const Login = () => {
               type="submit"
               disabled={isLoading || phoneNumber.length < 10}
             >
-              {t('login.sendOtp', 'Send Secure OTP Code 🚀')}
+              {authMode === 'signup' ? 'Create Account & Send OTP 🚀' : 'Send Secure OTP Code 🚀'}
             </Button>
-            <p className="login-disclaimer-txt">
-              {t('login.disclaimer', 'By continuing, you agree to receive automated simulated OTP tokens. Standard developer simulated rates apply.')}
-            </p>
+
+            <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '0.85rem' }}
+                onClick={() => setLoginMethod('password')}
+              >
+                Or sign in with Email & Password
+              </button>
+            </div>
           </form>
         ) : (
           /* Email & Password entry form */
@@ -244,6 +309,16 @@ const Login = () => {
             >
               {isLoading ? 'Verifying Credentials...' : 'Access Dashboard 🔓'}
             </Button>
+
+            <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '0.85rem' }}
+                onClick={() => setLoginMethod('otp')}
+              >
+                ← Back to Mobile OTP Login
+              </button>
+            </div>
           </form>
         )}
       </div>

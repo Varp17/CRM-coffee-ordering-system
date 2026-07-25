@@ -1,76 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import './Support.css';
 import { supportService } from '../../../services/support';
 import { formatDate } from '../../../utils/formatters';
 import { unwrapList, unwrapObject } from '../../../utils/apiResponse';
 import toast from 'react-hot-toast';
 import DataTable from '../../../components/ui/DataTable';
+import { useNotificationStore } from '../../../store/useNotificationStore';
+import { useConfirmation } from '../../../hooks/useConfirmation';
 import { X, RefreshCw, Send, ChevronRight, ChevronDown } from 'lucide-react';
 
-const INITIAL_KIOSK_SUPPORT = [
-  {
-    id: 't-901',
-    subject: 'Bulk Corporate Order Inquiry for Tech Park Store',
-    customer_name: 'Vikram Roy',
-    email: 'vikram.roy@innovate.co',
-    phone: '+91 98765 43210',
-    priority: 'high',
-    status: 'open',
-    source: 'Website Contact Form',
-    created_at: '2026-07-23T09:15:00Z',
-    message: 'Hello Chilld Coffee Team, we would like to set up a monthly subscription of 500 cold brew bottles for our office in Whitefield.'
-  },
-  {
-    id: 't-902',
-    subject: 'Custom Recipe Approval Status',
-    customer_name: 'Priya Sundaram',
-    email: 'priya.s@gmail.com',
-    phone: '+91 98123 45678',
-    priority: 'medium',
-    status: 'in_progress',
-    source: 'Website Contact Form',
-    created_at: '2026-07-22T14:30:00Z',
-    message: 'Hi! I created the Cardamom Vanilla Blend in your custom builder yesterday. Wanted to check if it will be featured on the community recipes page!'
-  },
-  {
-    id: 't-903',
-    subject: 'Feedback on Classic Cold Brew Concentrate',
-    customer_name: 'Amitabh Joshi',
-    email: 'ajoshi@techmail.com',
-    phone: '+91 99887 76655',
-    priority: 'low',
-    status: 'resolved',
-    source: 'Website Contact Form',
-    created_at: '2026-07-21T16:45:00Z',
-    message: 'Loved the smooth taste of the Classic concentrate at the Indiranagar store. Is this available for home delivery in 1L bottles?'
-  }
-];
-
-const getMergedSupport = () => {
-  try {
-    const userMsgs = JSON.parse(localStorage.getItem('chilld_kiosk_contacts') || '[]');
-    if (Array.isArray(userMsgs) && userMsgs.length > 0) {
-      const formatted = userMsgs.map((m) => ({
-        id: m.id || `t-${Date.now()}`,
-        subject: m.subject || 'Website Inquiry',
-        customer_name: m.name,
-        email: m.email,
-        phone: m.phone || 'N/A',
-        priority: 'medium',
-        status: m.status || 'open',
-        source: 'Website Contact Form',
-        created_at: m.createdAt || new Date().toISOString(),
-        message: m.message,
-      }));
-      return [...formatted, ...INITIAL_KIOSK_SUPPORT];
-    }
-  } catch (_) {}
-  return INITIAL_KIOSK_SUPPORT;
-};
-
 const Support = () => {
-  const [tickets, setTickets] = useState(getMergedSupport);
-  const [stats, setStats] = useState({ open: 2, urgent: 1 });
+  const [tickets, setTickets] = useState([]);
+  const [stats, setStats] = useState({ open: 0, urgent: 0 });
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -81,16 +23,7 @@ const Support = () => {
   const [openStatusId, setOpenStatusId] = useState(null);
   const [openPriorityId, setOpenPriorityId] = useState(null);
 
-  // Sync with customer website contact submissions
-  useEffect(() => {
-    const handleStorage = (e) => {
-      if (e.key === 'chilld_kiosk_contacts') {
-        setTickets(getMergedSupport());
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+  const confirmAction = useConfirmation();
 
   // Close open pickers on global click
   useEffect(() => {
@@ -102,27 +35,23 @@ const Support = () => {
     return () => window.removeEventListener('click', handleGlobalClick);
   }, []);
 
-  useEffect(() => {
-    loadAll();
-  }, []);
-
   const loadAll = async () => {
     setLoading(true);
     try {
       const [ticketsRes, statsRes] = await Promise.all([
-        supportService.getTickets().catch(() => null),
-        supportService.getStats().catch(() => null),
+        supportService.getTickets(),
+        supportService.getStats(),
       ]);
       const list = unwrapList(ticketsRes);
-      if (list && list.length > 0) {
-        setTickets(list);
-      }
+      setTickets(Array.isArray(list) ? list : []);
       const s = unwrapObject(statsRes);
       if (s && s.open !== undefined) {
         setStats({ open: s.open || 0, urgent: s.urgent || 0 });
       }
-    } catch {
-      // Retain INITIAL_KIOSK_SUPPORT fallback
+    } catch (error) {
+      setTickets([]);
+      setStats({ open: 0, urgent: 0 });
+      toast.error(error.message || 'Unable to load support tickets');
     } finally {
       setLoading(false);
     }
@@ -135,53 +64,135 @@ const Support = () => {
     urgent: '#991B1B',
   };
 
-  const openDetail = (ticket) => {
+  const openDetail = async (ticket) => {
     setSelected(ticket);
     setShowDetail(true);
-    setMessages([
-      {
-        id: 'm-1',
-        sender: 'customer',
-        text: ticket.message,
-        time: ticket.created_at || 'Today 10:15 AM',
-      },
-    ]);
-  };
-
-  const handleStatusUpdate = (id, newStatus) => {
-    setTickets((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
-    );
-    if (selected?.id === id) {
-      setSelected((prev) => ({ ...prev, status: newStatus }));
-    }
-    toast.success(`Ticket status updated to ${newStatus.replace('_', ' ')}`);
-  };
-
-  const handlePriorityUpdate = (id, newPriority) => {
-    setTickets((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, priority: newPriority } : t))
-    );
-    if (selected?.id === id) {
-      setSelected((prev) => ({ ...prev, priority: newPriority }));
-    }
-    toast.success(`Priority updated to "${newPriority.toUpperCase()}"`);
-  };
-
-  const handleSend = () => {
-    if (!newMsg.trim()) return;
-    const msgObj = {
-      id: `m-${Date.now()}`,
-      sender: 'agent',
-      text: newMsg.trim(),
-      time: 'Just now',
+    const initialMessage = {
+      id: `ticket-${ticket.id}`,
+      sender: 'customer',
+      text: ticket.message,
+      time: ticket.created_at,
     };
-    setMessages((prev) => [...prev, msgObj]);
-    setNewMsg('');
-    toast.success('Reply sent to customer!');
+    setMessages([initialMessage]);
+
+    try {
+      const response = await supportService.getMessages(ticket.id);
+      const replies = unwrapList(response).map((message) => ({
+        id: message.id,
+        sender: message.sender,
+        text: message.message,
+        time: message.created_at,
+      }));
+      setMessages([initialMessage, ...replies]);
+    } catch (error) {
+      toast.error(error.message || 'Unable to load ticket replies');
+    }
   };
 
-  const columns = useMemo(() => [
+  useEffect(() => {
+    loadAll();
+  }, []);
+
+  const handleStatusUpdate = async (id, newStatus) => {
+    const ticket = tickets.find((t) => t.id === id);
+    const label = newStatus.replace('_', ' ');
+
+    if (newStatus === 'resolved' || newStatus === 'closed') {
+      const isConfirmed = await confirmAction({
+        title: `${label.charAt(0).toUpperCase() + label.slice(1)} Ticket`,
+        description: `Are you sure you want to mark ticket #${ticket?.id || id} as "${label}"? This will close the conversation with ${ticket?.customer_name || 'the customer'}.`,
+        type: 'level1',
+        isDestructive: newStatus === 'closed',
+      });
+      if (!isConfirmed) return;
+    }
+
+    try {
+      await supportService.updateTicketStatus(id, { status: newStatus });
+      setTickets((previous) =>
+        previous.map((ticket) => (ticket.id === id ? { ...ticket, status: newStatus } : ticket))
+      );
+      if (selected?.id === id) {
+        setSelected((previous) => ({ ...previous, status: newStatus }));
+      }
+      toast.success(`Ticket status updated to ${label}`);
+      loadAll();
+    } catch (error) {
+      toast.error(error.message || 'Unable to update ticket status');
+    }
+  };
+
+  const handlePriorityUpdate = async (id, newPriority) => {
+    try {
+      await supportService.updateTicketPriority(id, { priority: newPriority });
+      setTickets((previous) =>
+        previous.map((ticket) => (ticket.id === id ? { ...ticket, priority: newPriority } : ticket))
+      );
+      if (selected?.id === id) {
+        setSelected((previous) => ({ ...previous, priority: newPriority }));
+      }
+      toast.success(`Priority updated to "${newPriority.toUpperCase()}"`);
+    } catch (error) {
+      toast.error(error.message || 'Unable to update ticket priority');
+    }
+  };
+
+  const handleAssign = async (id, assignedTo) => {
+    try {
+      await supportService.assignTicket(id, { assigned_to: assignedTo });
+      setTickets((previous) =>
+        previous.map((ticket) =>
+          ticket.id === id ? { ...ticket, assigned_to: assignedTo } : ticket
+        )
+      );
+      setSelected((previous) =>
+        previous?.id === id ? { ...previous, assigned_to: assignedTo } : previous
+      );
+      toast.success('Ticket assignment saved');
+    } catch (error) {
+      toast.error(error.message || 'Unable to assign ticket');
+    }
+  };
+
+  const handleSend = async () => {
+    const text = newMsg.trim();
+    if (!text || !selected?.id) return;
+
+    try {
+      const response = await supportService.addMessage(selected.id, {
+        sender: 'agent',
+        message: text,
+      });
+      const reply = unwrapObject(response);
+      setMessages((previous) => [
+        ...previous,
+        {
+          id: reply.id,
+          sender: reply.sender || 'agent',
+          text: reply.message || text,
+          time: reply.created_at || new Date().toISOString(),
+        },
+      ]);
+      setNewMsg('');
+      toast.success('Reply saved');
+    } catch (error) {
+      toast.error(error.message || 'Unable to save reply');
+    }
+  };
+
+  // WebSocket-driven real-time refresh
+  const wsNotifications = useNotificationStore((s) => s.notifications);
+  const prevNotifCountRef = useRef(0);
+
+  useEffect(() => {
+    const currentCount = wsNotifications.length;
+    if (prevNotifCountRef.current > 0 && currentCount > prevNotifCountRef.current) {
+      loadAll();
+    }
+    prevNotifCountRef.current = currentCount;
+  }, [wsNotifications.length]);
+
+  const columns = [
     {
       header: 'Subject',
       accessor: 'subject',
@@ -195,7 +206,19 @@ const Support = () => {
         </span>
       ),
     },
-    { header: 'Customer', accessor: 'customer_name', sortable: true },
+    {
+      header: 'Customer & Contact',
+      accessor: 'customer_name',
+      sortable: true,
+      render: (row) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+          <span style={{ fontWeight: 700, color: '#0F172A', fontSize: '14px' }}>{row.customer_name || 'Guest Customer'}</span>
+          <span style={{ fontSize: '12px', color: '#475569', fontWeight: 500 }}>
+            ✉️ {row.email || 'N/A'} {row.phone ? ` · 📞 ${row.phone}` : ''}
+          </span>
+        </div>
+      ),
+    },
     { header: 'Category', accessor: 'category', sortable: true },
     {
       header: 'Priority',
@@ -326,7 +349,7 @@ const Support = () => {
         </div>
       ),
     },
-  ], [tickets, openStatusId, openPriorityId]);
+  ];
 
   return (
     <div className="support-view animate-fade-in">
@@ -378,7 +401,11 @@ const Support = () => {
                 <div className="detail-row"><span className="detail-label">Priority</span><span style={{ color: priorityColor[selected.priority], fontWeight: 600 }}>{selected.priority}</span></div>
                 <div className="detail-row"><span className="detail-label">Status</span><span className={`badge ${selected.status === 'open' ? 'badge-info' : selected.status === 'in_progress' ? 'badge-warning' : selected.status === 'resolved' ? 'badge-success' : 'badge-muted'}`}>{selected.status}</span></div>
                 <div className="detail-row"><span className="detail-label">Assign to</span>
-                  <select className="support-assign-select" onChange={(e) => handleAssign(selected.id, e)} defaultValue="">
+                  <select
+                    className="support-assign-select"
+                    onChange={(event) => handleAssign(selected.id, event.target.value)}
+                    value={selected.assigned_to || ''}
+                  >
                     <option value="" disabled>Select staff</option>
                     <option value="staff1">Staff 1</option>
                     <option value="staff2">Staff 2</option>
@@ -391,11 +418,11 @@ const Support = () => {
                 {messages.length === 0 ? (
                   <p className="support-no-msgs">No messages yet</p>
                 ) : (
-                  messages.map((msg, i) => (
-                    <div key={i} className={`support-msg ${msg.is_staff ? 'staff' : 'customer'}`}>
+                  messages.map((msg) => (
+                    <div key={msg.id} className={`support-msg ${msg.sender === 'agent' ? 'staff' : 'customer'}`}>
                       <div className="support-msg-bubble">
-                        <p>{msg.message}</p>
-                        <span className="support-msg-time">{formatDate(msg.created_at)}</span>
+                        <p>{msg.text}</p>
+                        <span className="support-msg-time">{formatDate(msg.time)}</span>
                       </div>
                     </div>
                   ))

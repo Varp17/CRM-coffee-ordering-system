@@ -1,6 +1,10 @@
 import { api } from './api';
 
 export const menuRecipeService = {
+  getAll: async (params = {}) => {
+    return api.get('/recipes/menu', params);
+  },
+
   list: async (params = {}) => {
     return api.get('/recipes/menu', params);
   },

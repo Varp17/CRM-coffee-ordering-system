@@ -4,9 +4,9 @@
 // =====================================================
 
 // ── Product Card (Menu Page) Images ──
-const CLASSIC_IMAGE = '/images/Classic-concentrate.png';
-const BOLD_IMAGE = '/bold-concentrate-bottle.png';
-const KAPI_IMAGE = '/images/Kappi-concentrate.png';
+const CLASSIC_IMAGE = '/images/products/ClassicCBConc325.png';
+const BOLD_IMAGE = '/images/products/BoldConcentrate325.png';
+const KAPI_IMAGE = '/images/products/KappiConcentrate325.png';
 const BOLD_1L_BACK_IMAGE = '/images/products/Bold1ltr-Back.png';
 const CLASSIC_1L_BACK_IMAGE = '/images/products/Classic1ltr-Back.png';
 const KAPPI_1L_BACK_IMAGE = '/images/products/Kaapi1ltr-Back.png';
@@ -206,9 +206,10 @@ export const PRODUCTS = [
     name: 'Discovery Kit',
     tagline: 'Discover your preference or stock up for the mood swings',
     description: '3 Cold Brew Concentrate samples in a single pack',
-    image: '/3inone.png',
+    image: '/3inone.jpeg',
+    cardImage: '/3inone.jpeg',
     gallery: [
-      { id: 'sampler-concentrate-image-0', label: 'Front', src: '/3inone.png', alt: 'Discovery Kit - 3 in 1' },
+      { id: 'sampler-concentrate-image-0', label: 'Front', src: '/3inone.jpeg', alt: 'Discovery Kit - 3 in 1' },
       { id: 'sampler-concentrate-image-1', label: 'Serve', src: '/images/coffee-cups/iced-coffee-cup.png', alt: 'Discovery Kit - Serve' },
       { id: 'sampler-concentrate-image-2', label: 'Details', src: '/images/bgremoveconcentratebottels.png', alt: 'Discovery Kit - Details' },
     ],

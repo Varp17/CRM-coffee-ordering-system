@@ -193,7 +193,7 @@ const D2CLayout = () => {
                       <User size={16} />
                       <span>{user.name}</span>
                     </Link>
-                    <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="drawer-logout">
+                    <button onClick={() => { logout(); setMobileMenuOpen(false); navigate('/'); }} className="drawer-logout">
                       Sign out
                     </button>
                   </div>

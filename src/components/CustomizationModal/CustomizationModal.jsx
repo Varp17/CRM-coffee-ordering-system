@@ -55,6 +55,9 @@ const INGREDIENTS = {
   ],
 };
 
+import toast from 'react-hot-toast';
+import { publishUserMixLocally } from '../../utils/localRecipeSync';
+
 const getById = (items, id) => items.find((item) => item.id === id);
 
 const CustomizationModal = ({ isOpen, onClose, product, onAddToCart }) => {
@@ -124,19 +127,43 @@ const CustomizationModal = ({ isOpen, onClose, product, onAddToCart }) => {
     onClose();
   };
 
+  const handlePublishMix = () => {
+    const baseName = getById(INGREDIENTS.bases, selection.base)?.name || 'Classic';
+    const milkName = getById(INGREDIENTS.milks, selection.milk)?.name || 'Dairy Milk';
+    const sweetenerName = getById(INGREDIENTS.sweeteners, selection.sweetener)?.name || 'Sugar Syrup';
+    const toppingsList = selection.toppings.map((id) => getById(INGREDIENTS.toppings, id)?.name);
+    
+    const drinkName = `${product.title || product.name || 'Custom'} Mix`;
+
+    publishUserMixLocally({
+      name: drinkName,
+      baseName,
+      milkName,
+      sweetenerName,
+      toppings: toppingsList,
+      author: 'Website Guest',
+    });
+
+    toast.success(`✨ "${drinkName}" published! Sent to CRM Pending for Approval queue.`);
+    onClose();
+  };
+
   return (
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
-      title={`Customize ${product.title}`}
+      title={`Customize ${product.title || product.name}`}
       size="large"
       footerActions={
-        <div className="custom-modal-footer-flex">
+        <div className="custom-modal-footer-flex" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <div className="custom-modal-qty">
             <button onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
             <span>{quantity}</span>
             <button onClick={() => setQuantity(q => q + 1)}>+</button>
           </div>
+          <Button variant="outline" onClick={handlePublishMix} size="large">
+            🚀 Publish Your Mix
+          </Button>
           <Button variant="primary" onClick={handleAdd} size="large">
             Add to Cart - {formatCurrency(total * quantity)}
           </Button>

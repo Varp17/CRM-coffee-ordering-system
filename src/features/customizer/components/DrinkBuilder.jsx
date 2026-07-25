@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ArrowLeft, ArrowRight, ShoppingCart, Video, Camera, Sparkles, Droplets, Milk as MilkIcon, Coffee } from 'lucide-react';
+import { Check, ArrowLeft, ArrowRight, ShoppingCart, Sparkles, Send } from 'lucide-react';
 import { useCartStore } from '../../../store/useCartStore';
 import CupAnimation from '../../../components/CupAnimation/CupAnimation';
 import { DRINK_OPTIONS, INGREDIENT_VISUALS } from '../../../components/CupAnimation/ingredientVisuals';
@@ -11,6 +11,8 @@ import {
   isSweetenerCompatibleStatic, 
   isToppingCompatibleStatic 
 } from '../../../utils/compatibility';
+import { publishUserMixLocally } from '../../../utils/localRecipeSync';
+import toast from 'react-hot-toast';
 import './DrinkBuilder.css';
 
 const STEPS = [
@@ -161,6 +163,26 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
     if (onClose) onClose();
   }, [selections, totalPrice, externalAddToCart, addItemInternal, onClose]);
 
+  const handlePublishMix = useCallback(() => {
+    const matched = findMatchingRecipe(selections);
+    const drinkName = matched
+      ? matched.name
+      : `${selections.base.name} + ${selections.milk.name} Special`;
+
+    publishUserMixLocally({
+      name: drinkName,
+      baseName: selections.base.name,
+      base: selections.base.id,
+      milkName: selections.milk.name,
+      milk: selections.milk.id,
+      sweetenerName: selections.sweetener.name,
+      toppings: selections.toppings.map(t => t.name),
+      author: 'Website Guest',
+    });
+
+    toast.success(`✨ "${drinkName}" published! Sent to CRM Pending for Approval queue.`);
+  }, [selections]);
+
 
 
   const matchedRecipe = useMemo(() => findMatchingRecipe(selections), [selections]);
@@ -170,7 +192,7 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
     totalPrice,
   }), [selections, totalPrice]);
 
-  const [[step, direction], setStep] = useState([0, 0]);
+  const [[, direction], setStep] = useState([0, 0]);
 
   const paginate = useCallback((newDirection) => {
     const nextStep = currentStep + newDirection;
@@ -334,7 +356,7 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
           </button>
 
           {currentStep === STEPS.length - 1 ? (
-            <div className="finish-buttons-group">
+            <div className="finish-buttons-group" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <button
                 onClick={() => {
                   setCurrentStep(0);
@@ -347,10 +369,19 @@ const DrinkBuilder = ({ onClose, onAddToCart: externalAddToCart, onBack }) => {
               </button>
               <button
                 onClick={handleAddToCart}
-                className="action-btn action-btn-primary"
+                className="action-btn"
+                style={{ background: '#F1F5F9', color: '#1E293B', border: '1px solid #CBD5E1' }}
               >
                 <ShoppingCart className="w-4 h-4" />
                 Add to Cart
+              </button>
+              <button
+                onClick={handlePublishMix}
+                className="action-btn action-btn-primary"
+                style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', color: '#ffffff' }}
+              >
+                <Send className="w-4 h-4" />
+                Publish Your Mix
               </button>
             </div>
           ) : (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './CentralInventory.css';
 import Button from '../../../components/Button/Button';
 import { api } from '../../../services/api';
@@ -14,7 +14,6 @@ const CentralInventory = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -25,7 +24,7 @@ const CentralInventory = () => {
       ]);
       setInventory(unwrapData(invRes));
       setLogs(unwrapList(logsRes));
-    } catch (err) {
+    } catch {
       toast.error('Failed to load central inventory data.');
     } finally {
       setLoading(false);
@@ -38,7 +37,7 @@ const CentralInventory = () => {
 
   const totalAvailable = inventory.reduce((acc, item) => acc + (item.available_qty || 0), 0);
   const totalReserved = inventory.reduce((acc, item) => acc + (item.reserved_qty || 0), 0);
-  const totalCapacity = 10000; // Simulated total capacity in L for demonstration
+  const totalCapacity = inventory.reduce((acc, item) => acc + Number(item.capacity_qty || 0), 0);
 
   return (
     <div className="crm-dashboard">
@@ -77,7 +76,11 @@ const CentralInventory = () => {
             <span className="metric-icon info"><Activity size={20} /></span>
             <div>
               <p className="metric-label">Warehouse Capacity</p>
-              <h3 className="metric-value">{(((totalAvailable + totalReserved) / totalCapacity) * 100).toFixed(1)}%</h3>
+              <h3 className="metric-value">
+                {totalCapacity > 0
+                  ? `${(((totalAvailable + totalReserved) / totalCapacity) * 100).toFixed(1)}%`
+                  : 'Not configured'}
+              </h3>
             </div>
           </div>
         </div>

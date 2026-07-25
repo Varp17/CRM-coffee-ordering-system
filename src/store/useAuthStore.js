@@ -105,24 +105,24 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  sendOtp: async (mobile) => {
+  sendOtp: async (mobile, intent = 'login') => {
     set({ isLoading: true, error: null });
     try {
-      const res = await authService.sendOtp(mobile);
+      const res = await authService.sendOtp(mobile, intent);
       set({ isLoading: false });
       const payload = unwrapObject(res, {});
       const otp = payload.otp || res.otp || null;
-      return { success: true, otp };
+      return { success: true, otp, payload };
     } catch (err) {
       set({ error: err.message, isLoading: false });
       return { success: false, error: err.message };
     }
   },
 
-  verifyOtp: async (mobile, otp) => {
+  verifyOtp: async (mobile, otp, intent = 'login', extra = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await authService.verifyOtp(mobile, otp);
+      const res = await authService.verifyOtp(mobile, otp, intent, extra);
       const payload = unwrapObject(res, {});
       const user = payload.user || res.user;
       const role = user?.role || 'customer';
@@ -138,7 +138,7 @@ export const useAuthStore = create((set) => ({
         isAuthenticated: true,
         isLoading: false,
       });
-      return { success: true, role };
+      return { success: true, role, user };
     } catch (err) {
       set({ error: err.message, isLoading: false });
       return { success: false, error: err.message };
@@ -150,11 +150,12 @@ export const useAuthStore = create((set) => ({
       const res = await authService.getMe();
       const user = unwrapObject(res, null);
       const role = user?.role || 'customer';
-      localStorage.setItem('dc_user', JSON.stringify(user));
-      localStorage.setItem('dc_role', role);
-      set({ user, role, isAuthenticated: true });
+      if (user) {
+        localStorage.setItem('dc_user', JSON.stringify(user));
+        localStorage.setItem('dc_role', role);
+        set({ user, role, isAuthenticated: true });
+      }
     } catch (err) {
-      // Invalidate if loading user fails due to bad token
       authService.logout();
       set({ user: null, role: null, isAuthenticated: false });
     }
@@ -163,6 +164,9 @@ export const useAuthStore = create((set) => ({
   logout: async () => {
     await authService.logout();
     set({ user: null, role: null, isAuthenticated: false });
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      window.location.href = '/';
+    }
   },
 
   updateProfile: async (updatedData) => {

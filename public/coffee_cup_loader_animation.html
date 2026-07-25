@@ -28,8 +28,13 @@
     overflow: hidden;
   }
 
+  #c {
+    display: block;
+  }
+
   .progress-fill {
     height: 100%;
+    width: 0%;
     background: #b03a2e;
     border-radius: 2px;
     transition: width 0.1s linear;
@@ -66,10 +71,10 @@
 </style>
 
 <div class="loader-wrap" id="wrap">
-  <canvas id="c" width="220" height="220" style="display:block;"></canvas>
+  <canvas id="c" width="220" height="220"></canvas>
   <div class="stage-label" id="stageLbl">Step 1: Base forming</div>
   <div class="progress-bar">
-    <div class="progress-fill" id="prog" style="width:0%"></div>
+    <div class="progress-fill" id="prog"></div>
   </div>
   <div class="tap-hint" id="hint">● loading</div>
   <div class="btn-row">

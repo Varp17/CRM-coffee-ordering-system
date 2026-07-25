@@ -5,7 +5,7 @@
    ============================================ */
 
 const BASE_URL = import.meta.env.VITE_API_URL || (window.location.hostname.includes('vercel.app')
-  ? 'https://coffee-ordering-system-backend.onrender.com/api/v1'
+  ? 'https://coffee-website-backend.onrender.com/api/v1'
   : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3000/api/v1'
     : '/api/v1');
@@ -136,7 +136,7 @@ class ApiClient {
 
       // If local backend is unreachable, attempt fallback to production backend
       if ((url.includes('localhost:3000') || url.includes('127.0.0.1')) && !options._isFallback) {
-        const fallbackUrl = `https://coffee-ordering-system-backend.onrender.com/api/v1${endpoint}`;
+        const fallbackUrl = `https://coffee-website-backend.onrender.com/api/v1${endpoint}`;
         try {
           const fallbackRes = await fetch(fallbackUrl, { ...config, _isFallback: true });
           if (fallbackRes.ok) {

@@ -1,179 +1,155 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   CheckCircle2,
   Clock,
   Search,
-  Filter,
-  ThumbsUp,
   Heart,
   XCircle,
   Eye,
+  EyeOff,
   Coffee,
   Check,
   Trash2,
-  Plus,
-  Sparkles,
-  Share2,
-  Printer,
-  MessageSquare,
   Send,
+  RotateCcw,
 } from 'lucide-react';
 import './Recipes.css';
+import toast from 'react-hot-toast';
+import { recipeService } from '../../../services/recipes';
+import { unwrapList } from '../../../utils/apiResponse';
+import { useConfirmation } from '../../../hooks/useConfirmation';
+import {
+  getLocalPendingRecipes,
+  getLocalApprovedRecipes,
+  getLocalRejectedRecipes,
+  approveRecipeLocally,
+  rejectRecipeLocally,
+} from '../../../utils/localRecipeSync';
 
-import { RECIPES as KIOSK_WEBSITE_RECIPES } from '../../../data/kioskRecipes';
+const ORDERING_WEBSITE_ORIGIN =
+  import.meta.env.VITE_ORDERING_WEBSITE_URL ||
+  (window.location.hostname === 'localhost'
+    ? 'http://localhost:5176'
+    : 'https://coffee-ordering-kiosk.vercel.app');
 
-const getRecipeImage = (item) => {
-  if (item.image && !item.image.includes('georgesso-hero')) {
-    return item.image;
-  }
-  const name = (item.name || '').toLowerCase();
-  if (name.includes('orange')) return 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=800&auto=format&fit=crop&q=80';
-  if (name.includes('cranberry')) return 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&auto=format&fit=crop&q=80';
-  if (name.includes('vietnamese') || name.includes('mocha')) return 'https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=800&auto=format&fit=crop&q=80';
-  if (name.includes('kaapi') || item.concentrate === 'Kappi') return 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80';
-  return 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
+const resolveWebsiteMedia = (source) => {
+  if (!source) return '';
+  if (/^https?:\/\//i.test(source)) return source;
+  return `${ORDERING_WEBSITE_ORIGIN}${source.startsWith('/') ? source : `/${source}`}`;
 };
-
-// Format all recipes from the customer website catalog
-const FORMATTED_WEBSITE_RECIPES = KIOSK_WEBSITE_RECIPES.map((item) => {
-  let stepsList = [];
-  if (Array.isArray(item.steps)) {
-    stepsList = item.steps.map((s, idx) => {
-      if (typeof s === 'string') return { title: `Step ${idx + 1}`, copy: s };
-      return { title: s.title || `Step ${idx + 1}`, copy: s.copy || s.title || '' };
-    });
-  }
-
-  return {
-    id: item.id,
-    name: item.name,
-    description: item.description,
-    author: item.author || 'CHILLD Lab',
-    concentrate: item.concentrate || 'Classic',
-    status: 'approved',
-    mood: item.mood || 'Smooth, Refreshing & Charged-up',
-    tags: Array.isArray(item.tags) ? item.tags : ['#Coffee', '#Chilld'],
-    likesCount: typeof item.likes === 'number' ? item.likes : (parseInt(String(item.likes || '120')) || 120),
-    createdAt: '2026-07-20T10:30:00Z',
-    ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
-    steps: stepsList,
-    image: getRecipeImage(item),
-  };
-});
-
-const PENDING_RECIPES = [
-  {
-    id: 'rec-201',
-    name: 'Spiced Cardamom Cloud',
-    description: 'Shared via custom builder: Cardamom infused cold brew with aerated almond foam.',
-    author: 'Rohan Mehta (Indiranagar Store)',
-    concentrate: 'Kappi',
-    status: 'pending',
-    mood: 'Spiced, Creamy & Artisanal',
-    tags: ['#Cardamom', '#AlmondMilk', '#KappiSpecial'],
-    likesCount: 45,
-    createdAt: '2026-07-23T11:45:00Z',
-    ingredients: ['90 ml Kappi Concentrate', '100 ml Chilled Almond Milk', '2 pinch Ground Cardamom', '10 ml Organic Maple Syrup', 'Ice Cubes'],
-    steps: [
-      { title: 'Step 1', copy: 'Shake Kappi concentrate with ground cardamom & organic maple syrup' },
-      { title: 'Step 2', copy: 'Fill tall serving glass with crystal clear ice cubes' },
-      { title: 'Step 3', copy: 'Pour concentrate mix into glass, top with aerated almond milk froth' },
-    ],
-    image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'rec-202',
-    name: 'Salted Caramel Bold Splash',
-    description: 'Shared via custom builder: Salted caramel syrup mixed with extra bold cold brew.',
-    author: 'Sneha Patel (Koramangala Store)',
-    concentrate: 'Bold',
-    status: 'pending',
-    mood: 'Sweet & Salty, Bold Fuel',
-    tags: ['#Caramel', '#BoldBrew', '#SparklingCoffee'],
-    likesCount: 88,
-    createdAt: '2026-07-23T08:20:00Z',
-    ingredients: ['90 ml Bold Concentrate', '150 ml Sparkling Soda Water', '20 ml Salted Caramel Syrup', 'Ice Cubes'],
-    steps: [
-      { title: 'Step 1', copy: 'Stir caramel syrup into Bold concentrate until dissolved' },
-      { title: 'Step 2', copy: 'Add ice cubes into tumbler' },
-      { title: 'Step 3', copy: 'Slowly pour chilled sparkling soda water to layer' },
-    ],
-    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'rec-203',
-    name: 'Hazelnut Cream Classic Float',
-    description: 'Shared via custom builder: Classic cold brew concentrate with hazelnut drizzle and whipped cream.',
-    author: 'Vikram Singh (Whitefield Store)',
-    concentrate: 'Classic',
-    status: 'pending',
-    mood: 'Rich, Indulgent & Dessert Coffee',
-    tags: ['#Hazelnut', '#WhippedCream', '#ClassicFloat'],
-    likesCount: 64,
-    createdAt: '2026-07-22T17:10:00Z',
-    ingredients: ['90 ml Classic Concentrate', '120 ml Chilled Mineral Water', '15 ml Hazelnut Syrup', 'Heavy Whipped Cream'],
-    steps: [
-      { title: 'Step 1', copy: 'Fill glass with ice and cold water' },
-      { title: 'Step 2', copy: 'Add Classic concentrate and hazelnut syrup, stir gently' },
-      { title: 'Step 3', copy: 'Top generously with fresh whipped cream & hazelnut drizzle' },
-    ],
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=800&auto=format&fit=crop&q=80',
-  },
-];
-
-const ALL_INITIAL_RECIPES = [...FORMATTED_WEBSITE_RECIPES, ...PENDING_RECIPES];
-
-const getMergedRecipes = () => {
-  try {
-    const userRecipes = JSON.parse(localStorage.getItem('chilld_kiosk_recipes') || '[]');
-    if (Array.isArray(userRecipes) && userRecipes.length > 0) {
-      return [...userRecipes, ...ALL_INITIAL_RECIPES];
-    }
-  } catch (_) {}
-  return ALL_INITIAL_RECIPES;
-};
-
-const INITIAL_COMMENTS = [
-  {
-    name: 'Alia Bhatt',
-    time: '23 Jul 2026, 10:30 AM',
-    copy: 'I love it! Best with the jaggery espresso. Add a tiny pinch of sea salt on top to elevate the flavors.',
-  },
-  {
-    name: 'Ranveer Singh',
-    time: '22 Jul 2026, 04:15 PM',
-    copy: 'This recipe is dam good! Smooth caffeine hit without any bitterness.',
-  },
-];
 
 const Recipes = () => {
-  const [recipes, setRecipes] = useState(getMergedRecipes);
-  const [activeTab, setActiveTab] = useState('approved');
+  const [recipes, setRecipes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('approved'); // 'approved' | 'pending' | 'hidden' | 'rejected'
   const [selectedConcentrate, setSelectedConcentrate] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-  // Modal Recipe details interactivity (Likes & Comments)
+  // Interactivity (Likes & Comments)
   const [likedRecipes, setLikedRecipes] = useState({});
   const [commentInput, setCommentInput] = useState('');
-  const [recipeComments, setRecipeComments] = useState(INITIAL_COMMENTS);
+  const [recipeComments, setRecipeComments] = useState([]);
 
-  // Sync with recipes submitted through the customer website
-  React.useEffect(() => {
-    const handleStorage = (e) => {
-      if (e.key === 'chilld_kiosk_recipes') {
-        setRecipes(getMergedRecipes());
+  const confirmAction = useConfirmation();
+
+  // Load recipes from backend & local sync
+  const loadFromBackend = async () => {
+    try {
+      setIsLoading(true);
+      let backendFormatted = [];
+      try {
+        const res = await recipeService.getCommunityRecipes();
+        const list = unwrapList(res);
+        if (Array.isArray(list) && list.length > 0) {
+          backendFormatted = list.map((item) => ({
+            id: item.id,
+            name: item.name,
+            description: item.description || '',
+            author: item.author || 'CHILLD Lab',
+            concentrate: item.concentrate || 'Classic',
+            status: item.status || (item.is_published ? 'approved' : 'pending'),
+            mood: item.mood || '',
+            tags: Array.isArray(item.tags) ? item.tags : [],
+            likesCount: typeof item.likesCount === 'number' ? item.likesCount : (item.likes_count || 0),
+            createdAt: item.created_at || item.createdAt || new Date().toISOString(),
+            ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
+            steps: Array.isArray(item.steps) ? item.steps.map((s, idx) => {
+              if (typeof s === 'string') return { title: `Step ${idx + 1}`, copy: s };
+              return { title: s.title || `Step ${idx + 1}`, copy: s.copy || s.title || '' };
+            }) : [],
+            image: resolveWebsiteMedia(item.image),
+          }));
+        }
+      } catch {
+        // API fallback
       }
+
+      const localPending = getLocalPendingRecipes();
+      const localApproved = getLocalApprovedRecipes();
+      const localRejected = getLocalRejectedRecipes();
+
+      const mergedMap = new Map();
+      [...localPending, ...localApproved, ...localRejected, ...backendFormatted].forEach(r => {
+        if (r && r.id) {
+          mergedMap.set(r.id, r);
+        }
+      });
+
+      setRecipes(Array.from(mergedMap.values()));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { 
+    loadFromBackend();
+    window.addEventListener('recipes:updated', loadFromBackend);
+    window.addEventListener('storage', loadFromBackend);
+
+    let bc = null;
+    if ('BroadcastChannel' in window) {
+      bc = new BroadcastChannel('chilld_recipe_channel');
+      bc.onmessage = () => loadFromBackend();
+    }
+
+    return () => {
+      window.removeEventListener('recipes:updated', loadFromBackend);
+      window.removeEventListener('storage', loadFromBackend);
+      if (bc) bc.close();
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
+  useEffect(() => {
+    if (!selectedRecipe) return;
+    let isMounted = true;
+    recipeService.getComments(selectedRecipe.id)
+      .then((res) => {
+        if (!isMounted) return;
+        const comments = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        setRecipeComments(comments.map((c) => ({
+          name: c.author || c.customer_name || 'CRM Operator',
+          time: new Date(c.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+          copy: c.body || c.content || c.text || '',
+        })));
+      })
+      .catch(() => {
+        if (isMounted) setRecipeComments([]);
+      });
+    return () => { isMounted = false; };
+  }, [selectedRecipe]);
 
   const filteredRecipes = useMemo(() => {
     return recipes.filter((recipe) => {
-      const matchesTab = recipe.status === activeTab;
+      let matchesTab = recipe.status === activeTab;
+      if (activeTab === 'rejected') {
+        matchesTab = recipe.status === 'rejected' || recipe.status === 'deleted';
+      }
+
       const matchesConcentrate =
-        selectedConcentrate === 'All' || recipe.concentrate === selectedConcentrate;
+        selectedConcentrate === 'All' ||
+        recipe.concentrate === selectedConcentrate ||
+        (recipe.concentrate || '').toLowerCase().includes(selectedConcentrate.toLowerCase());
       const q = searchQuery.toLowerCase();
       const matchesSearch =
         !q ||
@@ -185,41 +161,144 @@ const Recipes = () => {
     });
   }, [recipes, activeTab, selectedConcentrate, searchQuery]);
 
+  // Tab counts
   const approvedCount = recipes.filter((r) => r.status === 'approved').length;
   const pendingCount = recipes.filter((r) => r.status === 'pending').length;
+  const hiddenCount = recipes.filter((r) => r.status === 'hidden').length;
+  const rejectedCount = recipes.filter((r) => r.status === 'rejected' || r.status === 'deleted').length;
 
-  const handleApprove = (id) => {
+  // ── Action Handlers ──
+  const handleApprove = async (id) => {
+    approveRecipeLocally(id);
+    try {
+      await recipeService.updateReviewStatus(id, 'approved');
+    } catch {
+      // local fallback handled
+    }
     setRecipes((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: 'approved' } : r))
+      prev.map((r) => (r.id === id ? { ...r, status: 'approved', is_published: true } : r))
     );
     if (selectedRecipe?.id === id) {
-      setSelectedRecipe((prev) => prev ? { ...prev, status: 'approved' } : null);
+      setSelectedRecipe((prev) => (prev ? { ...prev, status: 'approved', is_published: true } : null));
+    }
+    toast.success('Recipe approved and published to website catalog! ✨');
+  };
+
+  const handleHide = async (id) => {
+    const recipe = recipes.find((r) => r.id === id);
+    const isConfirmed = await confirmAction({
+      title: 'Hide Recipe',
+      description: `Are you sure you want to hide "${recipe?.name || 'this recipe'}"? It will no longer appear in the public catalog.`,
+      type: 'level1',
+      isDestructive: false,
+    });
+    if (!isConfirmed) return;
+
+    try {
+      await recipeService.updateReviewStatus(id, 'hidden');
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: 'hidden' } : r))
+      );
+      if (selectedRecipe?.id === id) {
+        setSelectedRecipe((prev) => (prev ? { ...prev, status: 'hidden' } : null));
+      }
+      toast.success('Recipe moved to Hidden Recipes');
+    } catch (error) {
+      toast.error(error.message || 'Unable to hide recipe');
     }
   };
 
-  const handleReject = (id) => {
-    setRecipes((prev) => prev.filter((r) => r.id !== id));
+  const handleReject = async (id) => {
+    const recipe = recipes.find((r) => r.id === id);
+    const isConfirmed = await confirmAction({
+      title: 'Reject Recipe',
+      description: `Are you sure you want to reject "${recipe?.name || 'this recipe'}"? It will be moved to the Rejected tab and hidden from the catalog.`,
+      type: 'level1',
+      isDestructive: false,
+    });
+    if (!isConfirmed) return;
+
+    rejectRecipeLocally(id);
+    try {
+      await recipeService.updateReviewStatus(id, 'rejected');
+    } catch {
+      // Local fallback handled
+    }
+    setRecipes((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status: 'rejected' } : r))
+    );
     if (selectedRecipe?.id === id) {
       setSelectedRecipe(null);
     }
+    toast.success('Recipe moved to Recently Deleted / Rejected');
   };
 
-  const toggleLike = (recipeId) => {
-    setLikedRecipes((prev) => ({
-      ...prev,
-      [recipeId]: !prev[recipeId],
-    }));
+  const handleRestore = async (id) => {
+    try {
+      await recipeService.updateReviewStatus(id, 'approved');
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: 'approved' } : r))
+      );
+      if (selectedRecipe?.id === id) {
+        setSelectedRecipe((prev) => (prev ? { ...prev, status: 'approved' } : null));
+      }
+      toast.success('Recipe restored to Approved Recipes');
+    } catch (error) {
+      toast.error(error.message || 'Unable to restore recipe');
+    }
   };
 
-  const handleAddComment = () => {
-    if (!commentInput.trim()) return;
-    const newComm = {
-      name: 'CRM Operator',
-      time: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
-      copy: commentInput.trim(),
-    };
-    setRecipeComments((prev) => [newComm, ...prev]);
-    setCommentInput('');
+  const handlePermanentDelete = async (id) => {
+    const recipe = recipes.find((r) => r.id === id);
+    const isConfirmed = await confirmAction({
+      title: 'Permanently Delete Recipe',
+      description: `This will PERMANENTLY delete "${recipe?.name || 'this recipe'}" from the system. This action cannot be undone.`,
+      type: 'level2',
+      payload: { requireText: true },
+      isDestructive: true,
+    });
+    if (!isConfirmed) return;
+
+    try {
+      await recipeService.permanentDelete(id);
+      setRecipes((prev) => prev.filter((r) => r.id !== id));
+      if (selectedRecipe?.id === id) {
+        setSelectedRecipe(null);
+      }
+      toast.success('Recipe permanently deleted');
+    } catch (error) {
+      toast.error(error.message || 'Unable to permanently delete recipe');
+    }
+  };
+
+  const toggleLike = async (recipeId) => {
+    try {
+      await recipeService.toggleLike(recipeId);
+      setLikedRecipes((prev) => ({
+        ...prev,
+        [recipeId]: !prev[recipeId],
+      }));
+    } catch {
+      toast.error('Unable to toggle like');
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!commentInput.trim() || !selectedRecipe) return;
+    try {
+      await recipeService.addComment(selectedRecipe.id, commentInput.trim());
+      const res = await recipeService.getComments(selectedRecipe.id);
+      const comments = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      setRecipeComments(comments.map((c) => ({
+        name: c.author || c.customer_name || 'CRM Operator',
+        time: new Date(c.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+        copy: c.body || c.content || c.text || '',
+      })));
+      setCommentInput('');
+      toast.success('Comment posted');
+    } catch (err) {
+      toast.error(err.message || 'Unable to add comment');
+    }
   };
 
   const getConcentrateBadgeClass = (concentrate) => {
@@ -250,30 +329,47 @@ const Recipes = () => {
           </button>
 
           <div className="nav-bar-admin-actions">
-            {selectedRecipe.status === 'pending' ? (
+            {selectedRecipe.status === 'pending' && (
               <>
                 <span className="pending-badge">Pending Approval</span>
-                <button
-                  className="btn-approve-kiosk"
-                  onClick={() => handleApprove(selectedRecipe.id)}
-                >
-                  <Check size={16} /> Approve for Store Menu
+                <button className="btn-approve-kiosk" onClick={() => handleApprove(selectedRecipe.id)}>
+                  <Check size={16} /> Approve
                 </button>
-                <button
-                  className="btn-reject-kiosk"
-                  onClick={() => handleReject(selectedRecipe.id)}
-                >
+                <button className="btn-reject-kiosk" onClick={() => handleReject(selectedRecipe.id)}>
                   <XCircle size={16} /> Reject
                 </button>
               </>
-            ) : (
+            )}
+            {selectedRecipe.status === 'approved' && (
               <>
                 <span className="approved-badge">Approved Formulation</span>
-                <button
-                  className="btn-reject-kiosk"
-                  onClick={() => handleReject(selectedRecipe.id)}
-                >
-                  <Trash2 size={16} /> Delete Recipe
+                <button className="btn-hide-kiosk" onClick={() => handleHide(selectedRecipe.id)}>
+                  <EyeOff size={16} /> Hide Recipe
+                </button>
+                <button className="btn-reject-kiosk" onClick={() => handleReject(selectedRecipe.id)}>
+                  <Trash2 size={16} /> Move to Trash
+                </button>
+              </>
+            )}
+            {selectedRecipe.status === 'hidden' && (
+              <>
+                <span className="hidden-badge">Hidden Recipe</span>
+                <button className="btn-approve-kiosk" onClick={() => handleApprove(selectedRecipe.id)}>
+                  <Check size={16} /> Unhide / Approve
+                </button>
+                <button className="btn-reject-kiosk" onClick={() => handleReject(selectedRecipe.id)}>
+                  <Trash2 size={16} /> Delete
+                </button>
+              </>
+            )}
+            {(selectedRecipe.status === 'rejected' || selectedRecipe.status === 'deleted') && (
+              <>
+                <span className="rejected-badge">Recently Deleted</span>
+                <button className="btn-approve-kiosk" onClick={() => handleRestore(selectedRecipe.id)}>
+                  <RotateCcw size={16} /> Restore
+                </button>
+                <button className="btn-reject-kiosk" onClick={() => handlePermanentDelete(selectedRecipe.id)}>
+                  <Trash2 size={16} /> Delete Permanently
                 </button>
               </>
             )}
@@ -451,13 +547,14 @@ const Recipes = () => {
         <div className="page-header-left">
           <h2>Recipes Catalog & Custom Formulations</h2>
           <p className="page-subtitle">
-            Catalog of recipes and guest custom formulations. Click any recipe card to view detailed recipe instructions.
+            Manage approved formulations, community recipe submissions, hidden items, and rejected entries.
           </p>
         </div>
       </div>
 
-      {/* Main Approval State Tabs */}
+      {/* ── 4 Main Category Tabs ── */}
       <div className="recipe-main-tabs">
+        {/* Tab 1: Approved Recipes */}
         <button
           className={`tab-btn ${activeTab === 'approved' ? 'active' : ''}`}
           onClick={() => setActiveTab('approved')}
@@ -467,6 +564,7 @@ const Recipes = () => {
           <span className="count-pill">{approvedCount}</span>
         </button>
 
+        {/* Tab 2: Pending for Approval */}
         <button
           className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
           onClick={() => setActiveTab('pending')}
@@ -474,6 +572,26 @@ const Recipes = () => {
           <Clock size={16} />
           <span>Pending for Approval</span>
           {pendingCount > 0 && <span className="count-pill warning">{pendingCount}</span>}
+        </button>
+
+        {/* Tab 3: Hidden Recipes */}
+        <button
+          className={`tab-btn ${activeTab === 'hidden' ? 'active' : ''}`}
+          onClick={() => setActiveTab('hidden')}
+        >
+          <EyeOff size={16} />
+          <span>Hidden Recipes</span>
+          <span className="count-pill muted">{hiddenCount}</span>
+        </button>
+
+        {/* Tab 4: Recently Deleted / Rejected */}
+        <button
+          className={`tab-btn ${activeTab === 'rejected' ? 'active' : ''}`}
+          onClick={() => setActiveTab('rejected')}
+        >
+          <Trash2 size={16} />
+          <span>Recently Deleted / Rejected</span>
+          <span className="count-pill danger">{rejectedCount}</span>
         </button>
       </div>
 
@@ -507,11 +625,17 @@ const Recipes = () => {
       </div>
 
       {/* Customer website-style recipe cards grid */}
-      {filteredRecipes.length === 0 ? (
+      {isLoading ? (
+        <div className="empty-state-card">
+          <Coffee size={36} className="empty-icon" />
+          <h3>Loading Recipes</h3>
+          <p>Fetching recipe data from the backend.</p>
+        </div>
+      ) : filteredRecipes.length === 0 ? (
         <div className="empty-state-card">
           <Coffee size={36} className="empty-icon" />
           <h3>No Recipes Found</h3>
-          <p>No recipes match the selected filter criteria.</p>
+          <p>No recipes match the selected tab or filter criteria.</p>
         </div>
       ) : (
         <div className="recipes-grid">
@@ -530,7 +654,8 @@ const Recipes = () => {
                     src={recipe.image} 
                     alt={recipe.name} 
                     onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = `${ORDERING_WEBSITE_ORIGIN}/images/georgesso-hero.png`;
                     }}
                   />
                   <span className={`concentrate-badge ${getConcentrateBadgeClass(recipe.concentrate)}`}>
@@ -573,37 +698,100 @@ const Recipes = () => {
                     </ul>
                   </div>
 
-                  {/* Card Actions */}
+                  {/* ── CARD ACTIONS FOR EACH OF THE 4 TABS ── */}
                   <div className="recipe-card-actions" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      className="action-btn view-btn"
-                      onClick={() => setSelectedRecipe(recipe)}
-                    >
-                      <Eye size={14} /> View Detail
-                    </button>
-
-                    {recipe.status === 'pending' ? (
+                    {/* TAB 1: APPROVED RECIPES (3 Buttons: Hide, View Details, Delete) */}
+                    {activeTab === 'approved' && (
                       <>
                         <button
-                          className="action-btn approve-btn"
-                          onClick={() => handleApprove(recipe.id)}
+                          className="action-btn hide-btn"
+                          onClick={() => handleHide(recipe.id)}
+                          title="Hide Recipe"
                         >
-                          <Check size={14} /> Approve
+                          <EyeOff size={14} /> Hide
+                        </button>
+                        <button
+                          className="action-btn view-btn"
+                          onClick={() => setSelectedRecipe(recipe)}
+                          title="View Details"
+                        >
+                          <Eye size={14} /> View Details
                         </button>
                         <button
                           className="action-btn reject-btn"
                           onClick={() => handleReject(recipe.id)}
+                          title="Delete Recipe"
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </>
+                    )}
+
+                    {/* TAB 2: PENDING FOR APPROVAL (3 Buttons: Approve, View, Reject) */}
+                    {activeTab === 'pending' && (
+                      <>
+                        <button
+                          className="action-btn approve-btn"
+                          onClick={() => handleApprove(recipe.id)}
+                          title="Approve Recipe"
+                        >
+                          <Check size={14} /> Approve
+                        </button>
+                        <button
+                          className="action-btn view-btn"
+                          onClick={() => setSelectedRecipe(recipe)}
+                          title="View Detail"
+                        >
+                          <Eye size={14} /> View
+                        </button>
+                        <button
+                          className="action-btn reject-btn"
+                          onClick={() => handleReject(recipe.id)}
+                          title="Reject Recipe"
                         >
                           <XCircle size={14} /> Reject
                         </button>
                       </>
-                    ) : (
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => handleReject(recipe.id)}
-                      >
-                        <Trash2 size={14} /> Delete
-                      </button>
+                    )}
+
+                    {/* TAB 3: HIDDEN RECIPES (2 Buttons: Unhide/Approve, Delete) */}
+                    {activeTab === 'hidden' && (
+                      <>
+                        <button
+                          className="action-btn approve-btn"
+                          onClick={() => handleApprove(recipe.id)}
+                          title="Unhide / Approve Recipe"
+                        >
+                          <Check size={14} /> Unhide
+                        </button>
+                        <button
+                          className="action-btn reject-btn"
+                          onClick={() => handleReject(recipe.id)}
+                          title="Delete Recipe"
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </>
+                    )}
+
+                    {/* TAB 4: RECENTLY DELETED / REJECTED (2 Buttons: Restore, Delete Permanently) */}
+                    {(activeTab === 'rejected' || activeTab === 'deleted') && (
+                      <>
+                        <button
+                          className="action-btn restore-btn"
+                          onClick={() => handleRestore(recipe.id)}
+                          title="Restore Recipe"
+                        >
+                          <RotateCcw size={14} /> Restore
+                        </button>
+                        <button
+                          className="action-btn danger-btn"
+                          onClick={() => handlePermanentDelete(recipe.id)}
+                          title="Permanently Delete Recipe"
+                        >
+                          <Trash2 size={14} /> Delete Permanent
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

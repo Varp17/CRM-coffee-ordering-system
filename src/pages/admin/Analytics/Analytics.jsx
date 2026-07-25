@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import './Analytics.css';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -22,13 +22,6 @@ const Analytics = () => {
   const [prepTimes, setPrepTimes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const defaultPrepData = [
-    { name: 'Classic Cold Brew', minTime: '1.2', maxTime: '3.4', avgTime: '2.1', totalPrepared: 42 },
-    { name: 'South Indian Filter Coffee', minTime: '2.5', maxTime: '5.8', avgTime: '3.9', totalPrepared: 28 },
-    { name: 'Premium Matcha Latte', minTime: '3.1', maxTime: '6.5', avgTime: '4.5', totalPrepared: 19 },
-    { name: 'Strong Chilled Coffee Core', minTime: '0.8', maxTime: '2.2', avgTime: '1.4', totalPrepared: 56 }
-  ];
-
   const loadAnalytics = async () => {
     setIsLoading(true);
     try {
@@ -49,8 +42,8 @@ const Analytics = () => {
       const mappedStock = unwrapList(invRes).map(item => ({
         id: item.ingredient?.id || item.id,
         name: item.ingredient?.name || item.name,
-        stock: item.quantity ?? 100,
-        threshold: item.thresholds?.low || item.threshold || 20,
+        stock: item.quantity ?? 0,
+        threshold: item.thresholds?.low || item.threshold || 0,
         unit: item.ingredient?.unit || item.unit || 'ml'
       }));
       setInventoryLevels(mappedStock);
@@ -59,9 +52,9 @@ const Analytics = () => {
       try {
         const prepRes = await analyticsService.getPrepTimes();
         const finalPrep = unwrapList(prepRes);
-        setPrepTimes(finalPrep.length > 0 ? finalPrep : defaultPrepData);
-      } catch (_) {
-        setPrepTimes(defaultPrepData);
+        setPrepTimes(finalPrep);
+      } catch {
+        setPrepTimes([]);
       }
     } catch (err) {
       toast.error('Failed to load analytics: ' + err.message);

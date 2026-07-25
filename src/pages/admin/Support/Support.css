@@ -359,6 +359,11 @@
   animation: pickerFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.support-dropdown-picker--portal {
+  position: fixed !important;
+  z-index: 999999 !important;
+}
+
 @keyframes pickerFadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }

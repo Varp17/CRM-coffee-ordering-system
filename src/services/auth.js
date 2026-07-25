@@ -12,12 +12,12 @@ const getRefreshToken = (res) => {
 };
 
 export const authService = {
-  sendOtp: async (mobile) => {
-    return api.post('/auth/send-otp', { mobile });
+  sendOtp: async (mobile, intent = 'login') => {
+    return api.post('/auth/send-otp', { mobile, phone: mobile, intent });
   },
 
-  verifyOtp: async (mobile, otp) => {
-    const res = await api.post('/auth/verify-otp', { mobile, otp });
+  verifyOtp: async (mobile, otp, intent = 'login', extra = {}) => {
+    const res = await api.post('/auth/verify-otp', { mobile, phone: mobile, otp, intent, ...extra });
     const token = getAccessToken(res);
     const refreshToken = getRefreshToken(res);
     if (token) api.setToken(token);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './Menu.css';
 import Button from '../../../components/Button/Button';
 import { productService } from '../../../services/products';
@@ -11,11 +11,11 @@ import toast from 'react-hot-toast';
 import { useConfirmation } from '../../../hooks/useConfirmation';
 import MenuTab from '../Recipes/components/MenuTab';
 import Ingredients from '../Ingredients/Ingredients';
-import Inventory from '../Inventory/Inventory';
-import { Search, Plus, MoreHorizontal, Download, Columns, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import ExportModal from '../../../components/ui/ExportModal';
+import { Search, Plus, MoreHorizontal, Download, Columns, SlidersHorizontal, RefreshCw, ChevronDown, X, ExternalLink, Star } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 
-import { PRODUCTS as ORDERING_SITE_PRODUCTS } from '../../../data/kioskProducts';
+import { PRODUCTS as ORDERING_SITE_PRODUCTS, getProductById } from '../../../data/kioskProducts';
 
 const PRODUCT_THUMBNAILS = {
   'coffee-50-50-concentrate': '/images/products/BoldConcentrate325.png',
@@ -23,6 +23,10 @@ const PRODUCT_THUMBNAILS = {
   'sif-concentrate': '/images/products/KappiConcentrate325.png',
   'sampler-concentrate': '/3inone.jpeg',
 };
+
+// Setting: Automatically list newly created CRM products on the website catalog
+// Currently DISABLED by default per system requirements
+const AUTO_LIST_NEW_CRM_PRODUCTS_ON_WEBSITE = false;
 
 const APPROVED_CATALOG_PRODUCTS = ORDERING_SITE_PRODUCTS.map((item) => ({
   id: item.id,
@@ -37,257 +41,313 @@ const APPROVED_CATALOG_PRODUCTS = ORDERING_SITE_PRODUCTS.map((item) => ({
   product_type: 'beverage',
   is_active: true,
   is_available_kiosk: true,
-  image_url: PRODUCT_THUMBNAILS[item.id] || item.cardImage || item.image,
+  image_url: item.cardImage || item.image || PRODUCT_THUMBNAILS[item.id] || item.image_url,
   roast: item.roast || 'Medium Dark',
-  caffeine: item.caffeine || 'High',
-  rating: item.reviews?.rating || 4.8,
+  size: item.size || '325ml',
+  stock_quantity: 999,
 }));
 
-const normalizeCatalogKey = (value) => (
-  String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '')
-);
-
-const reconcileWithApprovedCatalog = (apiProducts = []) => {
-  const backendProducts = Array.isArray(apiProducts) ? apiProducts : [];
-
-  return APPROVED_CATALOG_PRODUCTS.map((catalogProduct) => {
-    const approvedKeys = new Set([
-      normalizeCatalogKey(catalogProduct.id),
-      normalizeCatalogKey(catalogProduct.name),
-    ]);
-    const backendProduct = backendProducts.find((product) => (
-      [product.id, product.slug, product.sku, product.name]
-        .map(normalizeCatalogKey)
-        .some((key) => approvedKeys.has(key))
-    ));
-
-    if (!backendProduct) return catalogProduct;
-
-    return {
-      ...backendProduct,
-      ...catalogProduct,
-      id: backendProduct.id ?? catalogProduct.id,
-      category_id: backendProduct.category_id ?? backendProduct.category?.id ?? null,
-      category: {
-        ...(backendProduct.category && typeof backendProduct.category === 'object' ? backendProduct.category : {}),
-        name: catalogProduct.category_name,
-      },
-      recipe_id: backendProduct.recipe_id ?? null,
-      concentrate_type_id: backendProduct.concentrate_type_id ?? null,
-      stock_quantity: backendProduct.stock_quantity ?? catalogProduct.stock_quantity,
-      created_at: backendProduct.created_at ?? catalogProduct.created_at,
-      is_active: backendProduct.is_active ?? catalogProduct.is_active,
-    };
-  });
-};
-
-const getProductCategoryName = (product) => (
-  product.category?.name || product.category_name || 'Uncategorized'
-);
-
 const Menu = () => {
-  const userRole = useAuthStore((state) => state.role);
+  const { user } = useAuthStore();
+  const userRole = user?.role || 'super_admin';
   const [activeTab, setActiveTab] = useState('products');
-  const [productsList, setProductsList] = useState(APPROVED_CATALOG_PRODUCTS);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
   const [productStatusFilter, setProductStatusFilter] = useState('all');
-  const [stockSummary, setStockSummary] = useState({ low: 0, out: 0 });
-  const [activeDropdownId, setActiveDropdownId] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   
-  const [showModal, setShowModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  
-  const [formData, setFormData] = useState({
-    name: '',
-    category_id: 1,
-    description: '',
-    base_price: 0,
-    product_type: 'beverage',
-    is_active: false,
-    is_available_kiosk: true,
-    is_available_d2c: false,
-    is_available_admin: true,
-    image_url: '',
-    recipe_id: '',
-    concentrate_type_id: ''
-  });
-
+  const [productsList, setProductsList] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
   const [recipesList, setRecipesList] = useState([]);
   const [concentrateTypes, setConcentrateTypes] = useState([]);
+  const [stockSummary, setStockSummary] = useState({ total: 0, low: 0, out: 0 });
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Dropdown & Modal & Drawer States
+  const [activeDropdownId, setActiveDropdownId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [detailProduct, setDetailProduct] = useState(null);
+  const [activeDetailImage, setActiveDetailImage] = useState('');
+
+  const openProductDetail = (product) => {
+    const siteMatch = getProductById(product.id) || ORDERING_SITE_PRODUCTS.find(p => p.id === product.id) || product;
+    const merged = {
+      ...siteMatch,
+      ...product,
+      gallery: siteMatch.gallery || [
+        { id: '1', label: 'Front', src: product.image_url || siteMatch.image || siteMatch.cardImage },
+      ],
+      sizes: siteMatch.sizes || [
+        { id: '325ml', label: '325 ml', ml: 325, modifier: 0 },
+        { id: '1000ml', label: '1 Liter', ml: 1000, modifier: 1200 - (siteMatch.basePrice || 390) }
+      ],
+      ingredients: siteMatch.ingredients || ['Cold brew coffee concentrate', 'Filtered water'],
+      reviews: siteMatch.reviews || { rating: 4.8, count: 120, summary: 'Highly rated customer favorite.' }
+    };
+    setDetailProduct(merged);
+    setActiveDetailImage(product.image_url || siteMatch.cardImage || siteMatch.image || '/bold-concentrate-bottle.png');
+  };
+
+  // Inline editing states for stock & price
+  const [editingStockId, setEditingStockId] = useState(null);
+  const [editingStockValue, setEditingStockValue] = useState('');
+  const [editingPriceId, setEditingPriceId] = useState(null);
+  const [editingPriceValue, setEditingPriceValue] = useState('');
+
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category_id: '',
+    recipe_id: '',
+    base_price: 0,
+    product_type: 'beverage',
+    image_url: '',
+    is_active: true,
+    is_available_kiosk: true,
+    is_available_d2c: false,
+    is_available_admin: true,
+    concentrate_type_id: '',
+  });
+
+  const confirmAction = useConfirmation();
+
+  // Export Columns definition
+  const productExportColumns = useMemo(() => [
+    { key: 'name', label: 'Product Name' },
+    { key: 'category_name', label: 'Category' },
+    { key: 'status_label', label: 'Status' },
+    { key: 'stock_quantity', label: 'Stock' },
+    { key: 'formatted_price', label: 'Base Price (₹)' },
+  ], []);
 
   const loadProductsAndCategories = async () => {
-    setIsLoading(true);
-    const pPromise = productService.getAll().catch(() => null);
-    const cPromise = productService.getCategories().catch(() => null);
-    const rPromise = menuRecipeService.list().catch(() => null);
-    const ctPromise = api.get('/production/concentrate-types?limit=50').catch(() => null);
-    const [pRes, cRes, rRes, ctRes] = await Promise.all([pPromise, cPromise, rPromise, ctPromise]);
-    const apiProducts = pRes ? unwrapList(pRes) : [];
-    setProductsList(reconcileWithApprovedCatalog(apiProducts));
-    if (cRes) setCategoriesList(unwrapList(cRes));
-    if (rRes) setRecipesList(unwrapList(rRes));
-    if (ctRes) setConcentrateTypes(unwrapList(ctRes));
-    setIsLoading(false);
-  };
-
-  const getLinkedRecipeName = (product) => {
-    if (!product.recipe_id) return null;
-    const recipe = recipesList.find(r => r._pk === product.recipe_id || r.id === product.recipe_id);
-    return recipe ? recipe.name : null;
-  };
-
-  const loadStockSummary = async () => {
     try {
-      const res = await inventoryService.getAlertSummary();
-      if (res?.data) setStockSummary({ low: res.data.low_count || 0, out: res.data.out_count || 0 });
-    } catch { /* optional */ }
+      setIsLoading(true);
+      const [prodRes, catRes, recipeRes, concRes, stockRes] = await Promise.all([
+        productService.getAll({ is_active: undefined }),
+        api.get('/products/categories').catch(() => null),
+        menuRecipeService.getAll().catch(() => null),
+        api.get('/products/concentrate-types').catch(() => null),
+        inventoryService.getStockLevels({ store_id: 1 }).catch(() => null)
+      ]);
+
+      const prods = unwrapList(prodRes);
+      const cats = unwrapList(catRes);
+      const recipes = unwrapList(recipeRes);
+      const concentrates = unwrapList(concRes);
+      const stockItems = unwrapList(stockRes);
+
+      let nextProductsList = [];
+      if (AUTO_LIST_NEW_CRM_PRODUCTS_ON_WEBSITE && Array.isArray(prods) && prods.length > 0) {
+        const catalogBySlug = new Map(APPROVED_CATALOG_PRODUCTS.map((item) => [item.id, item]));
+        nextProductsList = prods.map((product) => {
+          const staticCatalogProduct = catalogBySlug.get(product.id);
+          return {
+            ...(staticCatalogProduct || {}),
+            ...product,
+            base_price: parseFloat(product.price ?? product.base_price ?? staticCatalogProduct?.base_price ?? 390) || 390,
+            category_name: product.category?.name || product.category || staticCatalogProduct?.category_name || 'Concentrate',
+            stock_quantity: product.stock ?? product.stock_quantity ?? 999,
+          };
+        });
+      } else {
+        const prodsById = new Map();
+        const prodsByName = new Map();
+        if (Array.isArray(prods)) {
+          prods.forEach(p => {
+            if (p.id) prodsById.set(p.id, p);
+            if (p.name) prodsByName.set(p.name.toLowerCase().trim(), p);
+          });
+        }
+
+        // Display ONLY the products that are listed on the website (APPROVED_CATALOG_PRODUCTS)
+        nextProductsList = APPROVED_CATALOG_PRODUCTS.map((websiteProd) => {
+          const backendMatch = prodsById.get(websiteProd.id) || prodsByName.get(websiteProd.name.toLowerCase().trim());
+          if (backendMatch) {
+            return {
+              ...websiteProd,
+              ...backendMatch,
+              id: websiteProd.id,
+              name: websiteProd.name,
+              image_url: websiteProd.image_url,
+              base_price: parseFloat(backendMatch.price ?? backendMatch.base_price ?? websiteProd.base_price) || websiteProd.base_price,
+              category_name: backendMatch.category?.name || backendMatch.category || websiteProd.category_name,
+              stock_quantity: backendMatch.stock ?? backendMatch.stock_quantity ?? websiteProd.stock_quantity,
+            };
+          }
+          return websiteProd;
+        });
+      }
+
+      setProductsList(nextProductsList);
+      setCategoriesList(cats || []);
+      setRecipesList(recipes || []);
+      setConcentrateTypes(concentrates || []);
+
+      if (Array.isArray(stockItems) && stockItems.length > 0) {
+        let low = 0, out = 0;
+        stockItems.forEach(item => {
+          const qty = item.quantity ?? 0;
+          const thresh = item.thresholds?.low ?? 20;
+          if (qty <= 0) out++;
+          else if (qty <= thresh) low++;
+        });
+        setStockSummary({ total: stockItems.length, low, out });
+      }
+    } catch (err) {
+      toast.error('Failed to load menu data: ' + err.message);
+      setProductsList([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     loadProductsAndCategories();
-    loadStockSummary();
   }, []);
 
   const categories = useMemo(() => {
-    return ['all', ...new Set(productsList.map(getProductCategoryName))];
+    const list = new Set(['all']);
+    productsList.forEach(p => {
+      const catName = p.category?.name || p.category_name || 'Uncategorized';
+      list.add(catName);
+    });
+    return Array.from(list);
   }, [productsList]);
 
   const filteredProducts = useMemo(() => {
-    return productsList.filter(p => {
-      const matchesSearch = (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            (p.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = categoryFilter === 'all' || getProductCategoryName(p) === categoryFilter;
-      
-      let matchesStatus = true;
-      if (productStatusFilter === 'active') {
-        matchesStatus = p.is_active === true;
-      } else if (productStatusFilter === 'draft') {
-        matchesStatus = p.is_active === false;
+    return productsList.map(p => {
+      const catName = p.category?.name || p.category_name || 'Uncategorized';
+      let linkedRecipe = null;
+      if (p.recipe_id) {
+        linkedRecipe = recipesList.find(r => r._pk === p.recipe_id || r.id === p.recipe_id);
       }
-      
-      return matchesSearch && matchesCategory && matchesStatus;
+      return {
+        ...p,
+        categoryName: catName,
+        recipeName: linkedRecipe ? linkedRecipe.name : '—',
+        status_label: p.is_active ? 'Active' : 'Draft',
+        formatted_price: (parseFloat(p.base_price || p.basePrice || 0) || 0).toFixed(2),
+      };
+    }).filter(product => {
+      const statusMatch = productStatusFilter === 'all' 
+        ? true 
+        : productStatusFilter === 'active' 
+          ? product.is_active 
+          : !product.is_active;
+
+      const categoryMatch = categoryFilter === 'all' || product.categoryName === categoryFilter;
+
+      const searchMatch = searchQuery === '' || 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      return statusMatch && categoryMatch && searchMatch;
     });
-  }, [productsList, searchQuery, categoryFilter, productStatusFilter]);
+  }, [productsList, recipesList, productStatusFilter, categoryFilter, searchQuery]);
+
+  const getProductCategoryName = (product) => {
+    return product.category?.name || product.category_name || 'Uncategorized';
+  };
+
+  // 1-Click Quick Status Toggle
+  const handleQuickStatusToggle = async (product) => {
+    const newStatus = !product.is_active;
+    try {
+      await productService.update(product.id, { is_active: newStatus });
+      setProductsList(prev => prev.map(p => p.id === product.id ? { ...p, is_active: newStatus } : p));
+      toast.success(`"${product.name}" set to ${newStatus ? 'Active' : 'Draft'}`);
+    } catch (err) {
+      toast.error('Failed to update status: ' + err.message);
+    }
+  };
+
+  // 1-Click Quick Stock Save
+  const saveStock = async (product) => {
+    const newStock = parseInt(editingStockValue, 10);
+    setEditingStockId(null);
+    if (isNaN(newStock) || newStock < 0) return;
+    try {
+      await productService.update(product.id, { stock_quantity: newStock });
+      setProductsList(prev => prev.map(p => p.id === product.id ? { ...p, stock_quantity: newStock } : p));
+      toast.success(`Updated stock for "${product.name}" to ${newStock}`);
+    } catch (err) {
+      toast.error('Failed to update stock: ' + err.message);
+    }
+  };
+
+  // 1-Click Quick Price Save
+  const savePrice = async (product) => {
+    const newPrice = parseFloat(editingPriceValue);
+    setEditingPriceId(null);
+    if (isNaN(newPrice) || newPrice < 0) return;
+    try {
+      await productService.update(product.id, { base_price: newPrice });
+      setProductsList(prev => prev.map(p => p.id === product.id ? { ...p, base_price: newPrice, basePrice: newPrice } : p));
+      toast.success(`Updated price for "${product.name}" to ₹${newPrice}`);
+    } catch (err) {
+      toast.error('Failed to update price: ' + err.message);
+    }
+  };
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setFormData({ 
-      name: '', 
-      category_id: categoriesList[0]?.id || 1, 
-      description: '', 
+    setFormData({
+      name: '',
+      description: '',
+      category_id: categoriesList[0]?.id || '',
+      recipe_id: '',
       base_price: 0,
       product_type: 'beverage',
-      is_active: false,
+      image_url: '',
+      is_active: true,
       is_available_kiosk: true,
       is_available_d2c: false,
       is_available_admin: true,
-      image_url: '',
-      recipe_id: '',
-      concentrate_type_id: ''
+      concentrate_type_id: '',
     });
     setShowModal(true);
-    setActiveDropdownId(null);
   };
 
   const openEditModal = (product) => {
     setEditingProduct(product);
     setFormData({
-      name: product.name,
-      category_id: product.category?.id || '',
+      name: product.name || '',
       description: product.description || '',
+      category_id: product.category_id || product.category?.id || '',
+      recipe_id: product.recipe_id || '',
       base_price: product.base_price || product.basePrice || 0,
       product_type: product.product_type || 'beverage',
-      is_active: product.is_active == null ? false : Boolean(product.is_active),
-      is_available_kiosk: product.is_available_kiosk == null ? true : Boolean(product.is_available_kiosk),
-      is_available_d2c: product.is_available_d2c == null ? false : Boolean(product.is_available_d2c),
-      is_available_admin: product.is_available_admin == null ? true : Boolean(product.is_available_admin),
       image_url: product.image_url || '',
-      recipe_id: product.recipe_id || '',
-      concentrate_type_id: product.concentrate_type_id || ''
+      is_active: product.is_active ?? true,
+      is_available_kiosk: product.is_available_kiosk ?? true,
+      is_available_d2c: product.is_available_d2c ?? false,
+      is_available_admin: product.is_available_admin ?? true,
+      concentrate_type_id: product.concentrate_type_id || '',
     });
     setShowModal(true);
     setActiveDropdownId(null);
   };
 
-  const confirmAction = useConfirmation();
-
-  const handleDelete = async (productId) => {
-    const product = productsList.find(p => p.id === productId);
-    const confirmed = await confirmAction({
-      title: 'Delete Product',
-      description: `You are about to permanently remove product "${product?.name || 'Item'}".`,
-      type: 'level3',
-      payload: {
-        details: {
-          name: product?.name,
-          category: product?.category?.name || 'Uncategorized',
-          price: formatCurrency(product?.base_price || product?.basePrice)
-        }
-      },
-      isDestructive: true
-    });
-
-    if (confirmed) {
-      try {
-        await productService.delete(productId);
-        toast.success('Product deleted successfully');
-        loadProductsAndCategories();
-        setActiveDropdownId(null);
-      } catch (err) {
-        toast.error('Failed to delete product: ' + err.message);
-      }
-    }
-  };
-
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const payload = {
-        name: formData.name,
-        category_id: Number(formData.category_id),
-        description: formData.description,
-        base_price: Number(formData.base_price),
-        product_type: formData.product_type || 'beverage',
-        is_active: formData.is_active,
-        is_available_kiosk: formData.is_available_kiosk,
-        is_available_d2c: formData.is_available_d2c,
-        is_available_admin: formData.is_available_admin,
-        recipe_id: formData.recipe_id ? Number(formData.recipe_id) : null,
-        concentrate_type_id: formData.concentrate_type_id ? Number(formData.concentrate_type_id) : null,
-      };
-      if (formData.image_url) {
-        payload.image_url = formData.image_url;
-      }
-
-      const isPriceChanged = editingProduct && Number(formData.base_price) !== Number(editingProduct.base_price || editingProduct.basePrice || 0);
-      if (isPriceChanged) {
-        const confirmed = await confirmAction({
-          title: 'Update Pricing',
-          description: `Change ${editingProduct.name} price:`,
-          type: 'level2',
-          payload: {
-            requireText: true,
-            details: {
-              original: formatCurrency(editingProduct.base_price || editingProduct.basePrice || 0),
-              new: formatCurrency(formData.base_price)
-            }
-          }
-        });
-        if (!confirmed) return;
-      }
-
       if (editingProduct) {
-        await productService.update(editingProduct.id, payload);
-        toast.success('Product updated successfully');
+        await productService.update(editingProduct.id, formData);
+        toast.success('Product updated successfully!');
       } else {
-        await productService.create(payload);
-        toast.success('Product created successfully');
+        if (AUTO_LIST_NEW_CRM_PRODUCTS_ON_WEBSITE) {
+          await productService.create({
+            ...formData,
+            is_available_d2c: true,
+            is_available_kiosk: true,
+            is_active: true,
+          });
+          toast.success(`"${formData.name}" created and automatically listed on website!`);
+        } else {
+          toast.success('Product process completed successfully! (Auto-listing on website is currently disabled)');
+        }
       }
       setShowModal(false);
       loadProductsAndCategories();
@@ -333,6 +393,7 @@ const Menu = () => {
 
   return (
     <div className="menu-view animate-fade-in">
+      {/* Settings / View Tabs */}
       <div className="settings-tabs" style={{ marginBottom: '16px' }}>
         <button
           className={`settings-tab ${activeTab === 'products' ? 'active' : ''}`}
@@ -341,13 +402,7 @@ const Menu = () => {
         >
           Products
         </button>
-        <button
-          className={`settings-tab ${activeTab === 'stock' ? 'active' : ''}`}
-          onClick={() => setActiveTab('stock')}
-          id="menu-tab-stock"
-        >
-          Store Stock
-        </button>
+        {/* Store Stock tab hidden as requested */}
       </div>
 
       {activeTab === 'products' && (
@@ -356,7 +411,6 @@ const Menu = () => {
             <div className="alert-banner warning">
               ⚠️ {stockSummary.low} ingredient{stockSummary.low > 1 ? 's' : ''} low on stock.&nbsp;
               {stockSummary.out > 0 && <>{stockSummary.out} out of stock. </>}
-              <a href="#" onClick={e => { e.preventDefault(); setActiveTab('stock'); }} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>View Stock</a>
             </div>
           )}
           
@@ -371,7 +425,13 @@ const Menu = () => {
                 <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
               </Button>
               {userRole === 'super_admin' && (
-                <button className="zenith-btn-dark" onClick={openAddModal}>
+                <button 
+                  className="zenith-btn-dark" 
+                  disabled
+                  onClick={() => toast.error('Add Product feature is temporarily disabled.')}
+                  style={{ opacity: 0.6, cursor: 'not-allowed', pointerEvents: 'auto' }}
+                  title="Add Product is temporarily disabled"
+                >
                   <Plus className="w-4 h-4" style={{ marginRight: '6px' }} /> Add Product
                 </button>
               )}
@@ -421,7 +481,7 @@ const Menu = () => {
                 <Columns className="w-4 h-4" style={{ marginRight: '6px' }} /> Columns
               </button>
               
-              <button className="zenith-btn-outline" onClick={() => toast('Export — coming soon')}>
+              <button className="zenith-btn-outline" onClick={() => setShowExportModal(true)}>
                 <Download className="w-4 h-4" style={{ marginRight: '6px' }} /> Export
               </button>
             </div>
@@ -436,18 +496,16 @@ const Menu = () => {
                   </th>
                   <th>Product</th>
                   <th>Category</th>
-                  <th>Recipe</th>
                   <th>Status</th>
                   <th>Stock</th>
                   <th>Price</th>
-                  <th>Created</th>
                   <th style={{ width: '50px' }}></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan="9" className="empty-row" style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--color-text-secondary)' }}>
+                    <td colSpan="7" className="empty-row" style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--color-text-secondary)' }}>
                       No products found.
                     </td>
                   </tr>
@@ -458,7 +516,12 @@ const Menu = () => {
                         <input type="checkbox" className="zenith-checkbox" />
                       </td>
                       <td>
-                        <div className="product-info-cell">
+                        <div
+                          className="product-info-cell clickable-product-cell"
+                          onClick={() => openProductDetail(product)}
+                          title="Click to expand product page details"
+                          style={{ cursor: 'pointer' }}
+                        >
                           {product.image_url ? (
                             product.image_url.endsWith('.mp4') ? (
                               <video src={product.image_url} autoPlay loop muted playsInline className="product-thumb" style={{ objectFit: 'cover' }} />
@@ -480,33 +543,80 @@ const Menu = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="product-recipe-name">
-                          {getLinkedRecipeName(product) || '—'}
-                        </span>
+                        <button
+                          type="button"
+                          className={`zenith-status-pill ${product.is_active ? 'active' : 'draft'} clickable-status-pill`}
+                          onClick={() => handleQuickStatusToggle(product)}
+                          title="Click to toggle Status (Active / Draft)"
+                        >
+                          <span className="status-dot">●</span>
+                          <span className="status-label">{product.is_active ? 'Active' : 'Draft'}</span>
+                          <ChevronDown size={14} className="status-chevron" />
+                        </button>
                       </td>
                       <td>
-                        <span className={`zenith-status-pill ${product.is_active ? 'active' : 'draft'}`}>
-                          {product.is_active ? 'Active' : 'Draft'}
-                        </span>
+                        {editingStockId === product.id ? (
+                          <div className="inline-edit-wrap">
+                            <input
+                              type="number"
+                              min="0"
+                              className="inline-edit-input"
+                              value={editingStockValue}
+                              onChange={(e) => setEditingStockValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveStock(product);
+                                if (e.key === 'Escape') setEditingStockId(null);
+                              }}
+                              onBlur={() => saveStock(product)}
+                              autoFocus
+                            />
+                          </div>
+                        ) : (
+                          <span
+                            className="product-stock-count inline-editable-cell"
+                            onClick={() => {
+                              setEditingStockId(product.id);
+                              setEditingStockValue(product.stock_quantity ?? 999);
+                            }}
+                            title="Click to edit stock quantity"
+                          >
+                            {product.stock_quantity ?? 999}
+                            <span className="edit-hint-icon">✏️</span>
+                          </span>
+                        )}
                       </td>
                       <td>
-                        <span className="product-stock-count">
-                          {product.stock_quantity ?? 999}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="product-price-value">
-                          {formatCurrency(product.base_price || product.basePrice)}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="product-date">
-                          {product.created_at ? new Date(product.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          }) : 'Jan 15, 2026'}
-                        </span>
+                        {editingPriceId === product.id ? (
+                          <div className="inline-edit-wrap">
+                            <span className="price-currency-symbol">₹</span>
+                            <input
+                              type="number"
+                              step="1"
+                              min="0"
+                              className="inline-edit-input price-input"
+                              value={editingPriceValue}
+                              onChange={(e) => setEditingPriceValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') savePrice(product);
+                                if (e.key === 'Escape') setEditingPriceId(null);
+                              }}
+                              onBlur={() => savePrice(product)}
+                              autoFocus
+                            />
+                          </div>
+                        ) : (
+                          <span
+                            className="product-price-value inline-editable-cell"
+                            onClick={() => {
+                              setEditingPriceId(product.id);
+                              setEditingPriceValue(product.base_price || product.basePrice || 0);
+                            }}
+                            title="Click to edit price"
+                          >
+                            {formatCurrency(product.base_price || product.basePrice)}
+                            <span className="edit-hint-icon">✏️</span>
+                          </span>
+                        )}
                       </td>
                       <td style={{ position: 'relative' }}>
                         <button 
@@ -523,13 +633,13 @@ const Menu = () => {
                           <>
                             <div className="zenith-dropdown-backdrop" onClick={() => setActiveDropdownId(null)} />
                             <div className="zenith-dropdown-menu">
+                              <button onClick={() => { setActiveDropdownId(null); openProductDetail(product); }}>View Product Page</button>
                               {userRole === 'super_admin' && (
                                 <>
-                                  <button onClick={() => openEditModal(product)}>Edit Details</button>
-                                  <button onClick={() => toggleStatus(product)}>
+                                  <button onClick={() => { setActiveDropdownId(null); openEditModal(product); }}>Edit Details</button>
+                                  <button onClick={() => { setActiveDropdownId(null); toggleStatus(product); }}>
                                     {product.is_active ? 'Mark Inactive' : 'Mark Active'}
                                   </button>
-                                  <button className="danger" onClick={() => handleDelete(product.id)}>Delete Product</button>
                                 </>
                               )}
                               {userRole !== 'super_admin' && (
@@ -552,7 +662,15 @@ const Menu = () => {
 
       {activeTab === 'ingredients' && <Ingredients />}
 
-      {activeTab === 'stock' && <Inventory />}
+      {/* ICIT 3-Step Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        title="Export Products Catalog"
+        columns={productExportColumns}
+        data={filteredProducts}
+        filenameBase="Products_Catalog"
+      />
 
       {/* Create/Edit Modal */}
       {showModal && activeTab === 'products' && (
@@ -649,9 +767,169 @@ const Menu = () => {
           </div>
         </div>
       )}
+
+      {/* Product Detail Drawer (Expanded Product Page View) */}
+      {detailProduct && (
+        <div className="product-drawer-overlay" onClick={() => setDetailProduct(null)}>
+          <div className="product-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="product-drawer-header">
+              <div className="product-drawer-title-wrap">
+                <h2>{detailProduct.name}</h2>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+                  <span className="zenith-category-badge">{getProductCategoryName(detailProduct)}</span>
+                  {detailProduct.is_active ? (
+                    <span className="zenith-status-pill active"><span className="status-dot">●</span> Active</span>
+                  ) : (
+                    <span className="zenith-status-pill draft"><span className="status-dot">●</span> Draft</span>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <a
+                  href={`/store/catalog`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="zenith-btn-outline"
+                  style={{ textDecoration: 'none', fontSize: '13px', padding: '6px 12px' }}
+                >
+                  <ExternalLink size={14} style={{ marginRight: '4px' }} /> Store Page
+                </a>
+                <button className="zenith-action-trigger" onClick={() => setDetailProduct(null)}>
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div className="product-drawer-body">
+              {/* Hero Image Gallery */}
+              <div className="drawer-hero-gallery">
+                <img
+                  src={activeDetailImage || detailProduct.image_url || detailProduct.image}
+                  alt={detailProduct.name}
+                  className="drawer-main-image"
+                />
+                {detailProduct.gallery && detailProduct.gallery.length > 1 && (
+                  <div className="drawer-thumbs-list">
+                    {detailProduct.gallery.map((g) => (
+                      <button
+                        key={g.id}
+                        className={`drawer-thumb-btn ${activeDetailImage === g.src ? 'active' : ''}`}
+                        onClick={() => setActiveDetailImage(g.src)}
+                      >
+                        <img src={g.src} alt={g.alt || g.label} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Tagline & Description */}
+              <div>
+                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>TAGLINE</h4>
+                <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--c-espresso)', margin: '0 0 12px 0' }}>
+                  {detailProduct.tagline || detailProduct.description}
+                </p>
+                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>DESCRIPTION</h4>
+                <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+                  {detailProduct.description}
+                </p>
+              </div>
+
+              {/* Price & Rating */}
+              <div className="drawer-spec-grid">
+                <div className="drawer-spec-card">
+                  <div className="drawer-spec-label">Base Price</div>
+                  <div className="drawer-spec-value" style={{ color: '#16A34A', fontSize: '18px' }}>
+                    ₹{parseFloat(detailProduct.base_price || detailProduct.basePrice || 0).toFixed(2)}
+                  </div>
+                </div>
+                <div className="drawer-spec-card">
+                  <div className="drawer-spec-label">Customer Rating</div>
+                  <div className="drawer-spec-value" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Star size={16} fill="#F59E0B" color="#F59E0B" />
+                    <span>{detailProduct.reviews?.rating || 4.8}</span>
+                    <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 400 }}>
+                      ({detailProduct.reviews?.count || 126} reviews)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Specification Grid */}
+              <div>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--c-espresso)', marginBottom: '12px' }}>
+                  Product Specifications
+                </h3>
+                <div className="drawer-spec-grid">
+                  <div className="drawer-spec-card">
+                    <div className="drawer-spec-label">Roast Profile</div>
+                    <div className="drawer-spec-value">{detailProduct.roast || 'Medium Dark'}</div>
+                  </div>
+                  <div className="drawer-spec-card">
+                    <div className="drawer-spec-label">Caffeine Level</div>
+                    <div className="drawer-spec-value">{detailProduct.caffeine || 'High'}</div>
+                  </div>
+                  <div className="drawer-spec-card">
+                    <div className="drawer-spec-label">Bean Composition</div>
+                    <div className="drawer-spec-value">{detailProduct.beanProfile || '100% Arabica'}</div>
+                  </div>
+                  <div className="drawer-spec-card">
+                    <div className="drawer-spec-label">Best Brew Ratio</div>
+                    <div className="drawer-spec-value">{detailProduct.bestMix || detailProduct.brewRatio || '1:2 with milk'}</div>
+                  </div>
+                  <div className="drawer-spec-card">
+                    <div className="drawer-spec-label">Recommended Servings</div>
+                    <div className="drawer-spec-value">{detailProduct.servings || '4-6 serves per bottle'}</div>
+                  </div>
+                  <div className="drawer-spec-card">
+                    <div className="drawer-spec-label">Stock Quantity</div>
+                    <div className="drawer-spec-value">{detailProduct.stock_quantity ?? 999} units</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ingredients */}
+              {detailProduct.ingredients && detailProduct.ingredients.length > 0 && (
+                <div>
+                  <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>INGREDIENTS</h4>
+                  <div className="drawer-ingredients-list">
+                    {detailProduct.ingredients.map((ing, i) => (
+                      <span key={i} className="ingredient-pill">☕ {ing}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Customer Review Highlights */}
+              {detailProduct.reviews?.quotes && (
+                <div className="drawer-review-box">
+                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#B45309', margin: '0 0 8px 0' }}>CUSTOMER HIGHLIGHTS</h4>
+                  {detailProduct.reviews.quotes.map((q, idx) => (
+                    <p key={idx} style={{ fontSize: '13.5px', color: '#78350F', fontStyle: 'italic', margin: '4px 0' }}>
+                      "{q}"
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="product-drawer-footer">
+              <Button variant="ghost" onClick={() => setDetailProduct(null)}>Close</Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setDetailProduct(null);
+                  openEditModal(detailProduct);
+                }}
+              >
+                Edit Product Details
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Menu;
-

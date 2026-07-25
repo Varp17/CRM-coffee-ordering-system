@@ -6,6 +6,7 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 export default defineConfig({
   plugins: [react(), cloudflare()],
   server: {
+    port: 5173,
     proxy: {
       '/api/v1': {
         target: 'http://localhost:3000',

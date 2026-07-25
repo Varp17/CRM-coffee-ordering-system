@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import './Ingredients.css';
 import Button from '../../../components/Button/Button';
 import { recipeService } from '../../../services/recipes';
@@ -21,7 +21,6 @@ const Ingredients = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
-  const [rmMappings, setRmMappings] = useState([]);
   const [allRawMaterials, setAllRawMaterials] = useState([]);
   const [selectedRms, setSelectedRms] = useState([]);
 
@@ -43,27 +42,14 @@ const Ingredients = () => {
 
   const getCategoryFromType = (type) => ingredientTypeLabels[type] || 'Other';
 
-const DUMMY_INGREDIENTS = [
-  { id: 'ing-1', name: 'Bold Concentrate', ingredient_type: 'concentrate', cost_per_unit: 1.2, unit: 'ml', is_active: true },
-  { id: 'ing-2', name: 'Classic Cold Brew Concentrate', ingredient_type: 'concentrate', cost_per_unit: 1.1, unit: 'ml', is_active: true },
-  { id: 'ing-3', name: 'South Indian Chicory Roast', ingredient_type: 'raw', cost_per_unit: 0.8, unit: 'g', is_active: true },
-  { id: 'ing-4', name: 'Ultra Barista Oat Milk', ingredient_type: 'milk', cost_per_unit: 0.25, unit: 'ml', is_active: true },
-  { id: 'ing-5', name: 'Organic Jaggery Syrup', ingredient_type: 'sweetener', cost_per_unit: 0.4, unit: 'ml', is_active: true },
-  { id: 'ing-6', name: 'Salted Caramel Syrup', ingredient_type: 'syrup', cost_per_unit: 0.5, unit: 'ml', is_active: true },
-];
-
   const loadIngredients = async () => {
     setIsLoading(true);
     try {
       const response = await recipeService.getAll();
       const list = unwrapList(response);
-      if (Array.isArray(list) && list.length > 0) {
-        setIngredients(list);
-      } else {
-        setIngredients(DUMMY_INGREDIENTS);
-      }
-    } catch (_) {
-      setIngredients(DUMMY_INGREDIENTS);
+      setIngredients(Array.isArray(list) ? list : []);
+    } catch {
+      setIngredients([]);
     } finally {
       setIsLoading(false);
     }
@@ -97,13 +83,11 @@ const DUMMY_INGREDIENTS = [
   const loadRawMaterialMappings = async (ingredient) => {
     try {
       const res = await recipeService.getRawMaterialMappings(ingredient.uuid || ingredient.id);
-      setRmMappings(res.data || []);
       setSelectedRms((res.data || []).map(m => ({
         raw_material_id: m.raw_material_uuid || m.raw_material?.id || m.raw_material_id,
         quantity: m.quantity || m.quantity_used || 0,
       })));
     } catch {
-      setRmMappings([]);
       setSelectedRms([]);
     }
   };

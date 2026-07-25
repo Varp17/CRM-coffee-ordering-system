@@ -33,7 +33,7 @@ export const useWebSocket = (roleParam) => {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const storeId = localStorage.getItem('dc_store_id') || '1';
       const wsHost = window.location.hostname.includes('vercel.app')
-        ? 'coffee-ordering-system-backend.onrender.com'
+        ? 'coffee-website-backend.onrender.com'
         : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
           ? 'localhost:3000'
           : window.location.host;

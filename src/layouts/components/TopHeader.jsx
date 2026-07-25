@@ -2,20 +2,18 @@
  * TopHeader.jsx — Enterprise sticky top header
  * Features: Breadcrumb, store selector, notifications, theme toggle, user profile
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import {
-  Menu, Search, Bell, Sun, Moon, ChevronDown, MapPin,
-  AlertTriangle, Package, ShoppingCart, LogOut, Settings, User,
+  Menu, Search, Bell, Sun, Moon, MapPin,
+  ShoppingCart, LogOut, Settings,
   ChevronRight,
 } from 'lucide-react';
 import useSidebarStore from '../../store/useSidebarStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useOrderStore } from '../../store/useOrderStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
-import { storeService } from '../../services/stores';
-import { unwrapList } from '../../utils/apiResponse';
-import { ALL_MENU_ITEMS, findMenuItemByPath } from '../../constants/menuConfig';
+import { findMenuItemByPath } from '../../constants/menuConfig';
 import { CRM_STORES } from '../../data/crmStores';
 import './TopHeader.css';
 
@@ -134,7 +132,7 @@ const TopHeader = () => {
   const [showNotif, setShowNotif] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [selectedStore, setSelectedStore] = useState('all');
-  const [stores, setStores] = useState([
+  const [stores] = useState([
     { id: 'all', name: 'All Stores' },
     ...CRM_STORES,
   ]);
@@ -158,26 +156,6 @@ const TopHeader = () => {
   useEffect(() => {
     fetchNotifications();
     fetchUnreadCount();
-    storeService.getAll({ limit: 100 }).then((res) => {
-      const list = unwrapList(res, []);
-      if (list.length > 0) {
-        const websiteStoreNames = new Set(CRM_STORES.map((store) => store.name.toLowerCase()));
-        const additionalStores = list
-          .map((store) => ({
-            ...store,
-            name: store.name || store.store_name || '',
-          }))
-          .filter((store) => {
-            const name = store.name.toLowerCase();
-            return name && !websiteStoreNames.has(name);
-          });
-        setStores([
-          { id: 'all', name: 'All Stores' },
-          ...CRM_STORES,
-          ...additionalStores,
-        ]);
-      }
-    }).catch(() => {});
   }, [fetchNotifications, fetchUnreadCount]);
 
   const pendingCount = (orders || []).filter((o) => o.status === 'pending').length;

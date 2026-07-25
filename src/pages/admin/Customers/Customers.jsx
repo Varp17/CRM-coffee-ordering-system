@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import './Customers.css';
 import AdminMetricCard from '../../../components/ui/AdminMetricCard';
 import { customerService } from '../../../services/customers';
@@ -11,20 +11,44 @@ import {
   ShoppingBag, MessageCircle, UserCheck, UserX, Users, DollarSign
 } from 'lucide-react';
 
+const computeSegment = (c) => {
+  if (!c) return 'New';
+  const orders = parseInt(c.order_count || c.orders || 0, 10);
+  if (orders >= 5) return 'Regular';
+
+  const lastActivity = c.last_order_date || c.lastOrder || c.updated_at || c.created_at || c.joinedDate;
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const isInactiveLongTime = lastActivity && new Date(lastActivity) < thirtyDaysAgo;
+
+  if (c.is_active === false || isInactiveLongTime) {
+    return 'Inactive';
+  }
+  return 'New';
+};
+
 // ── Customer Detail Side Panel ──────────────────────────────────
-const CustomerPanel = ({ customer, onClose, onToggleStatus, onContact }) => {
+const CustomerPanel = ({ customer, onClose, onToggleStatus, onContact, onAddNote }) => {
   if (!customer) return null;
-                  const isActive = customer.is_active ?? true;
+  const isActive = customer.is_active ?? true;
   const orders = customer.order_count || customer.orders || 0;
-  const segment =
-    customer.segment ||
-    (orders >= 5 ? 'Regular' : orders >= 1 ? 'New' : 'Inactive');
+  const segment = customer.segment || computeSegment(customer);
 
   const segmentColor = {
     Regular: '#2563EB',
     New: '#16A34A',
     Inactive: '#9CA3AF',
   }[segment] || '#9CA3AF';
+
+  const [noteText, setNoteText] = useState('');
+  const [submittingNote, setSubmittingNote] = useState(false);
+
+  const handleSubmitNote = async () => {
+    if (!noteText.trim()) return;
+    setSubmittingNote(true);
+    await onAddNote(customer.id, noteText.trim());
+    setNoteText('');
+    setSubmittingNote(false);
+  };
 
   return (
     <>
@@ -121,6 +145,42 @@ const CustomerPanel = ({ customer, onClose, onToggleStatus, onContact }) => {
           </div>
         )}
 
+        {/* CRM Notes */}
+        <div className="cust-panel-section">
+          <h4>CRM Notes</h4>
+          <div className="cust-notes-list">
+            {(customer.notes || []).length === 0 ? (
+              <p className="cust-no-notes">No notes yet</p>
+            ) : (
+              (customer.notes || []).map((n) => (
+                <div key={n.id} className="cust-note-item">
+                  <p className="cust-note-text">{n.note}</p>
+                  <span className="cust-note-meta">
+                    {n.created_by || 'CRM Operator'} · {formatDate(n.created_at)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+          <div className="cust-note-input-row">
+            <input
+              type="text"
+              className="cust-note-input"
+              placeholder="Add a note..."
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmitNote()}
+            />
+            <button
+              className="cust-note-btn"
+              onClick={handleSubmitNote}
+              disabled={!noteText.trim() || submittingNote}
+            >
+              Add
+            </button>
+          </div>
+        </div>
+
         {/* Actions */}
         <div className="cust-panel-actions">
           <button
@@ -141,86 +201,11 @@ const CustomerPanel = ({ customer, onClose, onToggleStatus, onContact }) => {
   );
 };
 
-const DUMMY_CUSTOMERS = [
-  {
-    id: 'c-101',
-    name: 'Ananya Sharma',
-    email: 'ananya.sharma@example.com',
-    mobile: '+91 98765 43210',
-    order_count: 12,
-    total_spent: 3450,
-    segment: 'Regular',
-    is_active: true,
-    joinedDate: '2026-01-15T10:00:00Z',
-    lastOrder: '2026-07-23T11:30:00Z',
-  },
-  {
-    id: 'c-102',
-    name: 'Rohan Mehta',
-    email: 'rohan.mehta@techpark.in',
-    mobile: '+91 98123 45678',
-    order_count: 8,
-    total_spent: 2180,
-    segment: 'Regular',
-    is_active: true,
-    joinedDate: '2026-02-10T14:20:00Z',
-    lastOrder: '2026-07-23T12:00:00Z',
-  },
-  {
-    id: 'c-103',
-    name: 'Sneha Patel',
-    email: 'sneha.p@gmail.com',
-    mobile: '+91 99887 76655',
-    order_count: 4,
-    total_spent: 1240,
-    segment: 'New',
-    is_active: true,
-    joinedDate: '2026-06-01T09:15:00Z',
-    lastOrder: '2026-07-23T08:45:00Z',
-  },
-  {
-    id: 'c-104',
-    name: 'Vikram Roy',
-    email: 'vikram.roy@innovate.co',
-    mobile: '+91 97654 32109',
-    order_count: 18,
-    total_spent: 5920,
-    segment: 'Regular',
-    is_active: true,
-    joinedDate: '2025-11-20T16:00:00Z',
-    lastOrder: '2026-07-22T17:10:00Z',
-  },
-  {
-    id: 'c-105',
-    name: 'Karan Verma',
-    email: 'karan.verma@domain.com',
-    mobile: '+91 96543 21098',
-    order_count: 2,
-    total_spent: 560,
-    segment: 'New',
-    is_active: true,
-    joinedDate: '2026-07-10T12:30:00Z',
-    lastOrder: '2026-07-22T19:00:00Z',
-  },
-  {
-    id: 'c-106',
-    name: 'Priya Sundaram',
-    email: 'priya.sundaram@gmail.com',
-    mobile: '+91 95432 10987',
-    order_count: 0,
-    total_spent: 0,
-    segment: 'Inactive',
-    is_active: false,
-    joinedDate: '2026-04-12T11:00:00Z',
-    lastOrder: null,
-  },
-];
-
 // ── Main Customers Component ────────────────────────────────────
 const SEGMENTS = ['All', 'Regular', 'New', 'Inactive'];
 
 const Customers = () => {
-  const [customersList, setCustomersList] = useState(DUMMY_CUSTOMERS);
+  const [customersList, setCustomersList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -237,14 +222,10 @@ const Customers = () => {
     try {
       const res = await customerService.getAll();
       const list = unwrapList(res);
-      if (Array.isArray(list) && list.length > 0) {
-        setCustomersList(list);
-      } else {
-        setCustomersList(DUMMY_CUSTOMERS);
-      }
-    } catch (_) {
-      // Offline / local fallback without throwing error toast
-      setCustomersList(DUMMY_CUSTOMERS);
+      setCustomersList(Array.isArray(list) ? list : []);
+    } catch (error) {
+      setCustomersList([]);
+      setLoadError(error.message || 'Unable to load customers');
     } finally {
       setIsLoading(false);
     }
@@ -297,14 +278,24 @@ const Customers = () => {
   }, []);
 
   const handleContact = useCallback((customer, type) => {
-    if (type === 'whatsapp' && (customer.mobile || customer.phone)) {
-      const phone = (customer.mobile || customer.phone).replace(/\D/g, '');
+    const phone = customer.mobile || customer.phone;
+    if (type === 'whatsapp' && phone) {
       window.open(`https://wa.me/${phone}`, '_blank');
     } else if (type === 'email' && customer.email) {
       window.open(`mailto:${customer.email}`, '_blank');
     }
     toast.success(`Opening ${type} for ${customer.name || 'customer'}…`);
   }, []);
+
+  const handleAddNote = useCallback(async (customerId, noteText) => {
+    try {
+      await customerService.addNote(customerId, { note: noteText });
+      toast.success('Note added to customer');
+      loadCustomers();
+    } catch (error) {
+      toast.error(error.message || 'Unable to add note');
+    }
+  }, [loadCustomers]);
 
   const toggleStatus = useCallback(async (id, currentlyActive) => {
     const label = currentlyActive ? 'Deactivate' : 'Reactivate';
@@ -316,7 +307,8 @@ const Customers = () => {
     });
     if (!confirmed) return;
     try {
-      toast.success('Customer status updated.');
+      await customerService.update(id, { is_active: !currentlyActive });
+      toast.success(`Customer ${currentlyActive ? 'deactivated' : 'reactivated'}.`);
       setShowPanel(false);
       loadCustomers();
     } catch (err) {
@@ -531,6 +523,7 @@ const Customers = () => {
           onClose={() => setShowPanel(false)}
           onToggleStatus={toggleStatus}
           onContact={handleContact}
+          onAddNote={handleAddNote}
         />
       )}
     </div>

@@ -1,7 +1,5 @@
 import { create } from 'zustand';
 import toast from 'react-hot-toast';
-import { notificationService } from '../services/notifications';
-import { unwrapObject } from '../utils/apiResponse';
 
 export const useNotificationStore = create((set, get) => ({
   notifications: [],
@@ -9,29 +7,11 @@ export const useNotificationStore = create((set, get) => ({
   isLoading: false,
 
   fetchNotifications: async () => {
-    set({ isLoading: true });
-    try {
-      const res = await notificationService.getNotifications({ limit: 50 });
-      const unwrapped = unwrapObject(res);
-      const list = unwrapped?.notifications || [];
-      const count = list.filter(n => !n.is_read).length;
-      set({ notifications: list, unreadCount: count });
-    } catch (err) {
-      console.error('Failed to fetch notifications:', err);
-    } finally {
-      set({ isLoading: false });
-    }
+    set({ isLoading: false });
   },
 
   fetchUnreadCount: async () => {
-    try {
-      const res = await notificationService.getUnreadCount();
-      const countData = unwrapObject(res);
-      const count = countData?.unread_count ?? 0;
-      set({ unreadCount: count });
-    } catch (err) {
-      console.error('Failed to fetch unread count:', err);
-    }
+    set({ unreadCount: get().notifications.filter((notification) => !notification.is_read).length });
   },
 
   addNotificationToState: (notification) => {
@@ -65,7 +45,9 @@ export const useNotificationStore = create((set, get) => ({
       const audio = new Audio('/assets/chime.mp3');
       audio.volume = 0.5;
       audio.play().catch(() => {});
-    } catch (e) {}
+    } catch {
+      // Audio is optional and may be blocked by the browser's autoplay policy.
+    }
   },
 
   // Fallback for manual or client-only toast alerts
@@ -82,44 +64,29 @@ export const useNotificationStore = create((set, get) => ({
   },
 
   markAllAsRead: async () => {
-    try {
-      await notificationService.markAllAsRead();
-      set((state) => ({
-        notifications: state.notifications.map((n) => ({ ...n, is_read: true })),
-        unreadCount: 0
-      }));
-      toast.success('All notifications marked as read');
-    } catch (err) {
-      toast.error('Failed to mark all as read: ' + err.message);
-    }
+    set((state) => ({
+      notifications: state.notifications.map((n) => ({ ...n, is_read: true })),
+      unreadCount: 0
+    }));
+    toast.success('All notifications marked as read');
   },
 
   markAsRead: async (id) => {
-    try {
-      await notificationService.markAsRead(id);
-      set((state) => {
-        const target = state.notifications.find(n => n.id === id);
-        const unreadDiff = target && !target.is_read ? 1 : 0;
-        return {
-          notifications: state.notifications.map((n) =>
-            n.id === id ? { ...n, is_read: true } : n
-          ),
-          unreadCount: Math.max(0, state.unreadCount - unreadDiff)
-        };
-      });
-    } catch (err) {
-      toast.error('Failed to mark as read: ' + err.message);
-    }
+    set((state) => {
+      const target = state.notifications.find(n => n.id === id);
+      const unreadDiff = target && !target.is_read ? 1 : 0;
+      return {
+        notifications: state.notifications.map((n) =>
+          n.id === id ? { ...n, is_read: true } : n
+        ),
+        unreadCount: Math.max(0, state.unreadCount - unreadDiff)
+      };
+    });
   },
 
   clearAll: async () => {
-    try {
-      await notificationService.clearAll();
-      set({ notifications: [], unreadCount: 0 });
-      toast.success('Cleared all notifications');
-    } catch (err) {
-      toast.error('Failed to clear notifications: ' + err.message);
-    }
+    set({ notifications: [], unreadCount: 0 });
+    toast.success('Cleared all notifications');
   },
 
   getUnreadCount: () => {
