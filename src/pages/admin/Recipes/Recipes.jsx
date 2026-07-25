@@ -185,15 +185,6 @@ const Recipes = () => {
   };
 
   const handleHide = async (id) => {
-    const recipe = recipes.find((r) => r.id === id);
-    const isConfirmed = await confirmAction({
-      title: 'Hide Recipe',
-      description: `Are you sure you want to hide "${recipe?.name || 'this recipe'}"? It will no longer appear in the public catalog.`,
-      type: 'level1',
-      isDestructive: false,
-    });
-    if (!isConfirmed) return;
-
     try {
       await recipeService.updateReviewStatus(id, 'hidden');
       setRecipes((prev) =>
@@ -209,15 +200,6 @@ const Recipes = () => {
   };
 
   const handleReject = async (id) => {
-    const recipe = recipes.find((r) => r.id === id);
-    const isConfirmed = await confirmAction({
-      title: 'Reject Recipe',
-      description: `Are you sure you want to reject "${recipe?.name || 'this recipe'}"? It will be moved to the Rejected tab and hidden from the catalog.`,
-      type: 'level1',
-      isDestructive: false,
-    });
-    if (!isConfirmed) return;
-
     rejectRecipeLocally(id);
     try {
       await recipeService.updateReviewStatus(id, 'rejected');
@@ -700,22 +682,22 @@ const Recipes = () => {
 
                   {/* ── CARD ACTIONS FOR EACH OF THE 4 TABS ── */}
                   <div className="recipe-card-actions" onClick={(e) => e.stopPropagation()}>
-                    {/* TAB 1: APPROVED RECIPES (3 Buttons: Hide, View Details, Delete) */}
+                    {/* TAB 1: APPROVED RECIPES (3 Buttons: View Details, Hide, Delete) */}
                     {activeTab === 'approved' && (
                       <>
-                        <button
-                          className="action-btn hide-btn"
-                          onClick={() => handleHide(recipe.id)}
-                          title="Hide Recipe"
-                        >
-                          <EyeOff size={14} /> Hide
-                        </button>
                         <button
                           className="action-btn view-btn"
                           onClick={() => setSelectedRecipe(recipe)}
                           title="View Details"
                         >
                           <Eye size={14} /> View Details
+                        </button>
+                        <button
+                          className="action-btn hide-btn"
+                          onClick={() => handleHide(recipe.id)}
+                          title="Hide Recipe from Website"
+                        >
+                          <EyeOff size={14} /> Hide
                         </button>
                         <button
                           className="action-btn reject-btn"
@@ -727,22 +709,22 @@ const Recipes = () => {
                       </>
                     )}
 
-                    {/* TAB 2: PENDING FOR APPROVAL (3 Buttons: Approve, View, Reject) */}
+                    {/* TAB 2: PENDING FOR APPROVAL (3 Buttons: View Details, Approve, Reject) */}
                     {activeTab === 'pending' && (
                       <>
+                        <button
+                          className="action-btn view-btn"
+                          onClick={() => setSelectedRecipe(recipe)}
+                          title="View Details"
+                        >
+                          <Eye size={14} /> View Details
+                        </button>
                         <button
                           className="action-btn approve-btn"
                           onClick={() => handleApprove(recipe.id)}
                           title="Approve Recipe"
                         >
                           <Check size={14} /> Approve
-                        </button>
-                        <button
-                          className="action-btn view-btn"
-                          onClick={() => setSelectedRecipe(recipe)}
-                          title="View Detail"
-                        >
-                          <Eye size={14} /> View
                         </button>
                         <button
                           className="action-btn reject-btn"
@@ -754,13 +736,13 @@ const Recipes = () => {
                       </>
                     )}
 
-                    {/* TAB 3: HIDDEN RECIPES (2 Buttons: Unhide/Approve, Delete) */}
+                    {/* TAB 3: HIDDEN RECIPES (2 Buttons: Unhide, Delete) */}
                     {activeTab === 'hidden' && (
                       <>
                         <button
                           className="action-btn approve-btn"
                           onClick={() => handleApprove(recipe.id)}
-                          title="Unhide / Approve Recipe"
+                          title="Unhide Recipe to Approved"
                         >
                           <Check size={14} /> Unhide
                         </button>
@@ -774,13 +756,13 @@ const Recipes = () => {
                       </>
                     )}
 
-                    {/* TAB 4: RECENTLY DELETED / REJECTED (2 Buttons: Restore, Delete Permanently) */}
+                    {/* TAB 4: DELETED / REJECTED RECIPES (2 Buttons: Restore, Permanently Delete) */}
                     {(activeTab === 'rejected' || activeTab === 'deleted') && (
                       <>
                         <button
                           className="action-btn restore-btn"
                           onClick={() => handleRestore(recipe.id)}
-                          title="Restore Recipe"
+                          title="Restore Recipe to Approved"
                         >
                           <RotateCcw size={14} /> Restore
                         </button>
@@ -789,7 +771,7 @@ const Recipes = () => {
                           onClick={() => handlePermanentDelete(recipe.id)}
                           title="Permanently Delete Recipe"
                         >
-                          <Trash2 size={14} /> Delete Permanent
+                          <Trash2 size={14} /> Permanently Delete
                         </button>
                       </>
                     )}

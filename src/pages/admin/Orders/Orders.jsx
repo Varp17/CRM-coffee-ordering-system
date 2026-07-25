@@ -841,10 +841,23 @@ const Orders = () => {
                   const isCombo = isComboOrder(order);
                   const avatar = getAvatarColor(order.customer_name);
                   const status = STATUS_STYLES[order.status?.toLowerCase()] || STATUS_STYLES.refunded;
-                  const itemsText =
-                    (order.items && order.items.map((i) => `${i.name || i.title} ×${i.quantity || 1}`).join(', ')) ||
-                    order.items_summary ||
-                    '—';
+                  const itemsText = (() => {
+                    if (Array.isArray(order.items) && order.items.length > 0) {
+                      const first = order.items[0];
+                      const firstName = first.name || first.title || 'Product';
+                      const firstQty = first.quantity || 1;
+                      const firstStr = `${firstName} ×${firstQty}`;
+                      return order.items.length > 1 ? `${firstStr}...` : firstStr;
+                    }
+                    if (order.items_summary) {
+                      const parts = order.items_summary.split(', ');
+                      if (parts.length > 1) {
+                        return `${parts[0]}...`;
+                      }
+                      return order.items_summary;
+                    }
+                    return '—';
+                  })();
 
                   return (
                     <tr key={order.id} className="icit-row">

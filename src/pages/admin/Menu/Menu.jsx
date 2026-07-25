@@ -18,15 +18,14 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import { PRODUCTS as ORDERING_SITE_PRODUCTS, getProductById } from '../../../data/kioskProducts';
 
 const PRODUCT_THUMBNAILS = {
-  'coffee-50-50-concentrate': '/images/products/BoldConcentrate325.png',
-  'classic-cb-concentrate': '/images/products/ClassicCBConc325.png',
-  'sif-concentrate': '/images/products/KappiConcentrate325.png',
+  'coffee-50-50-concentrate': '/bold-concentrate-bottle.png',
+  'classic-cb-concentrate': '/images/Classic-concentrate.png',
+  'sif-concentrate': '/images/Kappi-concentrate.png',
   'sampler-concentrate': '/3inone.jpeg',
 };
 
 // Setting: Automatically list newly created CRM products on the website catalog
-// Currently DISABLED by default per system requirements
-const AUTO_LIST_NEW_CRM_PRODUCTS_ON_WEBSITE = false;
+const AUTO_LIST_NEW_CRM_PRODUCTS_ON_WEBSITE = true;
 
 const APPROVED_CATALOG_PRODUCTS = ORDERING_SITE_PRODUCTS.map((item) => ({
   id: item.id,
@@ -69,6 +68,8 @@ const Menu = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [detailProduct, setDetailProduct] = useState(null);
   const [activeDetailImage, setActiveDetailImage] = useState('');
+  const [detailStockValue, setDetailStockValue] = useState('');
+  const [isSavingDetailStock, setIsSavingDetailStock] = useState(false);
 
   const openProductDetail = (product) => {
     const siteMatch = getProductById(product.id) || ORDERING_SITE_PRODUCTS.find(p => p.id === product.id) || product;
@@ -86,7 +87,27 @@ const Menu = () => {
       reviews: siteMatch.reviews || { rating: 4.8, count: 120, summary: 'Highly rated customer favorite.' }
     };
     setDetailProduct(merged);
+    setDetailStockValue(product.stock_quantity ?? 999);
     setActiveDetailImage(product.image_url || siteMatch.cardImage || siteMatch.image || '/bold-concentrate-bottle.png');
+  };
+
+  const handleSaveDetailStock = async (product) => {
+    const newStock = parseInt(detailStockValue, 10);
+    if (isNaN(newStock) || newStock < 0) {
+      toast.error('Please enter a valid stock quantity');
+      return;
+    }
+    try {
+      setIsSavingDetailStock(true);
+      await api.put(`/products/${product.id}`, { stock: newStock });
+      setProductsList(prev => prev.map(p => p.id === product.id ? { ...p, stock_quantity: newStock } : p));
+      setDetailProduct(prev => prev ? { ...prev, stock_quantity: newStock } : null);
+      toast.success(`Stock updated to ${newStock} units`);
+    } catch (err) {
+      toast.error(err.message || 'Failed to update stock');
+    } finally {
+      setIsSavingDetailStock(false);
+    }
   };
 
   // Inline editing states for stock & price
@@ -125,7 +146,7 @@ const Menu = () => {
     try {
       setIsLoading(true);
       const [prodRes, catRes, recipeRes, concRes, stockRes] = await Promise.all([
-        productService.getAll({ is_active: undefined }),
+        productService.getAll({ all: 'true', include_inactive: 'true' }),
         api.get('/products/categories').catch(() => null),
         menuRecipeService.getAll().catch(() => null),
         api.get('/products/concentrate-types').catch(() => null),
@@ -138,49 +159,54 @@ const Menu = () => {
       const concentrates = unwrapList(concRes);
       const stockItems = unwrapList(stockRes);
 
-      let nextProductsList = [];
-      if (AUTO_LIST_NEW_CRM_PRODUCTS_ON_WEBSITE && Array.isArray(prods) && prods.length > 0) {
-        const catalogBySlug = new Map(APPROVED_CATALOG_PRODUCTS.map((item) => [item.id, item]));
-        nextProductsList = prods.map((product) => {
-          const staticCatalogProduct = catalogBySlug.get(product.id);
-          return {
-            ...(staticCatalogProduct || {}),
-            ...product,
-            base_price: parseFloat(product.price ?? product.base_price ?? staticCatalogProduct?.base_price ?? 390) || 390,
-            category_name: product.category?.name || product.category || staticCatalogProduct?.category_name || 'Concentrate',
-            stock_quantity: product.stock ?? product.stock_quantity ?? 999,
-          };
-        });
-      } else {
-        const prodsById = new Map();
-        const prodsByName = new Map();
-        if (Array.isArray(prods)) {
-          prods.forEach(p => {
-            if (p.id) prodsById.set(p.id, p);
-            if (p.name) prodsByName.set(p.name.toLowerCase().trim(), p);
-          });
-        }
-
-        // Display ONLY the products that are listed on the website (APPROVED_CATALOG_PRODUCTS)
-        nextProductsList = APPROVED_CATALOG_PRODUCTS.map((websiteProd) => {
-          const backendMatch = prodsById.get(websiteProd.id) || prodsByName.get(websiteProd.name.toLowerCase().trim());
-          if (backendMatch) {
-            return {
-              ...websiteProd,
-              ...backendMatch,
-              id: websiteProd.id,
-              name: websiteProd.name,
-              image_url: websiteProd.image_url,
-              base_price: parseFloat(backendMatch.price ?? backendMatch.base_price ?? websiteProd.base_price) || websiteProd.base_price,
-              category_name: backendMatch.category?.name || backendMatch.category || websiteProd.category_name,
-              stock_quantity: backendMatch.stock ?? backendMatch.stock_quantity ?? websiteProd.stock_quantity,
-            };
-          }
-          return websiteProd;
+      const backendById = new Map();
+      const backendByName = new Map();
+      if (Array.isArray(prods)) {
+        prods.forEach((p) => {
+          if (p.id) backendById.set(p.id, p);
+          if (p.name) backendByName.set(p.name.toLowerCase().trim(), p);
         });
       }
 
-      setProductsList(nextProductsList);
+      // 1. Always include all 4 website catalog products with cover images and backend overrides
+      const catalogIds = new Set(APPROVED_CATALOG_PRODUCTS.map((p) => p.id));
+      const catalogList = APPROVED_CATALOG_PRODUCTS.map((websiteProd) => {
+        const backendMatch =
+          backendById.get(websiteProd.id) ||
+          backendByName.get(websiteProd.name.toLowerCase().trim());
+        if (backendMatch) {
+          return {
+            ...websiteProd,
+            ...backendMatch,
+            id: websiteProd.id,
+            name: websiteProd.name,
+            image_url: PRODUCT_THUMBNAILS[websiteProd.id] || websiteProd.image_url || backendMatch.image_url,
+            base_price: parseFloat(backendMatch.price ?? backendMatch.base_price ?? websiteProd.base_price) || websiteProd.base_price,
+            category_name: backendMatch.category?.name || backendMatch.category || websiteProd.category_name,
+            stock_quantity: backendMatch.stock ?? backendMatch.stock_quantity ?? websiteProd.stock_quantity ?? 999,
+            is_active: backendMatch.is_active !== undefined ? Boolean(backendMatch.is_active) : websiteProd.is_active,
+          };
+        }
+        return websiteProd;
+      });
+
+      // 2. Append any additional products created dynamically via CRM backend
+      if (Array.isArray(prods)) {
+        prods.forEach((p) => {
+          if (p.id && !catalogIds.has(p.id) && !APPROVED_CATALOG_PRODUCTS.some(acp => acp.name.toLowerCase().trim() === (p.name || '').toLowerCase().trim())) {
+            catalogList.push({
+              ...p,
+              base_price: parseFloat(p.price ?? p.base_price ?? 390) || 390,
+              category_name: p.category?.name || p.category || 'Concentrate',
+              stock_quantity: p.stock ?? p.stock_quantity ?? 999,
+              is_active: p.is_active !== undefined ? Boolean(p.is_active) : true,
+              image_url: p.image_url || '/images/products/BoldConcentrate325.png',
+            });
+          }
+        });
+      }
+
+      setProductsList(catalogList);
       setCategoriesList(cats || []);
       setRecipesList(recipes || []);
       setConcentrateTypes(concentrates || []);
@@ -726,9 +752,49 @@ const Menu = () => {
                     <option value="addon">Add-on</option>
                   </select>
                 </div>
-                <div className="form-group">
-                  <label>Image URL</label>
-                  <input type="text" value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
+                <div className="form-group full-width">
+                  <label>Product Image File (Upload)</label>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          toast.loading('Uploading image to server...', { id: 'crm-prod-upload' });
+                          const uploadData = new FormData();
+                          uploadData.append('file', file);
+                          uploadData.append('folder', 'products');
+                          const res = await api.post('/upload/s3', uploadData);
+                          const returnedUrl = res?.data?.url || res?.url;
+                          if (returnedUrl) {
+                            setFormData(prev => ({ ...prev, image_url: returnedUrl }));
+                            toast.success('Image uploaded! Saved to product image_url.', { id: 'crm-prod-upload' });
+                          } else {
+                            toast.error('Upload succeeded but no image URL was returned.', { id: 'crm-prod-upload' });
+                          }
+                        } catch (err) {
+                          toast.error(`Upload failed: ${err.message}`, { id: 'crm-prod-upload' });
+                        }
+                      }}
+                      style={{ fontSize: '13px', padding: '6px', background: 'var(--c-surface)', border: '1px solid var(--c-border)', borderRadius: '6px' }}
+                    />
+                    {formData.image_url && (
+                      <img 
+                        src={formData.image_url.startsWith('http') ? formData.image_url : `http://localhost:3000${formData.image_url}`} 
+                        alt="Preview" 
+                        style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #CBD5E1' }} 
+                      />
+                    )}
+                  </div>
+                  <input 
+                    type="text" 
+                    placeholder="Or enter image URL manually (e.g. /uploads/products/...)" 
+                    value={formData.image_url} 
+                    onChange={e => setFormData({...formData, image_url: e.target.value})} 
+                    style={{ marginTop: '8px' }} 
+                  />
                 </div>
                 <div className="form-group">
                   <label>Status</label>
@@ -785,15 +851,6 @@ const Menu = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <a
-                  href={`/store/catalog`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="zenith-btn-outline"
-                  style={{ textDecoration: 'none', fontSize: '13px', padding: '6px 12px' }}
-                >
-                  <ExternalLink size={14} style={{ marginRight: '4px' }} /> Store Page
-                </a>
                 <button className="zenith-action-trigger" onClick={() => setDetailProduct(null)}>
                   <X size={20} />
                 </button>
@@ -821,6 +878,42 @@ const Menu = () => {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Size Varieties Display */}
+              <div>
+                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
+                  Available Varieties & Sizes
+                </h4>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                  {detailProduct.sizes && detailProduct.sizes.length > 0 ? (
+                    detailProduct.sizes.map((s) => (
+                      <span
+                        key={s.id}
+                        style={{
+                          padding: '6px 14px',
+                          background: '#F1F5F9',
+                          border: '1px solid #CBD5E1',
+                          borderRadius: '6px',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          color: '#1E293B',
+                        }}
+                      >
+                        {s.label} {s.modifier ? `(+₹${s.modifier})` : ''}
+                      </span>
+                    ))
+                  ) : (
+                    <>
+                      <span style={{ padding: '6px 14px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}>
+                        325 ml
+                      </span>
+                      <span style={{ padding: '6px 14px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}>
+                        1 Liter
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Tagline & Description */}
@@ -855,8 +948,35 @@ const Menu = () => {
                 </div>
               </div>
 
+              {/* Editable Stock Section */}
+              <div style={{ marginTop: '16px', padding: '14px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: '#0F172A', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  Inventory Stock Management
+                </h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', color: '#64748B', display: 'block', marginBottom: '4px' }}>Available Stock Units</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={detailStockValue}
+                      onChange={(e) => setDetailStockValue(e.target.value)}
+                      style={{ width: '100%', padding: '8px 12px', fontSize: '15px', fontWeight: 700, border: '1px solid #CBD5E1', borderRadius: '6px', outline: 'none', background: '#FFFFFF' }}
+                    />
+                  </div>
+                  <Button
+                    variant="primary"
+                    onClick={() => handleSaveDetailStock(detailProduct)}
+                    disabled={isSavingDetailStock}
+                    style={{ marginTop: '18px', padding: '8px 16px', fontSize: '13px' }}
+                  >
+                    {isSavingDetailStock ? 'Updating...' : 'Update Stock'}
+                  </Button>
+                </div>
+              </div>
+
               {/* Specification Grid */}
-              <div>
+              <div style={{ marginTop: '16px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--c-espresso)', marginBottom: '12px' }}>
                   Product Specifications
                 </h3>
@@ -880,10 +1000,6 @@ const Menu = () => {
                   <div className="drawer-spec-card">
                     <div className="drawer-spec-label">Recommended Servings</div>
                     <div className="drawer-spec-value">{detailProduct.servings || '4-6 serves per bottle'}</div>
-                  </div>
-                  <div className="drawer-spec-card">
-                    <div className="drawer-spec-label">Stock Quantity</div>
-                    <div className="drawer-spec-value">{detailProduct.stock_quantity ?? 999} units</div>
                   </div>
                 </div>
               </div>

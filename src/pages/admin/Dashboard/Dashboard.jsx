@@ -322,7 +322,21 @@ const Dashboard = () => {
                     <td><span className="terminal-badge">{order.shipping_address?.location_name || 'Not specified'}</span></td>
                     <td className="products-cell">
                       <Coffee size={14} className="cell-icon" />
-                      <span>{(order.items || []).map((item) => `${getItemName(item)} ×${item.quantity || 1}`).join(', ') || 'No item details'}</span>
+                      <span>
+                        {(() => {
+                          const items = order.items || [];
+                          if (items.length > 0) {
+                            const first = items[0];
+                            const firstStr = `${getItemName(first)} ×${first.quantity || 1}`;
+                            return items.length > 1 ? `${firstStr}...` : firstStr;
+                          }
+                          if (order.items_summary) {
+                            const parts = order.items_summary.split(', ');
+                            return parts.length > 1 ? `${parts[0]}...` : order.items_summary;
+                          }
+                          return 'No item details';
+                        })()}
+                      </span>
                     </td>
                     <td><strong>{formatCurrency(getAmount(order))}</strong></td>
                     <td>{getStatusBadge(order.status)}</td>
