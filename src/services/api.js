@@ -108,7 +108,7 @@ class ApiClient {
         let message = errData.message || errData.error || `Request failed with status ${response.status}`;
         
         // If it is a validation error containing field details, construct a friendly message
-        const valErrors = errData.errors || errData.error;
+        const valErrors = errData.details || errData.errors || errData.error;
         if (Array.isArray(valErrors) && valErrors.length > 0) {
           const detail = valErrors.map(e => `${e.field}: ${e.message}`).join(', ');
           message = `Validation failed (${detail})`;
