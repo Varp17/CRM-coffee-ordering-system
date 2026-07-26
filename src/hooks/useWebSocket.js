@@ -77,13 +77,15 @@ export const useWebSocket = (roleParam) => {
                   id: `order-create-${Date.now()}`,
                   type: 'new_order',
                   title: 'New Order Received',
-                  message: `Order #${payload.order_number || payload.id} placed.`,
+                  message: `Order #${payload?.order_number || payload?.id || 'N/A'} placed.`,
                   created_at: new Date().toISOString()
                 });
                 fetchOrders();
                 if (role === 'barista') {
                   fetchBaristaQueue();
                 }
+                window.dispatchEvent(new CustomEvent('orders:updated'));
+                window.dispatchEvent(new CustomEvent('dashboard:updated'));
                 break;
 
               case 'KOT_UPDATE':
@@ -93,13 +95,25 @@ export const useWebSocket = (roleParam) => {
                   id: `order-status-${Date.now()}`,
                   type: 'order_updated',
                   title: 'Order Status Changed',
-                  message: `Order #${payload.order_number || payload.id || 'N/A'} is now ${payload.status || payload.toStatus || 'updated'}.`,
+                  message: `Order #${payload?.order_number || payload?.id || 'N/A'} is now ${payload?.status || payload?.toStatus || 'updated'}.`,
                   created_at: new Date().toISOString()
                 });
                 fetchOrders();
                 if (role === 'barista') {
                   fetchBaristaQueue();
                 }
+                window.dispatchEvent(new CustomEvent('orders:updated'));
+                window.dispatchEvent(new CustomEvent('dashboard:updated'));
+                break;
+
+              case 'RECIPE_UPDATED':
+              case 'recipe.updated':
+                window.dispatchEvent(new CustomEvent('recipes:updated'));
+                break;
+
+              case 'PRODUCT_UPDATED':
+              case 'product.updated':
+                window.dispatchEvent(new CustomEvent('products:updated'));
                 break;
 
               case 'STOCK_ALERT':
@@ -109,9 +123,10 @@ export const useWebSocket = (roleParam) => {
                   id: `stock-${Date.now()}`,
                   type: 'low_stock',
                   title: 'Low Stock Alert',
-                  message: payload.message || `${payload.ingredient_name || 'Ingredient'} is running low.`,
+                  message: payload?.message || `${payload?.ingredient_name || 'Ingredient'} is running low.`,
                   created_at: new Date().toISOString()
                 });
+                window.dispatchEvent(new CustomEvent('products:updated'));
                 break;
 
               case 'ERROR':
@@ -119,6 +134,9 @@ export const useWebSocket = (roleParam) => {
                 break;
 
               default:
+                window.dispatchEvent(new CustomEvent('orders:updated'));
+                window.dispatchEvent(new CustomEvent('recipes:updated'));
+                window.dispatchEvent(new CustomEvent('products:updated'));
                 break;
             }
           } catch (err) {
@@ -129,9 +147,8 @@ export const useWebSocket = (roleParam) => {
         ws.onclose = (e) => {
           if (!isMounted) return;
           console.warn('[WS] Closed:', e.reason);
-          // Auto-reconnect with backoff
           setTimeout(() => {
-            if (isMounted && localStorage.getItem('dc_token')) {
+            if (isMounted) {
               connect();
             }
           }, 5000);
@@ -147,9 +164,18 @@ export const useWebSocket = (roleParam) => {
       connect();
     }
 
+    // 3. Asynchronous background poll every 10 seconds to keep all pages synced without manual refresh
+    const bgSyncInterval = setInterval(() => {
+      window.dispatchEvent(new CustomEvent('orders:updated'));
+      window.dispatchEvent(new CustomEvent('recipes:updated'));
+      window.dispatchEvent(new CustomEvent('products:updated'));
+      window.dispatchEvent(new CustomEvent('support:updated'));
+    }, 10000);
+
     return () => {
       isMounted = false;
       clearInterval(timerInterval);
+      clearInterval(bgSyncInterval);
       if (wsRef.current) {
         const ws = wsRef.current;
         ws.onclose = null;

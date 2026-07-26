@@ -51,9 +51,10 @@ class ApiClient {
   async request(endpoint, options = {}, hasRetriedAuth = false) {
     const url = `${this.baseUrl}${endpoint}`;
     const token = this.getToken();
+    const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
 
     const headers = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(options.headers || {}),
     };
 
@@ -75,7 +76,9 @@ class ApiClient {
 
     // Don't send body for GET/HEAD
     if (options.body && config.method !== 'GET' && config.method !== 'HEAD') {
-      config.body = typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
+      config.body = isFormData
+        ? options.body
+        : (typeof options.body === 'string' ? options.body : JSON.stringify(options.body));
     }
 
     try {

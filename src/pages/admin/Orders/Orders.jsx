@@ -451,6 +451,13 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
+    window.addEventListener('orders:updated', fetchOrders);
+    window.addEventListener('focus', fetchOrders);
+
+    return () => {
+      window.removeEventListener('orders:updated', fetchOrders);
+      window.removeEventListener('focus', fetchOrders);
+    };
   }, [fetchOrders]);
 
   useEffect(() => {
@@ -860,7 +867,7 @@ const Orders = () => {
                   })();
 
                   return (
-                    <tr key={order.id} className="icit-row">
+                    <tr key={order.id} className="icit-row" style={{ cursor: 'pointer' }} onClick={() => openDetail(order)}>
                       {/* Order # + Combo Tag */}
                       <td className="icit-td">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
@@ -874,7 +881,7 @@ const Orders = () => {
                       </td>
 
                       {/* Customer (Avatar + Name + Email) */}
-                      <td className="icit-td" style={{ cursor: 'pointer' }} onClick={() => openDetail(order)}>
+                      <td className="icit-td">
                         <div className="icit-customer-cell">
                           <div className="icit-avatar" style={{ backgroundColor: avatar.bg, color: avatar.text }}>
                             {(order.customer_name || 'G').charAt(0).toUpperCase()}
@@ -892,7 +899,7 @@ const Orders = () => {
                       </td>
 
                       {/* Status Badge (smooth portal dropdown picker with confirmation step) */}
-                      <td className="icit-td">
+                      <td className="icit-td" onClick={(e) => e.stopPropagation()}>
                         <StatusPickerControl
                           order={order}
                           isOpen={openStatusId === order.id}
@@ -922,7 +929,7 @@ const Orders = () => {
                       </td>
 
                       {/* Actions (sticky right) */}
-                      <td className="icit-td icit-td-sticky">
+                      <td className="icit-td icit-td-sticky" onClick={(e) => e.stopPropagation()}>
                         <div className="icit-actions">
                           {getNextStatus(order.status) && (
                             <button
@@ -989,185 +996,263 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* ─── Order Detail Modal ─── */}
-      {showDetailModal && selectedOrder && (
-        <div className="order-detail-modal-overlay" onMouseDown={() => setShowDetailModal(false)}>
-          <section
-            className="order-detail-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="order-detail-modal-title"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <div className="order-detail-modal__header">
-              <div>
-                <h3 id="order-detail-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  Order #{selectedOrder.order_number || selectedOrder.id}
+      {/* ── Full-Screen Order Detail Page (portal) ── */}
+      {showDetailModal && selectedOrder && createPortal(
+        <div className="odp-overlay" onClick={() => setShowDetailModal(false)}>
+          <div className="odp-page" onClick={(e) => e.stopPropagation()}>
+
+            {/* ── Top Bar ── */}
+            <div className="odp-topbar">
+              <div className="odp-topbar-left">
+                <button className="odp-back-btn" onClick={() => setShowDetailModal(false)}>
+                  <X size={16} /> Back to Orders
+                </button>
+                <div className="odp-topbar-title">
+                  <span className="odp-order-num">#{selectedOrder.order_number || selectedOrder.id?.substring(0, 8)}</span>
                   {isComboOrder(selectedOrder) && (
-                    <span className="combo-tag-badge" style={{ fontSize: '12px', padding: '3px 10px' }}>
-                      <Sparkles size={13} /> Custom Combo Box
+                    <span className="combo-tag-badge" style={{ fontSize: '12px' }}>
+                      <Sparkles size={12} /> Combo
                     </span>
                   )}
-                </h3>
-                <p>
-                  {selectedOrder.customer_name || 'Guest'} ·{' '}
-                  {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : ''}
-                </p>
+                </div>
+                <span className="odp-date-stamp">
+                  {selectedOrder.created_at
+                    ? new Date(selectedOrder.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                    : ''}
+                </span>
               </div>
-              <button className="panel-close-btn" onClick={() => setShowDetailModal(false)} aria-label="Close order details">
-                <X size={16} />
-              </button>
+              <div className="odp-topbar-right">
+                {/* Status badge */}
+                {(() => {
+                  const st = STATUS_STYLES[selectedOrder.status?.toLowerCase()] || STATUS_STYLES.refunded;
+                  return (
+                    <span className="odp-status-chip" style={{ background: st.bg, color: st.text, border: `1px solid ${st.border}` }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: st.dot, display: 'inline-block' }} />
+                      {formatStatusLabel(selectedOrder.status)}
+                    </span>
+                  );
+                })()}
+                {/* Quick action */}
+                {getNextStatus(selectedOrder.status) && (
+                  <button
+                    className="odp-action-btn"
+                    style={{ background: getActionColor(selectedOrder.status) }}
+                    onClick={() => requestStatusChange(selectedOrder.id, getNextStatus(selectedOrder.status))}
+                  >
+                    {selectedOrder.status === 'pending' && <Play size={14} />}
+                    {(selectedOrder.status === 'in_progress' || selectedOrder.status === 'ready') && <CheckCircle size={14} />}
+                    {getActionLabel(selectedOrder.status)}
+                  </button>
+                )}
+                {selectedOrder.status === 'completed' && (
+                  <button className="odp-print-btn" onClick={() => toast.success('Invoice generated for #' + (selectedOrder.order_number || selectedOrder.id))}>
+                    <Printer size={14} /> Print Invoice
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="order-detail-modal__body">
-              <div className="detail-grid">
-                <div className="detail-section">
-                  <h4>Customer Information</h4>
-                  <div className="detail-row">
-                    <span className="detail-label">Name</span>
-                    <span>{selectedOrder.customer_name || 'Guest'}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Email</span>
-                    <span>{selectedOrder.customer_email || 'N/A'}</span>
-                  </div>
-                </div>
+            {/* ── Body ── */}
+            <div className="odp-body">
 
-                <div className="detail-section">
-                  <h4>Order Details</h4>
-                  <div className="detail-row">
-                    <span className="detail-label">Type</span>
-                    <span>{isComboOrder(selectedOrder) ? '✨ Custom Combo Box' : 'Standard Order'}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Status</span>
-                    <span className={`status-badge status-${selectedOrder.status?.toLowerCase()}`}>{selectedOrder.status}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Placed</span>
-                    <span>{new Date(selectedOrder.created_at).toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-              </div>
+              {/* LEFT COLUMN */}
+              <div className="odp-left">
 
-              {/* Timeline Section */}
-              <div className="detail-section timeline-section" style={{ marginTop: '20px', padding: '16px', backgroundColor: '#F8FAFC', borderRadius: '8px' }}>
-                <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🧭 Order Progress</h4>
-                <div className="fulfillment-timeline" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', padding: '10px 0' }}>
-                  <div style={{ position: 'absolute', top: '20px', left: '5%', right: '5%', height: '2px', backgroundColor: '#E2E8F0', zIndex: 1 }} />
-                  {['Placed', 'Paid', 'Preparing', 'Ready', 'Delivered'].map((step, i) => {
-                    const timestamps = selectedOrder.timestamps || {};
-                    const keys = [true, timestamps.confirmed_at, timestamps.in_progress_at, timestamps.ready_at, timestamps.completed_at];
-                    const done = !!keys[i];
-                    return (
-                      <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20%', zIndex: 2, textAlign: 'center' }}>
-                        <div
-                          style={{
-                            width: '24px',
-                            height: '24px',
-                            borderRadius: '50%',
-                            backgroundColor: done ? '#007AFF' : '#E2E8F0',
-                            color: 'white',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '0.75rem',
-                          }}
-                        >
-                          {done ? '✓' : i + 1}
+                {/* Customer Card */}
+                <div className="odp-card">
+                  <div className="odp-card-header">👤 Customer</div>
+                  <div className="odp-card-body">
+                    {(() => {
+                      const av = getAvatarColor(selectedOrder.customer_name);
+                      return (
+                        <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 16 }}>
+                          <div style={{ width: 48, height: 48, borderRadius: '50%', background: av.bg, color: av.text, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 800, flexShrink: 0 }}>
+                            {(selectedOrder.customer_name || 'G').charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p style={{ fontWeight: 700, fontSize: 16, color: '#0F172A', margin: 0 }}>{selectedOrder.customer_name || 'Guest'}</p>
+                            <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>{selectedOrder.customer_email || 'No email'}</p>
+                            {selectedOrder.customer_phone && (
+                              <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>📞 {selectedOrder.customer_phone}</p>
+                            )}
+                          </div>
                         </div>
-                        <span style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '6px' }}>{step}</span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })()}
+                  </div>
                 </div>
+
+                {/* Order Progress Timeline */}
+                <div className="odp-card">
+                  <div className="odp-card-header">🧭 Order Progress</div>
+                  <div className="odp-card-body">
+                    <div className="odp-timeline">
+                      {[
+                        { label: 'Placed', icon: '📋', done: true },
+                        { label: 'Confirmed', icon: '✅', done: !!selectedOrder.timestamps?.confirmed_at || selectedOrder.status !== 'pending' },
+                        { label: 'Preparing', icon: '☕', done: ['in_progress','ready','completed'].includes(selectedOrder.status) },
+                        { label: 'Ready', icon: '🔔', done: ['ready','completed'].includes(selectedOrder.status) },
+                        { label: 'Delivered', icon: '🎉', done: selectedOrder.status === 'completed' },
+                      ].map((step, i) => (
+                        <div key={step.label} className={`odp-timeline-step ${step.done ? 'done' : ''}`}>
+                          <div className="odp-timeline-icon">{step.done ? '✓' : step.icon}</div>
+                          <span className="odp-timeline-label">{step.label}</span>
+                          {i < 4 && <div className={`odp-timeline-line ${step.done ? 'done' : ''}`} />}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delivery / Payment Info */}
+                <div className="odp-card">
+                  <div className="odp-card-header">📦 Delivery & Payment</div>
+                  <div className="odp-card-body">
+                    <div className="odp-info-rows">
+                      <div className="odp-info-row">
+                        <span className="odp-info-label">Payment</span>
+                        <span className="odp-info-val" style={{ color: selectedOrder.payment_status === 'paid' ? '#16A34A' : '#D97706', fontWeight: 700 }}>
+                          {selectedOrder.payment_status || 'N/A'}
+                        </span>
+                      </div>
+                      <div className="odp-info-row">
+                        <span className="odp-info-label">Method</span>
+                        <span className="odp-info-val">{selectedOrder.payment_method || 'Online'}</span>
+                      </div>
+                      {selectedOrder.shipping_address && (
+                        <div className="odp-info-row" style={{ alignItems: 'flex-start' }}>
+                          <span className="odp-info-label">Address</span>
+                          <span className="odp-info-val" style={{ textAlign: 'right' }}>
+                            {typeof selectedOrder.shipping_address === 'string'
+                              ? selectedOrder.shipping_address
+                              : [
+                                  selectedOrder.shipping_address.line1 || selectedOrder.shipping_address.address,
+                                  selectedOrder.shipping_address.city,
+                                  selectedOrder.shipping_address.state,
+                                  selectedOrder.shipping_address.pincode || selectedOrder.shipping_address.zip,
+                                ].filter(Boolean).join(', ')
+                            }
+                          </span>
+                        </div>
+                      )}
+                      {selectedOrder.notes && (
+                        <div className="odp-info-row" style={{ alignItems: 'flex-start' }}>
+                          <span className="odp-info-label">Notes</span>
+                          <span className="odp-info-val" style={{ color: '#7C3AED', fontStyle: 'italic', textAlign: 'right' }}>
+                            {selectedOrder.notes}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
-              {selectedOrder.items && (
-                <div className="detail-section" style={{ marginTop: '24px' }}>
-                  <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '12px', letterSpacing: '0.04em' }}>
-                    Items Ordered ({selectedOrder.items.length})
-                  </h4>
-                  <div className="detail-items-scroll">
-                    <table className="table detail-items-table">
-                      <thead>
-                        <tr>
-                          <th style={{ fontSize: '13px', fontWeight: 700, color: '#475569', padding: '10px 12px' }}>Item</th>
-                          <th style={{ fontSize: '13px', fontWeight: 700, color: '#475569', textAlign: 'center', padding: '10px 12px' }}>Qty</th>
-                          <th style={{ fontSize: '13px', fontWeight: 700, color: '#475569', textAlign: 'right', padding: '10px 12px' }}>Price</th>
-                          <th style={{ fontSize: '13px', fontWeight: 700, color: '#475569', textAlign: 'right', padding: '10px 12px' }}>Subtotal</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedOrder.items.map((item, i) => {
-                          const displayName = item.name || item.item_name || item.product?.name || item.Product?.name || item.title || (item.product_id ? `Product (${item.product_id})` : `Coffee Item #${i + 1}`);
-                          const qty = item.quantity || item.qty || 1;
-                          const price = item.unit_price || item.price || 0;
-                          const subtotal = (item.line_total || price * qty);
-                          const isComboItem = item.is_combo || item.isCombo || (displayName && displayName.toLowerCase().includes('combo'));
-
-                          return (
-                            <tr key={i} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                              <td style={{ padding: '12px', fontSize: '15px', fontWeight: 600, color: '#0F172A' }}>
-                                <span>{displayName}</span>
-                                {isComboItem && (
-                                  <span className="combo-tag-badge" style={{ marginLeft: '8px', fontSize: '11px' }}>
-                                    <Sparkles size={11} /> Combo
-                                  </span>
-                                )}
-                                {item.size && (
-                                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748B', display: 'block', marginTop: '2px' }}>
-                                    Size: {item.size}
-                                  </span>
-                                )}
-                              </td>
-                              <td style={{ padding: '12px', textAlign: 'center', fontSize: '15px', fontWeight: 600, color: '#334155' }}>
-                                {qty}
-                              </td>
-                              <td style={{ padding: '12px', textAlign: 'right', fontSize: '15px', fontWeight: 500, color: '#475569' }}>
-                                {formatCurrency(price)}
-                              </td>
-                              <td style={{ padding: '12px', textAlign: 'right', fontSize: '15px', fontWeight: 700, color: '#0F172A' }}>
-                                {formatCurrency(subtotal)}
+              {/* RIGHT COLUMN — Items Table */}
+              <div className="odp-right">
+                <div className="odp-card odp-items-card">
+                  <div className="odp-card-header">
+                    🛒 Items Ordered
+                    <span className="odp-item-count">{(selectedOrder.items || []).length} item{(selectedOrder.items || []).length !== 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="odp-card-body" style={{ padding: 0 }}>
+                    {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                      <table className="odp-items-table">
+                        <thead>
+                          <tr>
+                            <th>Item</th>
+                            <th style={{ textAlign: 'center' }}>Qty</th>
+                            <th style={{ textAlign: 'right' }}>Price</th>
+                            <th style={{ textAlign: 'right' }}>Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedOrder.items.map((item, i) => {
+                            const name = item.name || item.item_name || item.product?.name || item.title || `Item #${i + 1}`;
+                            const qty = item.quantity || item.qty || 1;
+                            const price = item.unit_price || item.price || 0;
+                            const subtotal = item.line_total || price * qty;
+                            const isComboItem = item.is_combo || item.isCombo || name.toLowerCase().includes('combo');
+                            return (
+                              <tr key={i}>
+                                <td>
+                                  <div className="odp-item-name">
+                                    {name}
+                                    {isComboItem && (
+                                      <span className="combo-tag-badge" style={{ fontSize: 11, marginLeft: 6 }}>
+                                        <Sparkles size={10} /> Combo
+                                      </span>
+                                    )}
+                                  </div>
+                                  {item.size && <div className="odp-item-meta">Size: {item.size}</div>}
+                                  {item.addons?.length > 0 && (
+                                    <div className="odp-item-meta">+ {item.addons.map(a => a.name).join(', ')}</div>
+                                  )}
+                                </td>
+                                <td style={{ textAlign: 'center', fontWeight: 700, color: '#334155' }}>×{qty}</td>
+                                <td style={{ textAlign: 'right', color: '#64748B' }}>{formatCurrency(price)}</td>
+                                <td style={{ textAlign: 'right', fontWeight: 700, color: '#0F172A' }}>{formatCurrency(subtotal)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                        <tfoot>
+                          {selectedOrder.discount_amount > 0 && (
+                            <tr>
+                              <td colSpan="3" style={{ textAlign: 'right', color: '#64748B', paddingRight: 16 }}>Discount</td>
+                              <td style={{ textAlign: 'right', color: '#16A34A', fontWeight: 700 }}>
+                                -{formatCurrency(selectedOrder.discount_amount)}
                               </td>
                             </tr>
-                          );
-                        })}
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <td colSpan="3" style={{ textAlign: 'right', paddingRight: '16px', fontSize: '16px', fontWeight: 700, color: '#0F172A', paddingTop: '14px' }}>
-                            Grand Total
-                          </td>
-                          <td style={{ textAlign: 'right', fontSize: '18px', fontWeight: 800, color: '#0F172A', paddingTop: '14px' }}>
-                            {formatCurrency(selectedOrder.total_amount || selectedOrder.total)}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                          )}
+                          {selectedOrder.delivery_charge > 0 && (
+                            <tr>
+                              <td colSpan="3" style={{ textAlign: 'right', color: '#64748B', paddingRight: 16 }}>Delivery</td>
+                              <td style={{ textAlign: 'right', color: '#475569', fontWeight: 600 }}>
+                                +{formatCurrency(selectedOrder.delivery_charge)}
+                              </td>
+                            </tr>
+                          )}
+                          <tr className="odp-total-row">
+                            <td colSpan="3">Grand Total</td>
+                            <td>{formatCurrency(selectedOrder.total_amount || selectedOrder.total)}</td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    ) : (
+                      <div style={{ padding: '32px', textAlign: 'center', color: '#94A3B8' }}>
+                        No item details available for this order.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Change Status from modal */}
+                  <div className="odp-status-footer">
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#64748B' }}>Update Status:</span>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {STATUS_OPTIONS.filter(s => s !== selectedOrder.status).map(s => {
+                        const st = STATUS_STYLES[s] || STATUS_STYLES.refunded;
+                        return (
+                          <button
+                            key={s}
+                            className="odp-status-opt"
+                            style={{ background: st.bg, color: st.text, border: `1px solid ${st.border}` }}
+                            onClick={() => requestStatusChange(selectedOrder.id, s)}
+                          >
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: st.dot, display: 'inline-block' }} />
+                            {formatStatusLabel(s)}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-
-            <div className="order-detail-modal__footer">
-              {getNextStatus(selectedOrder.status) && (
-                <Button variant="primary" onClick={() => handleStatusChange(selectedOrder.id, getNextStatus(selectedOrder.status))}>
-                  {getActionLabel(selectedOrder.status)}
-                </Button>
-              )}
-              {selectedOrder.status === 'completed' && (
-                <Button variant="outline" onClick={() => toast.success('Invoice generated for #' + (selectedOrder.order_number || selectedOrder.id))}>
-                  Print Invoice
-                </Button>
-              )}
-              <Button variant="outline" onClick={() => toast.success('Invoice generated')}>
-                Invoice
-              </Button>
-            </div>
-          </section>
-        </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       {/* Step Confirmation Modal ("Are you sure?") */}

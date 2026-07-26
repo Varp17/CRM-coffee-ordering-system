@@ -26,16 +26,34 @@ import {
   rejectRecipeLocally,
 } from '../../../utils/localRecipeSync';
 
+const BACKEND_ORIGIN =
+  import.meta.env.VITE_API_URL?.replace(/\/api\/v1\/?$/, '') ||
+  (window.location.hostname === 'localhost' ? 'http://localhost:3000' : '');
+
 const ORDERING_WEBSITE_ORIGIN =
   import.meta.env.VITE_ORDERING_WEBSITE_URL ||
   (window.location.hostname === 'localhost'
     ? 'http://localhost:5176'
     : 'https://coffee-ordering-kiosk.vercel.app');
 
-const resolveWebsiteMedia = (source) => {
-  if (!source) return '';
-  if (/^https?:\/\//i.test(source)) return source;
-  return `${ORDERING_WEBSITE_ORIGIN}${source.startsWith('/') ? source : `/${source}`}`;
+const getFallbackImage = (concentrate) => {
+  const c = (concentrate || '').toLowerCase();
+  if (c.includes('kappi') || c.includes('kaapi')) return '/images/Kappi-concentrate.png';
+  if (c.includes('classic')) return '/images/Classic-concentrate.png';
+  return '/bold-concentrate-bottle.png';
+};
+
+const resolveWebsiteMedia = (source, concentrate) => {
+  if (!source || source === 'null' || source === 'undefined') {
+    return getFallbackImage(concentrate);
+  }
+  if (/^https?:\/\//i.test(source)) {
+    return source;
+  }
+  if (source.startsWith('/uploads/')) {
+    return `${BACKEND_ORIGIN}${source}`;
+  }
+  return source.startsWith('/') ? source : `/${source}`;
 };
 
 const Recipes = () => {
@@ -78,7 +96,7 @@ const Recipes = () => {
               if (typeof s === 'string') return { title: `Step ${idx + 1}`, copy: s };
               return { title: s.title || `Step ${idx + 1}`, copy: s.copy || s.title || '' };
             }) : [],
-            image: resolveWebsiteMedia(item.image),
+            image: resolveWebsiteMedia(item.image, item.concentrate),
           }));
         }
       } catch {
@@ -424,7 +442,8 @@ const Recipes = () => {
                 src={selectedRecipe.image} 
                 alt={selectedRecipe.name} 
                 onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80';
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = getFallbackImage(selectedRecipe.concentrate);
                 }}
               />
               <span className="ai-note">*Illustrative visual presentation</span>
@@ -637,7 +656,7 @@ const Recipes = () => {
                     alt={recipe.name} 
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = `${ORDERING_WEBSITE_ORIGIN}/images/georgesso-hero.png`;
+                      e.currentTarget.src = getFallbackImage(recipe.concentrate);
                     }}
                   />
                   <span className={`concentrate-badge ${getConcentrateBadgeClass(recipe.concentrate)}`}>

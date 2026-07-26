@@ -65,6 +65,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchOrders();
+    window.addEventListener('dashboard:updated', fetchOrders);
+    window.addEventListener('orders:updated', fetchOrders);
+    window.addEventListener('focus', fetchOrders);
+
+    return () => {
+      window.removeEventListener('dashboard:updated', fetchOrders);
+      window.removeEventListener('orders:updated', fetchOrders);
+      window.removeEventListener('focus', fetchOrders);
+    };
   }, [fetchOrders]);
 
   const metrics = useMemo(() => {

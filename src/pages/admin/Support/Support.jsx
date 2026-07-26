@@ -91,6 +91,13 @@ const Support = () => {
 
   useEffect(() => {
     loadAll();
+    window.addEventListener('support:updated', loadAll);
+    window.addEventListener('focus', loadAll);
+
+    return () => {
+      window.removeEventListener('support:updated', loadAll);
+      window.removeEventListener('focus', loadAll);
+    };
   }, []);
 
   const handleStatusUpdate = async (id, newStatus) => {

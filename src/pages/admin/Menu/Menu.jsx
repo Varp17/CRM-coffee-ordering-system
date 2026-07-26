@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import './Menu.css';
 import Button from '../../../components/Button/Button';
 import { productService } from '../../../services/products';
@@ -63,6 +64,7 @@ const Menu = () => {
 
   // Dropdown & Modal & Drawer States
   const [activeDropdownId, setActiveDropdownId] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -231,6 +233,17 @@ const Menu = () => {
 
   useEffect(() => {
     loadProductsAndCategories();
+    window.addEventListener('products:updated', loadProductsAndCategories);
+    window.addEventListener('recipes:updated', loadProductsAndCategories);
+    window.addEventListener('focus', loadProductsAndCategories);
+    window.addEventListener('storage', loadProductsAndCategories);
+
+    return () => {
+      window.removeEventListener('products:updated', loadProductsAndCategories);
+      window.removeEventListener('recipes:updated', loadProductsAndCategories);
+      window.removeEventListener('focus', loadProductsAndCategories);
+      window.removeEventListener('storage', loadProductsAndCategories);
+    };
   }, []);
 
   const categories = useMemo(() => {
@@ -644,36 +657,25 @@ const Menu = () => {
                           </span>
                         )}
                       </td>
-                      <td style={{ position: 'relative' }}>
+                      <td>
                         <button 
                           className="zenith-action-trigger"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setActiveDropdownId(activeDropdownId === product.id ? null : product.id);
+                            if (activeDropdownId === product.id) {
+                              setActiveDropdownId(null);
+                            } else {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setDropdownPosition({
+                                top: rect.bottom + 6,
+                                left: rect.right - 180,
+                              });
+                              setActiveDropdownId(product.id);
+                            }
                           }}
                         >
                           <MoreHorizontal className="w-4 h-4" />
                         </button>
-                        
-                        {activeDropdownId === product.id && (
-                          <>
-                            <div className="zenith-dropdown-backdrop" onClick={() => setActiveDropdownId(null)} />
-                            <div className="zenith-dropdown-menu">
-                              <button onClick={() => { setActiveDropdownId(null); openProductDetail(product); }}>View Product Page</button>
-                              {userRole === 'super_admin' && (
-                                <>
-                                  <button onClick={() => { setActiveDropdownId(null); openEditModal(product); }}>Edit Details</button>
-                                  <button onClick={() => { setActiveDropdownId(null); toggleStatus(product); }}>
-                                    {product.is_active ? 'Mark Inactive' : 'Mark Active'}
-                                  </button>
-                                </>
-                              )}
-                              {userRole !== 'super_admin' && (
-                                <button disabled style={{ color: 'var(--color-text-secondary)' }}>View Only</button>
-                              )}
-                            </div>
-                          </>
-                        )}
                       </td>
                     </tr>
                   ))
@@ -687,6 +689,42 @@ const Menu = () => {
       {activeTab === 'recipes' && <MenuTab />}
 
       {activeTab === 'ingredients' && <Ingredients />}
+
+      {/* ── Fixed-position product action dropdown — rendered via portal into document.body ── */}
+      {activeDropdownId && createPortal((() => {
+        const activeProduct = filteredProducts.find(p => p.id === activeDropdownId);
+        if (!activeProduct) return null;
+        return (
+          <>
+            <div
+              style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+              onClick={() => setActiveDropdownId(null)}
+            />
+            <div
+              className="zenith-dropdown-menu"
+              style={{
+                position: 'fixed',
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                zIndex: 9999,
+              }}
+            >
+              <button onClick={() => { setActiveDropdownId(null); openProductDetail(activeProduct); }}>View Product Page</button>
+              {userRole === 'super_admin' && (
+                <>
+                  <button onClick={() => { setActiveDropdownId(null); openEditModal(activeProduct); }}>Edit Details</button>
+                  <button onClick={() => { setActiveDropdownId(null); toggleStatus(activeProduct); }}>
+                    {activeProduct.is_active ? 'Mark Inactive' : 'Mark Active'}
+                  </button>
+                </>
+              )}
+              {userRole !== 'super_admin' && (
+                <button disabled style={{ color: 'var(--color-text-secondary)' }}>View Only</button>
+              )}
+            </div>
+          </>
+        );
+      })(), document.body)}
 
       {/* ICIT 3-Step Export Modal */}
       <ExportModal
@@ -834,215 +872,197 @@ const Menu = () => {
         </div>
       )}
 
-      {/* Product Detail Drawer (Expanded Product Page View) */}
-      {detailProduct && (
-        <div className="product-drawer-overlay" onClick={() => setDetailProduct(null)}>
-          <div className="product-drawer" onClick={(e) => e.stopPropagation()}>
-            <div className="product-drawer-header">
-              <div className="product-drawer-title-wrap">
-                <h2>{detailProduct.name}</h2>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                  <span className="zenith-category-badge">{getProductCategoryName(detailProduct)}</span>
-                  {detailProduct.is_active ? (
-                    <span className="zenith-status-pill active"><span className="status-dot">●</span> Active</span>
-                  ) : (
-                    <span className="zenith-status-pill draft"><span className="status-dot">●</span> Draft</span>
-                  )}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button className="zenith-action-trigger" onClick={() => setDetailProduct(null)}>
-                  <X size={20} />
+      {/* ── Product Detail Modal (Website-style full-screen preview) ── */}
+      {detailProduct && createPortal(
+        <div className="pdp-modal-overlay" onClick={() => setDetailProduct(null)}>
+          <div className="pdp-modal" onClick={(e) => e.stopPropagation()}>
+
+            {/* Top bar */}
+            <div className="pdp-modal-topbar">
+              <div className="pdp-modal-topbar-left">
+                <button className="pdp-back-btn" onClick={() => setDetailProduct(null)}>
+                  <X size={18} /> Close Preview
                 </button>
+                <span className="pdp-preview-tag">Website Preview</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {detailProduct.is_active ? (
+                  <span className="zenith-status-pill active"><span className="status-dot">●</span> Live on Website</span>
+                ) : (
+                  <span className="zenith-status-pill draft"><span className="status-dot">●</span> Draft (Hidden)</span>
+                )}
+                <Button variant="primary" onClick={() => { setDetailProduct(null); openEditModal(detailProduct); }}>
+                  Edit Product
+                </Button>
               </div>
             </div>
 
-            <div className="product-drawer-body">
-              {/* Hero Image Gallery */}
-              <div className="drawer-hero-gallery">
-                <img
-                  src={activeDetailImage || detailProduct.image_url || detailProduct.image}
-                  alt={detailProduct.name}
-                  className="drawer-main-image"
-                />
+            {/* 2-column body — mirrors website layout */}
+            <div className="pdp-modal-body">
+
+              {/* LEFT: Image column */}
+              <div className="pdp-image-col">
+                <div className="pdp-main-image-wrap">
+                  <img
+                    src={activeDetailImage || detailProduct.image_url || detailProduct.image || detailProduct.cardImage || '/bold-concentrate-bottle.png'}
+                    alt={detailProduct.name}
+                    className="pdp-main-image"
+                    onError={(e) => { e.target.src = '/bold-concentrate-bottle.png'; }}
+                  />
+                  {detailProduct.badges?.length > 0 && (
+                    <div className="pdp-badge-stack">
+                      {detailProduct.badges.slice(0, 3).map((b) => (
+                        <span key={b} className={`pdp-badge pdp-badge--${b}`}>
+                          {b.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ')}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Thumbnail strip */}
                 {detailProduct.gallery && detailProduct.gallery.length > 1 && (
-                  <div className="drawer-thumbs-list">
+                  <div className="pdp-thumbs">
                     {detailProduct.gallery.map((g) => (
                       <button
                         key={g.id}
-                        className={`drawer-thumb-btn ${activeDetailImage === g.src ? 'active' : ''}`}
+                        className={`pdp-thumb ${activeDetailImage === g.src ? 'active' : ''}`}
                         onClick={() => setActiveDetailImage(g.src)}
                       >
-                        <img src={g.src} alt={g.alt || g.label} />
+                        <img src={g.src} alt={g.label} />
+                        <span>{g.label}</span>
                       </button>
                     ))}
                   </div>
                 )}
-              </div>
 
-              {/* Size Varieties Display */}
-              <div>
-                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  Available Varieties & Sizes
-                </h4>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                  {detailProduct.sizes && detailProduct.sizes.length > 0 ? (
-                    detailProduct.sizes.map((s) => (
-                      <span
-                        key={s.id}
-                        style={{
-                          padding: '6px 14px',
-                          background: '#F1F5F9',
-                          border: '1px solid #CBD5E1',
-                          borderRadius: '6px',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: '#1E293B',
-                        }}
-                      >
-                        {s.label} {s.modifier ? `(+₹${s.modifier})` : ''}
-                      </span>
-                    ))
-                  ) : (
-                    <>
-                      <span style={{ padding: '6px 14px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}>
-                        325 ml
-                      </span>
-                      <span style={{ padding: '6px 14px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}>
-                        1 Liter
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Tagline & Description */}
-              <div>
-                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>TAGLINE</h4>
-                <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--c-espresso)', margin: '0 0 12px 0' }}>
-                  {detailProduct.tagline || detailProduct.description}
-                </p>
-                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '4px', textTransform: 'uppercase' }}>DESCRIPTION</h4>
-                <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-                  {detailProduct.description}
-                </p>
-              </div>
-
-              {/* Price & Rating */}
-              <div className="drawer-spec-grid">
-                <div className="drawer-spec-card">
-                  <div className="drawer-spec-label">Base Price</div>
-                  <div className="drawer-spec-value" style={{ color: '#16A34A', fontSize: '18px' }}>
-                    ₹{parseFloat(detailProduct.base_price || detailProduct.basePrice || 0).toFixed(2)}
+                {/* Spec tiles — like website */}
+                <div className="pdp-spec-tiles">
+                  <div className="pdp-spec-tile">
+                    <span className="pdp-spec-label">Caffeine</span>
+                    <span className="pdp-spec-val">{detailProduct.caffeine || 'High'}</span>
                   </div>
-                </div>
-                <div className="drawer-spec-card">
-                  <div className="drawer-spec-label">Customer Rating</div>
-                  <div className="drawer-spec-value" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Star size={16} fill="#F59E0B" color="#F59E0B" />
-                    <span>{detailProduct.reviews?.rating || 4.8}</span>
-                    <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 400 }}>
-                      ({detailProduct.reviews?.count || 126} reviews)
-                    </span>
+                  <div className="pdp-spec-tile">
+                    <span className="pdp-spec-label">Servings</span>
+                    <span className="pdp-spec-val">{detailProduct.servings || '4–6 per bottle'}</span>
+                  </div>
+                  <div className="pdp-spec-tile">
+                    <span className="pdp-spec-label">Brew Ratio</span>
+                    <span className="pdp-spec-val">{detailProduct.brewRatio || '1:2 with milk'}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Editable Stock Section */}
-              <div style={{ marginTop: '16px', padding: '14px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: '#0F172A', marginBottom: '8px', textTransform: 'uppercase' }}>
-                  Inventory Stock Management
-                </h4>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '12px', color: '#64748B', display: 'block', marginBottom: '4px' }}>Available Stock Units</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={detailStockValue}
-                      onChange={(e) => setDetailStockValue(e.target.value)}
-                      style={{ width: '100%', padding: '8px 12px', fontSize: '15px', fontWeight: 700, border: '1px solid #CBD5E1', borderRadius: '6px', outline: 'none', background: '#FFFFFF' }}
-                    />
-                  </div>
-                  <Button
-                    variant="primary"
-                    onClick={() => handleSaveDetailStock(detailProduct)}
-                    disabled={isSavingDetailStock}
-                    style={{ marginTop: '18px', padding: '8px 16px', fontSize: '13px' }}
-                  >
-                    {isSavingDetailStock ? 'Updating...' : 'Update Stock'}
-                  </Button>
-                </div>
-              </div>
+              {/* RIGHT: Info column */}
+              <div className="pdp-info-col">
+                <div className="pdp-info-header">
+                  <span className="pdp-category">{getProductCategoryName(detailProduct)}</span>
+                  <h1 className="pdp-title">{detailProduct.name}</h1>
+                  <p className="pdp-tagline">{detailProduct.tagline || detailProduct.description}</p>
 
-              {/* Specification Grid */}
-              <div style={{ marginTop: '16px' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--c-espresso)', marginBottom: '12px' }}>
-                  Product Specifications
-                </h3>
-                <div className="drawer-spec-grid">
-                  <div className="drawer-spec-card">
-                    <div className="drawer-spec-label">Roast Profile</div>
-                    <div className="drawer-spec-value">{detailProduct.roast || 'Medium Dark'}</div>
-                  </div>
-                  <div className="drawer-spec-card">
-                    <div className="drawer-spec-label">Caffeine Level</div>
-                    <div className="drawer-spec-value">{detailProduct.caffeine || 'High'}</div>
-                  </div>
-                  <div className="drawer-spec-card">
-                    <div className="drawer-spec-label">Bean Composition</div>
-                    <div className="drawer-spec-value">{detailProduct.beanProfile || '100% Arabica'}</div>
-                  </div>
-                  <div className="drawer-spec-card">
-                    <div className="drawer-spec-label">Best Brew Ratio</div>
-                    <div className="drawer-spec-value">{detailProduct.bestMix || detailProduct.brewRatio || '1:2 with milk'}</div>
-                  </div>
-                  <div className="drawer-spec-card">
-                    <div className="drawer-spec-label">Recommended Servings</div>
-                    <div className="drawer-spec-value">{detailProduct.servings || '4-6 serves per bottle'}</div>
+                  {/* Rating */}
+                  <div className="pdp-rating">
+                    <Star size={15} fill="#F59E0B" color="#F59E0B" />
+                    <strong>{detailProduct.reviews?.rating || 4.8}</strong>
+                    <span>({detailProduct.reviews?.count || 126} reviews)</span>
                   </div>
                 </div>
-              </div>
 
-              {/* Ingredients */}
-              {detailProduct.ingredients && detailProduct.ingredients.length > 0 && (
-                <div>
-                  <h4 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>INGREDIENTS</h4>
-                  <div className="drawer-ingredients-list">
-                    {detailProduct.ingredients.map((ing, i) => (
-                      <span key={i} className="ingredient-pill">☕ {ing}</span>
+                <p className="pdp-desc">{detailProduct.description}</p>
+
+                {/* Size Selector */}
+                <div className="pdp-section">
+                  <h3 className="pdp-section-title">Choose Bottle Size</h3>
+                  <div className="pdp-sizes">
+                    {detailProduct.sizes && detailProduct.sizes.length > 0 ? (
+                      detailProduct.sizes.map((s) => (
+                        <div key={s.id} className="pdp-size-chip">
+                          <span className="pdp-size-label">{s.label}</span>
+                          <span className="pdp-size-price">
+                            ₹{parseFloat((detailProduct.base_price || detailProduct.basePrice || 0) + (s.modifier || 0)).toFixed(0)}
+                            {s.modifier > 0 && <small> (+₹{s.modifier})</small>}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <div className="pdp-size-chip">
+                          <span className="pdp-size-label">325 ml</span>
+                          <span className="pdp-size-price">₹{parseFloat(detailProduct.base_price || detailProduct.basePrice || 0).toFixed(0)}</span>
+                        </div>
+                        <div className="pdp-size-chip">
+                          <span className="pdp-size-label">1 Liter</span>
+                          <span className="pdp-size-price">₹{(parseFloat(detailProduct.base_price || detailProduct.basePrice || 0) * 3).toFixed(0)}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Ingredients */}
+                {detailProduct.ingredients && detailProduct.ingredients.length > 0 && (
+                  <div className="pdp-section">
+                    <h3 className="pdp-section-title">Ingredients</h3>
+                    <div className="pdp-ingredients">
+                      {detailProduct.ingredients.map((ing, i) => (
+                        <span key={i} className="ingredient-pill">☕ {ing}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Price + CTA (read-only preview) */}
+                <div className="pdp-cta-bar">
+                  <div className="pdp-price-display">
+                    <span className="pdp-price-label">From</span>
+                    <span className="pdp-price-value">₹{parseFloat(detailProduct.base_price || detailProduct.basePrice || 0).toFixed(0)}</span>
+                  </div>
+                  <button className="pdp-add-btn" disabled>
+                    Add to Cart (Preview)
+                  </button>
+                </div>
+
+                {/* CRM-only stock management */}
+                <div className="pdp-crm-stock-panel">
+                  <h4 className="pdp-crm-panel-title">📦 CRM — Inventory Stock</h4>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontSize: '12px', color: '#64748B', display: 'block', marginBottom: '4px' }}>
+                        Available Stock Units
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={detailStockValue}
+                        onChange={(e) => setDetailStockValue(e.target.value)}
+                        style={{ width: '100%', padding: '8px 12px', fontSize: '15px', fontWeight: 700, border: '1px solid #CBD5E1', borderRadius: '8px', outline: 'none' }}
+                      />
+                    </div>
+                    <Button
+                      variant="primary"
+                      onClick={() => handleSaveDetailStock(detailProduct)}
+                      disabled={isSavingDetailStock}
+                      style={{ padding: '8px 18px', fontSize: '13px', whiteSpace: 'nowrap' }}
+                    >
+                      {isSavingDetailStock ? 'Updating…' : 'Update Stock'}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Customer review quotes */}
+                {detailProduct.reviews?.quotes && (
+                  <div className="drawer-review-box" style={{ marginTop: '16px' }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#B45309', margin: '0 0 8px 0' }}>CUSTOMER HIGHLIGHTS</h4>
+                    {detailProduct.reviews.quotes.map((q, idx) => (
+                      <p key={idx} style={{ fontSize: '13.5px', color: '#78350F', fontStyle: 'italic', margin: '4px 0' }}>"{q}"</p>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Customer Review Highlights */}
-              {detailProduct.reviews?.quotes && (
-                <div className="drawer-review-box">
-                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#B45309', margin: '0 0 8px 0' }}>CUSTOMER HIGHLIGHTS</h4>
-                  {detailProduct.reviews.quotes.map((q, idx) => (
-                    <p key={idx} style={{ fontSize: '13.5px', color: '#78350F', fontStyle: 'italic', margin: '4px 0' }}>
-                      "{q}"
-                    </p>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="product-drawer-footer">
-              <Button variant="ghost" onClick={() => setDetailProduct(null)}>Close</Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setDetailProduct(null);
-                  openEditModal(detailProduct);
-                }}
-              >
-                Edit Product Details
-              </Button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
