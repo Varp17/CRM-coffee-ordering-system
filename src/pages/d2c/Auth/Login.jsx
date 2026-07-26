@@ -43,11 +43,11 @@ const Login = () => {
         setOtpStep(true);
         if (res.otp) {
           setSimulatedOtp(res.otp);
-          toast.success(`[WhatsApp Notification] OTP code generated: ${res.otp}`, {
+          toast.success(`[Email Notification] OTP code generated: ${res.otp}`, {
             duration: 8000,
           });
         } else {
-          toast.success('OTP sent successfully via WhatsApp.');
+          toast.success('OTP sent successfully via Email.');
         }
       } else {
         toast.error(res.error || 'Failed to send OTP.');
