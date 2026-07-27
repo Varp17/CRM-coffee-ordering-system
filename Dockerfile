@@ -1,27 +1,50 @@
-# Build Stage
-FROM node:20-alpine AS build
 
-ARG VITE_API_URL=/api/v1
+# FROM node:22-alpine
+
+# RUN npm install -g pnpm@latest
+
+# WORKDIR /app
+
+# COPY package.json /app
+
+# COPY package-lock.json /app
+
+# RUN pnpm install
+
+# COPY . /app
+
+# RUN pnpm build
+
+# EXPOSE 8022
+
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+#   CMD wget -q --spider http://localhost:8022/ || exit 1
+
+# CMD ["npm", "run", "dev"]
+
+
+FROM node:22-alpine
+
+RUN apk add --no-cache wget
+RUN npm install -g pnpm
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json package-lock.json ./
+
+COPY pnpm-workspace.yaml ./
+
+COPY pnpm-lock.yaml ./
+
+RUN pnpm install
 
 COPY . .
 
-ENV VITE_API_URL=$VITE_API_URL
-RUN npm run build
+RUN pnpm build
 
-# Production Stage
-FROM nginx:alpine
+EXPOSE 8022
 
-# Copy custom nginx config with SPA routing + API/WS proxy
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+  CMD wget -q --spider http://localhost:8022/ || exit 1
 
-# Copy built assets to Nginx html directory
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["pnpm", "start"]
